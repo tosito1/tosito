@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Pro - Ultimate Edition</title>
+    <meta name="description" content="La plataforma de ajedrez más avanzada. Juega contra IA, entrena aperturas, multijugador online y análisis profundo con Stockfish.">
+
+    <!-- External Libraries (CDN, no Tailwind) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+    <style>
+        #error-catcher { position: fixed; top: 0; left: 0; z-index: 99999; background: red; color: white; padding: 10px; font-size: 14px; max-height: 50vh; overflow: auto; display: none; }
+    </style>
+    <script>
+        window.addEventListener('error', function(e) {
+            var el = document.getElementById('error-catcher');
+            if(el) { el.style.display = 'block'; el.innerHTML += e.message + '<br>' + e.filename + ':' + e.lineno + '<hr>'; }
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            var el = document.getElementById('error-catcher');
+            if(el) { el.style.display = 'block'; el.innerHTML += e.reason + '<hr>'; }
+        });
+    </script>
+</head>
+<body>
+    <div id="error-catcher"></div>
+
+    <!-- ═══ LOGIN MODAL ══════════════════════════════════════════════════ -->
+    <div id="loginModal" class="login-overlay">
+        <div class="login-bg-effects">
+            <div class="login-orb login-orb-1"></div>
+            <div class="login-orb login-orb-2"></div>
+            <div class="login-orb login-orb-3"></div>
+        </div>
+        <!-- Floating chess pieces -->
+        <div class="floating-pieces">
+            <div class="fp" style="top:10%;left:8%;">♔</div>
+            <div class="fp" style="top:75%;left:5%;">♖</div>
+            <div class="fp" style="top:20%;right:9%;">♕</div>
+            <div class="fp" style="top:65%;right:7%;">♗</div>
+            <div class="fp" style="top:45%;left:15%;">♘</div>
+            <div class="fp" style="top:85%;right:18%;">♙</div>
+            <div class="fp" style="top:5%;left:45%;">♟</div>
+            <div class="fp" style="top:50%;right:22%;">♜</div>
+        </div>
+        <div class="login-logo">
+            <div class="login-logo-icon">♟</div>
+            <h1 class="login-title">Chess <span class="login-pro">Pro</span></h1>
+            <p class="login-subtitle">✦ La experiencia definitiva del ajedrez ✦</p>
+        </div>
+        <div class="login-card">
+            <h2 class="login-card-title">Acceder</h2>
+            <input type="email" id="loginEmail" placeholder="Correo electrónico" class="login-input">
+            <input type="password" id="loginPass" placeholder="Contraseña" class="login-input">
+            <div id="loginErrorMsg" class="login-error hidden"></div>
+            <div class="login-btns">
+                <button id="btnLoginEmail" class="btn-login btn-login-primary">Entrar</button>
+                <button id="btnSignupEmail" class="btn-login btn-login-secondary">Registro</button>
+            </div>
+            <div class="login-divider"><span>o continúa con</span></div>
+            <button id="btnLoginGoogle" class="btn-login btn-login-google">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Continuar con Google
+            </button>
+            <button id="btnLoginGuest" class="btn-login btn-login-guest">👤 Entrar como invitado</button>
+        </div>
+    </div>
+
+    <!-- ═══ MAIN MENU ══════════════════════════════════════════════════════ -->
+    <div id="mainMenu" style="display:none">
+        <!-- Floating ambient pieces for menu bg -->
+        <div class="floating-pieces" style="z-index:1;">
+            <div class="fp" style="top:15%;left:38%;">♔</div>
+            <div class="fp" style="top:70%;left:42%;">♕</div>
+            <div class="fp" style="top:35%;left:60%;">♖</div>
+            <div class="fp" style="top:80%;left:65%;">♗</div>
+            <div class="fp" style="top:25%;right:5%;">♘</div>
+            <div class="fp" style="top:55%;right:10%;">♙</div>
+            <div class="fp" style="top:5%;right:15%;">♟</div>
+            <div class="fp" style="top:90%;right:25%;">♜</div>
+        </div>
+        <div class="menu-sidebar">
+            <div class="menu-brand">
+                <span class="menu-brand-icon">♟</span>
+                <div>
+                    <div class="menu-brand-name">Chess Pro</div>
+                    <div class="menu-brand-elo" id="userEloDisplay">ELO: ...</div>
+                </div>
+            </div>
+            <nav class="menu-nav">
+                <button class="menu-tab active" data-target="view-play">🤖 Jugar vs IA</button>
+                <button class="menu-tab" data-target="view-profile">👤 Mi Perfil</button>
+                <button class="menu-tab" data-target="view-online">🌐 Multijugador</button>
+                <button class="menu-tab" data-target="view-openings">📖 Academia</button>
+                <button class="menu-tab" data-target="view-challenges">⚔️ Táctica</button>
+                <button class="menu-tab" data-target="view-leaderboard">🏆 Clasificación</button>
+                <button class="menu-tab" data-target="view-settings">⚙️ Ajustes</button>
+            </nav>
+            <div class="menu-version">✦ v10.0 Pro Edition ✦</div>
+        </div>
+
+        <div class="menu-content custom-scrollbar">
+
+            <!-- ── VS AI ── -->
+            <div id="view-play" class="menu-view active">
+                <div class="view-card">
+                    <h2 class="view-title">⚔️ Partida contra Bot</h2>
+                    <div class="settings-section">
+                        <label class="settings-label">Color de Piezas</label>
+                        <div class="color-picker">
+                            <button class="color-btn" data-color="w">♙<span>Blancas</span></button>
+                            <button class="color-btn color-btn-selected" data-color="random">🎲<span>Aleatorio</span></button>
+                            <button class="color-btn" data-color="b">♟<span>Negras</span></button>
+                        </div>
+                        <input type="hidden" id="introColor" value="random">
+                    </div>
+                    <div class="settings-section">
+                        <label class="settings-label">Control de Tiempo</label>
+                        <select id="introTimeControl" class="select-input">
+                            <option value="60">⚡ 1 min · Bullet</option>
+                            <option value="180">🔥 3 min · Blitz</option>
+                            <option value="600" selected>⏱️ 10 min · Rápido</option>
+                            <option value="1800">🧩 30 min · Clásico</option>
+                            <option value="0">∞ Sin límite</option>
+                        </select>
+                    </div>
+                    <div class="settings-section">
+                        <label class="settings-label">Fuerza del Motor</label>
+                        <select id="introDifficulty" class="select-input">
+                            <option value="1">🌱 Nivel 1 · Principiante (~500 ELO)</option>
+                            <option value="3">🐣 Nivel 3 · Básico (~700 ELO)</option>
+                            <option value="5">🎮 Nivel 5 · Amateur (~900 ELO)</option>
+                            <option value="8">⚔️ Nivel 8 · Club (~1100 ELO)</option>
+                            <option value="10" selected>🧠 Nivel 10 · Intermedio (~1400 ELO)</option>
+                            <option value="13">🔥 Nivel 13 · Avanzado (~1700 ELO)</option>
+                            <option value="15">💎 Nivel 15 · Experto (~2000 ELO)</option>
+                            <option value="18">👑 Nivel 18 · Master (~2300 ELO)</option>
+                            <option value="20">🏆 Nivel 20 · Gran Maestro (~2600 ELO)</option>
+                        </select>
+                    </div>
+                    <div class="settings-section">
+                        <label class="settings-label">Profundidad del Motor: <span id="engineDepthDisplay">12</span></label>
+                        <input type="range" id="engineDepthSlider" min="6" max="20" value="12" class="range-input">
+                        <div class="range-labels"><span>Rápido</span><span>Preciso</span></div>
+                    </div>
+                    <button id="startIntroBtn" class="btn-start">
+                        <span>Empezar Partida</span>
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── PROFILE ── -->
+            <div id="view-profile" class="menu-view">
+                <div class="view-card">
+                    <div class="profile-header">
+                        <div id="profileAvatarContainer" class="profile-avatar">
+                            <span id="profileAvatarText">👤</span>
+                            <img id="profileAvatarImg" src="" alt="Avatar" class="hidden">
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileDisplayName" class="profile-name">Jugador</h2>
+                            <span id="profileRankBadge" class="rank-badge">Bronce</span>
+                            <div class="profile-username-row">
+                                <span id="profileUsernameSpan">
+                                    @<span id="profileUsername" class="profile-username">cargando...</span>
+                                    <button id="editUsernameBtn" class="btn-icon">✏️</button>
+                                </span>
+                                <span id="editUsernameContainer" class="hidden">
+                                    <input type="text" id="editUsernameInput" class="edit-input">
+                                    <button id="saveUsernameBtn" class="btn-small btn-success">Guardar</button>
+                                    <button id="cancelUsernameBtn" class="btn-small btn-danger">✕</button>
+                                </span>
+                                <div id="usernameError" class="error-text hidden"></div>
+                            </div>
+                        </div>
+                        <div class="profile-elo-block">
+                            <div class="elo-label">ELO Global</div>
+                            <div class="elo-value" id="profileElo">1200</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card stat-win">
+                            <div class="stat-value" id="statWins">0</div>
+                            <div class="stat-label">Victorias</div>
+                        </div>
+                        <div class="stat-card stat-draw">
+                            <div class="stat-value" id="statDraws">0</div>
+                            <div class="stat-label">Empates</div>
+                        </div>
+                        <div class="stat-card stat-loss">
+                            <div class="stat-value" id="statLosses">0</div>
+                            <div class="stat-label">Derrotas</div>
+                        </div>
+                        <div class="stat-card stat-neutral">
+                            <div class="stat-value" id="statWinRate">0%</div>
+                            <div class="stat-label">Win Rate</div>
+                        </div>
+                    </div>
+
+                    <!-- ELO History -->
+                    <div class="section-block">
+                        <h3 class="section-title">📈 Historial ELO</h3>
+                        <div class="chart-container" style="height:160px">
+                            <canvas id="eloHistoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Friends -->
+                    <div class="section-block">
+                        <h3 class="section-title">👥 Lista de Amigos</h3>
+                        <div class="friend-add-row">
+                            <input type="text" id="friendUidInput" placeholder="Nombre de usuario..." class="edit-input">
+                            <button id="addFriendBtn" class="btn-small btn-primary">+ Añadir</button>
+                        </div>
+                        <div id="friendError" class="error-text hidden"></div>
+                        <div id="friendsList" class="friends-list custom-scrollbar"></div>
+                    </div>
+
+                    <div class="logout-row">
+                        <button id="btnLogout" class="btn-small btn-danger">🚪 Cerrar Sesión</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── MULTIPLAYER ── -->
+            <div id="view-online" class="menu-view">
+                <div class="view-card view-centered">
+                    <div class="multiplayer-hero">
+                        <div class="multiplayer-icon">🌐</div>
+                        <h2 class="view-title">Multijugador Online</h2>
+                        <p class="view-desc">Compite contra jugadores de todo el mundo o desafía a tus amigos a una partida clasificatoria.</p>
+                        <button id="startMatchmakingBtn" class="btn-start btn-green">
+                            <span>⚔️ Buscar Oponente</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── OPENINGS ACADEMY ── -->
+            <div id="view-openings" class="menu-view">
+                <div class="academy-header">
+                    <h2 class="view-title">📖 Academia de Aperturas</h2>
+                    <p class="view-desc">Domina la teoría con el entrenador interactivo. Aprende las líneas principales y la lógica detrás de cada apertura.</p>
+                </div>
+                <div class="openings-toolbar">
+                    <input type="text" id="openingSearch" placeholder="🔍 Buscar apertura..." class="search-input">
+                    <div class="filter-btns">
+                        <button class="opening-filter-btn active" data-filter="all">Todas</button>
+                        <button class="opening-filter-btn" data-filter="white">⚪ Blancas</button>
+                        <button class="opening-filter-btn" data-filter="black">⚫ Negras</button>
+                    </div>
+                </div>
+                <div class="openings-grid" id="openings-grid"></div>
+            </div>
+
+            <!-- ── TACTICS ── -->
+            <div id="view-challenges" class="menu-view">
+                <div class="view-card view-centered">
+                    <div class="tactics-hero">
+                        <div class="tactics-icon">⚔️</div>
+                        <h2 class="view-title">Entrenamiento Táctico</h2>
+                        <p class="view-desc">Resuelve puzzles reales. Mantén tu racha viva.</p>
+                        <div class="tactics-stats">
+                            <div class="tactic-stat">
+                                <div class="tactic-stat-val" id="tacticsStreak">🔥 0</div>
+                                <div class="tactic-stat-label">Racha</div>
+                            </div>
+                            <div class="tactic-stat">
+                                <div class="tactic-stat-val" id="tacticsTotal">0</div>
+                                <div class="tactic-stat-label">Total resueltos</div>
+                            </div>
+                        </div>
+                        <button id="startPuzzleBtn" class="btn-start btn-amber">⚔️ Empezar Reto</button>
+                    </div>
+                    <div class="coord-trainer-section">
+                        <h3 class="section-title">🎯 Entrenador de Coordenadas</h3>
+                        <p class="view-desc" style="font-size:12px">Haz clic en la casilla mostrada lo más rápido posible.</p>
+                        <button id="startCoordTrainBtn" class="btn-small btn-primary">🎯 Entrenar Coordenadas</button>
+                        <div id="coordinateDisplay" style="display:none;margin-top:12px">
+                            <div style="font-size:2.5rem;font-weight:900;text-align:center;color:#60a5fa" id="coordinateTarget">A1</div>
+                            <div style="text-align:center;font-size:12px;color:#64748b">Puntuación: <span id="coordinateScore" style="color:#10b981;font-weight:bold">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── LEADERBOARD ── -->
+            <div id="view-leaderboard" class="menu-view">
+                <div class="view-card">
+                    <h2 class="view-title">🏆 Clasificación Global</h2>
+                    <div id="leaderboardList" class="leaderboard-container">
+                        <div class="empty-state">Cargando clasificación...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SETTINGS ── -->
+            <div id="view-settings" class="menu-view">
+                <div class="view-card">
+                    <h2 class="view-title">⚙️ Ajustes</h2>
+
+                    <div class="settings-section">
+                        <h3 class="section-title">🎮 Jugabilidad</h3>
+                        <label class="toggle-row">
+                            <span>Promoción automática a Dama</span>
+                            <input type="checkbox" id="settingsAutoQueen" class="toggle-checkbox">
+                        </label>
+                        <label class="toggle-row">
+                            <span>Resaltar movimientos legales</span>
+                            <input type="checkbox" id="settingsHighlightMoves" checked class="toggle-checkbox">
+                        </label>
+                        <label class="toggle-row">
+                            <span>Mostrar coordenadas</span>
+                            <input type="checkbox" id="settingsShowCoords" checked class="toggle-checkbox">
+                        </label>
+                        <label class="toggle-row">
+                            <span>Voltear tablero</span>
+                            <input type="checkbox" id="settingsBoardFlip" class="toggle-checkbox">
+                        </label>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 class="section-title">🔊 Audio</h3>
+                        <label class="settings-label">Volumen de efectos</label>
+                        <input type="range" id="settingsSoundVolume" min="0" max="1" step="0.1" value="0.7" class="range-input">
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 class="section-title">📺 Modo Streaming</h3>
+                        <label class="toggle-row">
+                            <span>Ocultar nombre de usuario (para stream)</span>
+                            <input type="checkbox" id="streamModeToggle" class="toggle-checkbox">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══ MATCHMAKING OVERLAY ══════════════════════════════════════════ -->
+    <div id="matchmakingModal">
+        <div class="radar-spinner"></div>
+        <h2 style="font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:3px;text-transform:uppercase">Buscando Oponente</h2>
+        <p id="matchmakingStatusText" style="color:#60a5fa;font-family:monospace;margin-bottom:36px;font-size:13px;letter-spacing:1px">Conectando...</p>
+        <button id="cancelMatchmakingBtn" class="btn-small btn-danger">✕ Cancelar</button>
+    </div>
+
+    <!-- ═══ RESIGN CONFIRM ══════════════════════════════════════════════ -->
+    <div id="resignConfirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;flex-direction:column;justify-content:center;align-items:center;gap:16px">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:32px;max-width:320px;text-align:center">
+            <div style="font-size:2rem;margin-bottom:12px">🏳️</div>
+            <h3 style="font-weight:900;font-size:1.2rem;color:#fff;margin-bottom:8px">¿Rendirse?</h3>
+            <p style="color:#94a3b8;font-size:13px;margin-bottom:20px">Se perderá la partida y se actualizará tu ELO.</p>
+            <div style="display:flex;gap:10px;justify-content:center">
+                <button id="resignConfirmBtn" class="btn-small btn-danger">Sí, rendirse</button>
+                <button id="resignCancelBtn" class="btn-small btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ THEME MODAL ══════════════════════════════════════════════════ -->
+    <div id="themeModal">
+        <div class="theme-modal-inner">
+            <button id="closeThemeModal" class="theme-close">&times;</button>
+            <h2 class="theme-modal-title">🎨 Apariencia</h2>
+
+            <div class="settings-section">
+                <h3 class="section-title">Opciones Visuales</h3>
+                <label class="toggle-row">
+                    <span>Tablero 3D Dinámico</span>
+                    <input type="checkbox" id="toggle3D" checked class="toggle-checkbox">
+                </label>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">Estilo del Tablero</h3>
+                <div class="board-theme-grid">
+                    <div class="theme-card board-theme-btn active" data-board="basic">
+                        <div class="theme-preview-board"><div style="background:#cbd5e1"></div><div style="background:#64748b"></div><div style="background:#64748b"></div><div style="background:#cbd5e1"></div></div>
+                        <div class="theme-label">Básico</div>
+                    </div>
+                            <div class="theme-card board-theme-btn" data-board="classic">
+                        <div class="theme-preview-board"><div style="background:#f0d9b5"></div><div style="background:#b58863"></div><div style="background:#b58863"></div><div style="background:#f0d9b5"></div></div>
+                        <div class="theme-label">Clásico</div>
+                    </div>
+                    <div class="theme-card board-theme-btn" data-board="neon">
+                        <div class="theme-preview-board"><div style="background:#2dd4bf"></div><div style="background:#0f172a"></div><div style="background:#0f172a"></div><div style="background:#2dd4bf"></div></div>
+                        <div class="theme-label">Neón</div>
+                    </div>
+                    <div class="theme-card board-theme-btn" data-board="galaxy">
+                        <div class="theme-preview-board"><div style="background:#64748b"></div><div style="background:#1e1b4b"></div><div style="background:#1e1b4b"></div><div style="background:#64748b"></div></div>
+                        <div class="theme-label">Galaxia</div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3 class="section-title">Diseño de Piezas</h3>
+                <div id="pieceThemesContainer" class="piece-themes-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ GAME UI ══════════════════════════════════════════════════════ -->
+    <div class="game-wrapper" id="gameUI" style="opacity:0;display:none">
+
+        <!-- TOP CONTROLS -->
+        <div class="controls-top">
+            <div class="glass-panel status-panel">
+                <div id="statusDisplay" class="status-normal">Esperando inicio...</div>
+                <div id="openingNameDisplay" class="opening-name-display"></div>
+            </div>
+
+            <!-- Click-toggle dropdown (NO hover) -->
+            <div class="tools-group glass-panel" id="toolsGroup">
+                <button class="tools-trigger" id="toolsTrigger">
+                    ⚙️ Herramientas <span class="tools-arrow" id="toolsArrow">▼</span>
+                </button>
+                <div class="tools-panel" id="toolsPanel" style="display:none;">
+                    <div class="tools-section-label">Partida</div>
+                    <div class="tools-row">
+                        <button id="newGameBtn" class="btn btn-primary text-xs" style="flex:1;">🏳️ Rendirse</button>
+                        <button id="backToMenuBtn" class="btn btn-danger text-xs" style="flex:1;">← Salir</button>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                        <button id="multiPvBtn" class="btn btn-secondary text-xs" style="flex:1;">🔍 Multi-PV</button>
+                        <button id="godModeBtn" class="btn btn-god text-xs" style="flex:1;">✨ Oráculo</button>
+                    </div>
+
+
+                    <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:800; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 4px;">Posición FEN</div>
+                    <div class="fen-tools" style="display:flex; gap:6px; border: none; padding-top: 0;">
+                        <input type="text" id="positionFenInput" placeholder="FEN..." class="fen-input" style="flex:1;">
+                        <button id="loadFenBtn" class="btn-icon" title="Cargar posición">📥</button>
+                        <button id="copyFenBtn" class="btn-icon" title="Copiar FEN">📋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ORACLE BAR — floating on the left -->
+        <div id="oracleBar" class="oracle-bar" style="display:none;">
+            <div class="oracle-bar-inner glass-panel">
+                <div class="oracle-badge" style="text-align: center; margin-bottom: 8px;">✨ ORÁCULO</div>
+                <div id="oracleText" class="oracle-terminal" style="margin-bottom: 12px; display:none;"></div>
+                <div id="multiPvDisplay" style="font-size:10px;color:#94a3b8;margin-bottom:12px;"></div>
+                
+                <div class="oracle-tool-btns">
+                    <button id="radarBtn" class="oracle-tool-btn" title="Resalta casillas en peligro">
+                        <span>&#128308;</span> Radar
+                    </button>
+                    <button id="autoPlayBtn" class="oracle-tool-btn" title="La IA juega el mejor movimiento">
+                        <span>&#9889;</span> Jugar
+                    </button>
+                    <button id="hintBtn" class="oracle-tool-btn" title="Muestra la mejor jugada">
+                        <span>&#128302;</span> Pista
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="studyPanel" class="glass-panel study-glass" style="display:none">
+            <div id="studyTypeTag" class="study-type-tag study-white">Apertura</div>
+            <h2 id="studyTitle" class="study-title">Nombre</h2>
+            <div id="studyDesc" class="study-desc">...</div>
+            <div class="study-nav">
+                <button id="studyPrevBtn" class="btn btn-secondary text-xs">◄ Atrás</button>
+                <button id="studyNextBtn" class="btn btn-primary text-xs">Siguiente ►</button>
+            </div>
+            <div id="studyProgress" class="study-progress">Paso 0</div>
+        </div>
+
+        <!-- BOARD AREA -->
+        <div class="board-scaler">
+            <div id="board-wrapper">
+                <!-- Eval Bar -->
+                <div id="evalBar" class="eval-container">
+                    <div id="evalTextTop" class="eval-text top"></div>
+                    <div id="evalFill" class="eval-fill"></div>
+                    <div id="evalTextBottom" class="eval-text bottom">0.0</div>
+                </div>
+
+                <!-- Move History Panel -->
+                <div id="liveHistoryPanel" class="glass-panel side-panel" style="display:none">
+                    <h3 class="side-panel-title">Historial</h3>
+                    <div id="moveList" class="move-list custom-scrollbar"></div>
+                </div>
+
+                <!-- Analysis Panel -->
+                <div id="analysisPanel" class="glass-panel side-panel" style="display:none;height:100%;max-height:800px;flex-direction:column;">
+                    <h3 class="side-panel-title" style="display:flex;justify-content:space-between">
+                        <span>📊 Análisis Post-Partida</span>
+                        <span id="analysisStatus" class="analysis-status">Analizando...</span>
+                    </h3>
+                    <div id="analysisSummary" style="font-size:12px;text-align:center;margin-bottom:8px;font-weight:bold;"></div>
+                    <div style="height:120px;flex-shrink:0;">
+                        <canvas id="evalChart"></canvas>
+                    </div>
+                    <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:800; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 12px; margin-bottom: 8px;">Revisión de Jugadas</div>
+                    <div id="reviewMoveList" class="custom-scrollbar" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding-right:4px;">
+                        <!-- JS will populate review moves here -->
+                    </div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div id="chatPanel" class="glass-panel side-panel" style="display:none">
+                    <h3 class="side-panel-title" style="display:flex;justify-content:space-between">
+                        <span>💬 Chat</span>
+                        <span style="color:#10b981;font-size:10px">● Conectado</span>
+                    </h3>
+                    <div id="chatMessages" class="chat-messages custom-scrollbar"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" placeholder="Escribe..." class="chat-input-field">
+                    </div>
+                </div>
+
+                <!-- AI HUD -->
+                <div class="hud-bar hud-top hud-glass" id="hudTop">
+                    <div class="player-info">
+                        <div id="turnDotAi" class="turn-dot hidden"></div>
+                        <div class="player-name" id="hudTopName">Stockfish IA</div>
+                        <div id="ai-captured" class="captured-area"></div>
+                    </div>
+                    <div id="ai-timer" class="timer">10:00</div>
+                </div>
+
+                <!-- Chessboard -->
+                <div id="chessboard">
+                    <div id="hints-layer"></div>
+                    <svg id="svg-layer" class="abs-full no-pointer z14">
+                        <defs>
+                            <filter id="neonMagenta"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                            <marker id="arrowMagenta" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#d946ef"/></marker>
+                            <marker id="customArrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/></marker>
+                            <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/></marker>
+                            <marker id="arrowTeal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2dd4bf"/></marker>
+                            <marker id="arrowYellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#eab308"/></marker>
+                            <marker id="arrowOrange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f97316"/></marker>
+                            <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/></marker>
+                        </defs>
+                        <g id="arrow-container"></g>
+                    </svg>
+                    <svg id="arrow-layer" class="abs-full no-pointer" style="z-index:16"></svg>
+                    <div id="virtual-cursor"></div>
+                    <div id="promotionModal">
+                        <h2 class="promo-title">Coronación</h2>
+                        <div class="promo-pieces" id="promoPieces"></div>
+                    </div>
+                    <div id="gameOverModal">
+                        <div id="goTitle" class="go-title jedi">Victoria</div>
+                        <div id="goSubtitle" class="go-subtitle">Jaque Mate</div>
+                        <div class="go-btns">
+                            <button id="goAnalyzeBtn" class="go-btn go-btn-blue">📊 Analizar</button>
+                            <button id="goRestartBtn" class="go-btn go-btn-gray">Continuar →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player HUD -->
+                <div class="hud-bar hud-bottom hud-glass" id="hudBottom">
+                    <div class="player-info">
+                        <div id="turnDotP" class="turn-dot hidden"></div>
+                        <div class="player-name" id="hudBottomName">Tú (Blancas)</div>
+                        <div id="player-captured" class="captured-area"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <div class="history-controls" id="historyControlsPanel">
+                            <button id="btn-hist-start" class="history-btn" disabled>|◄</button>
+                            <button id="btn-hist-prev" class="history-btn" disabled>◄</button>
+                            <button id="btn-hist-next" class="history-btn" disabled>►</button>
+                            <button id="btn-hist-end" class="history-btn" disabled>►|</button>
+                        </div>
+                        <div id="player-timer" class="timer">10:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PIP Camera -->
+        <div class="pip-camera" id="pipContainer">
+            <video id="videoInput" autoplay playsinline muted></video>
+            <canvas id="pipCanvas" width="320" height="240"></canvas>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

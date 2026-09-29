@@ -1,0 +1,12 @@
+{
+  "name": "reloj-firebase",
+  "version": "1.0.0",
+  "description": "Reloj digital con Firebase y Firestore",
+  "scripts": {
+    "start": "serve public",
+    "dev": "serve public"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}

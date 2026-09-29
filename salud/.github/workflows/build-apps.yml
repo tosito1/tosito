@@ -1,0 +1,101 @@
+name: Build Capacitor Apps
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install npm dependencies
+        run: npm ci || npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Debug Keystore
+        working-directory: ./android/app
+        run: |
+          if [ ! -f "debug.keystore" ]; then
+            keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add debug.keystore
+            git commit -m "chore: auto-generate debug keystore for Google Login"
+            git push
+          fi
+          echo "========================================="
+          echo "🔑 SHA-1 FINGERPRINT PARA FIREBASE 🔑"
+          keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android | grep "SHA1:"
+          echo "========================================="
+
+      - name: Build Android APK
+        working-directory: ./android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: saludtracker-android-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install npm dependencies
+        run: npm ci || npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      - name: Build unsigned IPA
+        working-directory: ./ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphoneos -destination "generic/platform=iOS" clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -derivedDataPath build
+          mkdir Payload
+          cp -r build/Build/Products/Debug-iphoneos/App.app Payload/
+          zip -r saludtracker-ios-unsigned.ipa Payload
+          rm -rf Payload
+
+      - name: Upload iOS IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: saludtracker-ios-ipa
+          path: ios/App/saludtracker-ios-unsigned.ipa

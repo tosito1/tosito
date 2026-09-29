@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Función para verificar si el usuario es administrador
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.uid == 'UAApcyeDQNZElcOcrpUxMmpPysp1' || 
+        exists(/databases/$(database)/documents/relojes_toust_admins/$(request.auth.uid))
+      );
+    }
+
+    // 1. Catálogo de Relojes
+    match /relojes_toust/tienda/productos/{document=**} {
+      // Todo el mundo puede leer el catálogo de productos
+      allow read: if true;
+      // Sólo los administradores pueden añadir/modificar/borrar
+      allow write: if isAdmin();
+    }
+    
+    // 2. Perfiles de Usuarios
+    match /relojes_toust/tienda/usuarios/{userId} {
+      // Cada usuario puede leer y modificar su propio perfil. Los admins todos.
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+    
+    // 3. Pedidos de la Tienda
+    match /relojes_toust/tienda/pedidos/{pedidoId} {
+      // Clientes autenticados pueden crear sus pedidos
+      allow create: if request.auth != null;
+      // Los usuarios pueden leer sus propios pedidos, y los admins pueden leer todos
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      // Sólo los administradores pueden actualizar su estado
+      allow update, delete: if isAdmin();
+    }
+    
+    // Colección de administradores (TOUST Admins)
+    match /relojes_toust_admins/{userId} {
+      // Un usuario puede leer su propio documento, y los admins pueden leer los de todos
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Un administrador existente (o el Super Admin) puede dar de alta o baja a otros
+      allow write: if isAdmin();
+    }
+
+    // 4. Panel de Administración (Componentes, Configuración, etc.)
+    match /relojes_toust/admin/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Regla global (anulada por seguridad, ya que sino anularía las protecciones de TOUST)
+    // match /{document=**} {
+    //   allow read, write: if request.time > timestamp.date(2026, 6, 13);
+    // }
+  }
+}

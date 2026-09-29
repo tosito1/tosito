@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "tosito-7f923"
+  },
+  "targets": {
+    "tosito-7f923": {
+      "hosting": {
+        "reloj-toust": [
+          "reloj-toust"
+        ]
+      }
+    }
+  }
+}

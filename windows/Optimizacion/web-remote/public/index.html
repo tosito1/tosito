@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tosito Remote PC Client</title>
+    
+    <!-- Meta tags para PWA / Mobile Home Screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#09090e">
+    
+    <!-- Fuentes y Iconos Modernos -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Inter:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #09090e;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #151525 0%, #09090e 100%);
+            --accent: #74c7ec;
+            --accent-rgb: 116, 199, 236;
+            --accent-purple: #cba6f7;
+            --accent-purple-rgb: 203, 166, 247;
+            --glass: rgba(22, 22, 33, 0.65);
+            --glass-strong: rgba(18, 18, 28, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-glow: rgba(116, 199, 236, 0.15);
+            --text: #cdd6f4;
+            --text-muted: #a6adc8;
+            --text-dark: #11111b;
+            --danger: #f38ba8;
+            --success: #a6e3a1;
+            --warning: #f9e2af;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            background-image: var(--bg-gradient);
+            color: var(--text);
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow Blobs */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(var(--accent-rgb), 0.4);
+            top: -50px;
+            right: -50px;
+            animation: pulse-blob 8s infinite alternate;
+        }
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: rgba(var(--accent-purple-rgb), 0.3);
+            bottom: -50px;
+            left: -50px;
+            animation: pulse-blob 6s infinite alternate-reverse;
+        }
+
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+            100% { transform: scale(1.2) translate(-20px, 20px); opacity: 0.45; }
+        }
+
+        /* Pantalla de Carga / Login */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+        }
+
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border: 1px solid var(--glass-border);
+            border-radius: 36px;
+            width: 100%;
+            max-width: 420px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-box {
+            width: 76px;
+            height: 76px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            border-radius: 22px;
+            margin: 0 auto 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--text-dark);
+            box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.35);
+            animation: float-logo 4s ease-in-out infinite;
+        }
+
+        @keyframes float-logo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 30px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 60%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 10px 0 32px;
+            line-height: 1.5;
+        }
+
+        /* Caja de Entrada de PIN */
+        .pin-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 32px;
+            cursor: pointer;
+        }
+
+        .pin-digit {
+            width: 44px;
+            height: 56px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .pin-digit.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3), inset 0 0 8px rgba(var(--accent-rgb), 0.1);
+            transform: scale(1.05);
+        }
+
+        .hidden-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+        }
+
+        /* Botón de Enlace */
+        .btn-premium {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            border: none;
+            padding: 16px;
+            border-radius: 18px;
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-premium:hover, .btn-premium:active {
+            transform: scale(0.98);
+            background: #ffffff;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-premium:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Mensajes de Estado */
+        .status-message {
+            margin-top: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .status-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #error-msg { color: var(--danger); }
+        #info-msg { color: var(--accent); }
+
+        /* APLICACIÓN PRINCIPAL */
+        #main-app {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Premium */
+        .header {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(9, 9, 14, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 8px 14px;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse-dot 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 14px var(--success); }
+        }
+
+        .pc-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+
+        .stats-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .stats-badge span {
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2);
+        }
+
+        .fs-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .fs-toggle:active {
+            transform: scale(0.92);
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Contenido de Pestañas */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: calc(100px + env(safe-area-inset-bottom));
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pestaña: Control & Stream */
+        #control-tab {
+            padding: 0;
+            background: #000000;
+        }
+
+        .stream-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+        }
+
+        #stream-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .control-panel {
+            background: var(--glass-strong);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--glass-border);
+            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+        }
+
+        .trackpad {
+            height: 200px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 24px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trackpad::after {
+            content: 'TRACKPAD MULTITÁCTIL';
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 5px;
+            color: rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .trackpad-ripple {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(var(--accent-rgb), 0.25);
+            border: 1px solid rgba(var(--accent-rgb), 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.2);
+            opacity: 1;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            transition: transform 0.2s;
+        }
+
+        .action-btn span {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .action-btn:active {
+            background: rgba(var(--accent-rgb), 0.1);
+            border-color: rgba(var(--accent-rgb), 0.3);
+            transform: scale(0.94);
+        }
+
+        .action-btn:active i {
+            transform: scale(1.1);
+        }
+
+        /* Tarjetas de herramientas / Sistema */
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 26px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            font-size: 16px;
+            color: var(--accent-purple);
+        }
+
+        /* Bottom Tab Navigation Bar */
+        .tab-bar-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 50;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tab-bar {
+            background: rgba(18, 18, 28, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 10px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        .tab-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-item i {
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .tab-item span {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+
+        .tab-item.active {
+            color: var(--accent);
+        }
+
+        .tab-item.active i {
+            transform: translateY(-4px);
+            color: var(--accent);
+            text-shadow: 0 0 15px rgba(var(--accent-rgb), 0.4);
+        }
+
+        /* Modo Pantalla Completa */
+        body.fullscreen .header {
+            display: none;
+        }
+        body.fullscreen .tab-bar-container {
+            display: none;
+        }
+        body.fullscreen .stream-container {
+            height: 100vh;
+            height: 100dvh;
+        }
+        body.fullscreen .control-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(9, 9, 14, 0.85);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* Confirma panel / Modal */
+        .confirm-btn {
+            background: rgba(243, 139, 168, 0.1) !important;
+            border-color: rgba(243, 139, 168, 0.2) !important;
+            color: var(--danger) !important;
+        }
+        .confirm-btn:active {
+            background: rgba(243, 139, 168, 0.25) !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Glow Backdrops -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+
+    <!-- Login/Pin Screen -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="logo-box">
+                <i class="fas fa-desktop"></i>
+            </div>
+            <h1>Tosito PC Link</h1>
+
+            <!-- PANTALLA 1: Google Login (Inicial) -->
+            <div id="google-auth-section">
+                <p class="subtitle">Inicia sesión con tu cuenta de Google de forma segura para vincular y controlar tus ordenadores desde cualquier lugar.</p>
+                <button class="btn-premium" onclick="signInWithGoogle()" style="background: #ffffff; color: var(--text-dark); border: 1px solid var(--glass-border); box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" style="width: 18px; height: 18px; margin-right: 10px;">
+                    INICIAR SESIÓN CON GOOGLE
+                </button>
+            </div>
+
+            <!-- PANTALLA 2: Sección de Vinculación y Selección de PC (Oculta al inicio) -->
+            <div id="pairing-section" style="display: none;">
+                <!-- Perfil de usuario conectado -->
+                <div id="user-profile-header" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 10px 14px; border-radius: 20px;">
+                    <img id="user-avatar" src="" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover;">
+                    <div style="text-align: left; overflow: hidden; max-width: 200px;">
+                        <div id="user-name" style="font-size: 13px; font-weight: 700; color: #ffffff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">Cargando...</div>
+                        <a href="#" onclick="signOutUser(event)" style="font-size: 10px; color: var(--danger); text-decoration: none; font-weight: 700;">Cerrar sesión</a>
+                    </div>
+                </div>
+
+                <!-- Lista de Computadoras en la nube -->
+                <div id="pcs-list-container" style="display: none; margin-bottom: 24px; text-align: left;">
+                    <div style="font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;">Mis Computadoras:</div>
+                    <div id="pcs-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 4px;">
+                        <!-- Renderizado dinámico de PCs -->
+                    </div>
+                    <div style="margin-top: 16px; text-align: center;">
+                        <a href="#" onclick="showEnterPinSection(event)" style="font-size: 11px; color: var(--accent); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-plus"></i> Vincular nuevo ordenador con PIN
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Formulario de ingreso de PIN -->
+                <div id="enter-pin-container">
+                    <p class="subtitle" id="pairing-subtitle">Ingresa el código PIN de 6 dígitos que se muestra en tu aplicación de escritorio WPF para establecer el enlace.</p>
+                    
+                    <div class="pin-container" onclick="focusPinInput()">
+                        <div class="pin-digit" id="d0"></div>
+                        <div class="pin-digit" id="d1"></div>
+                        <div class="pin-digit" id="d2"></div>
+                        <div class="pin-digit" id="d3"></div>
+                        <div class="pin-digit" id="d4"></div>
+                        <div class="pin-digit" id="d5"></div>
+                    </div>
+                    
+                    <input type="number" id="pairing-code" class="hidden-input" pattern="\d*" maxlength="6" inputmode="numeric">
+                    
+                    <button class="btn-premium" onclick="attemptManualSubmit()">
+                        <i class="fas fa-link"></i> VINCULAR DISPOSITIVO
+                    </button>
+
+                    <div id="back-to-list-link" style="margin-top: 16px; text-align: center; display: none;">
+                        <a href="#" onclick="showPcsListSection(event)" style="font-size: 11px; color: var(--text-muted); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-arrow-left"></i> Volver a mis computadoras
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mensajes de estado -->
+            <div id="error-msg" class="status-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-text">Código incorrecto o dispositivo offline</span>
+            </div>
+            
+            <div id="info-msg" class="status-message">
+                <div class="status-spinner"></div>
+                <span id="info-text">Buscando PC activo...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Content (Hidden by default) -->
+    <div id="main-app">
+        <!-- Header -->
+        <div class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <div class="pc-name" id="pc-display-name">Estación Remota</div>
+            </div>
+            
+            <div class="stats-badge" id="stats-panel">
+                CPU: <span id="cpu-stat">--%</span> | RAM: <span id="ram-stat">--%</span>
+            </div>
+            
+            <div class="fs-toggle" onclick="toggleFullscreen()" title="Pantalla Completa">
+                <i class="fas fa-expand" id="fs-icon"></i>
+            </div>
+        </div>
+
+        <!-- TAB: CONTROL -->
+        <div id="control-tab" class="tab-content active">
+            <div class="stream-container" id="stream-area">
+                <img id="stream-img" alt="Stream del PC">
+            </div>
+            <div class="control-panel">
+                <div class="trackpad" id="trackpad-area"></div>
+                <div class="actions-grid">
+                    <div class="action-btn" onclick="send('MOUSE_CLICK|LEFT')">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span>Click Izq</span>
+                    </div>
+                    <div class="action-btn" onclick="send('MOUSE_CLICK|RIGHT')">
+                        <i class="fas fa-mouse"></i>
+                        <span>Click Der</span>
+                    </div>
+                    <div class="action-btn" onclick="send('MEDIA_PLAY')">
+                        <i class="fas fa-play-pause"></i>
+                        <span>Play/Pausa</span>
+                    </div>
+                    <div class="action-btn" onclick="typePrompt()">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Teclado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: HERRAMIENTAS -->
+        <div id="tools-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-bolt"></i> Optimización y Limpieza
+                </div>
+                <div class="actions-grid">
+                    <div class="action-btn" onclick="send('FREE_RAM')">
+                        <i class="fas fa-memory"></i>
+                        <span>Liberar RAM</span>
+                    </div>
+                    <div class="action-btn" onclick="send('QUICK_CLEAN')">
+                        <i class="fas fa-broom"></i>
+                        <span>Express</span>
+                    </div>
+                    <div class="action-btn" onclick="send('SCRIPT_DEBLOAT')">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Debloat</span>
+                    </div>
+                    <div class="action-btn" onclick="send('SCRIPT_GAME_BOOSTER')">
+                        <i class="fas fa-rocket"></i>
+                        <span>Game Boost</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-music"></i> Controles Multimedia
+                </div>
+                <div class="actions-grid">
+                    <div class="action-btn" onclick="send('VOL_UP')">
+                        <i class="fas fa-volume-up"></i>
+                        <span>Vol +</span>
+                    </div>
+                    <div class="action-btn" onclick="send('VOL_DOWN')">
+                        <i class="fas fa-volume-down"></i>
+                        <span>Vol -</span>
+                    </div>
+                    <div class="action-btn" onclick="send('VOL_MUTE')">
+                        <i class="fas fa-volume-mute"></i>
+                        <span>Mute</span>
+                    </div>
+                    <div class="action-btn" onclick="send('MEDIA_NEXT')">
+                        <i class="fas fa-step-forward"></i>
+                        <span>Siguiente</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: SISTEMA -->
+        <div id="system-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-power-off"></i> Control de Energía
+                </div>
+                <div class="actions-grid">
+                    <div class="action-btn confirm-btn" onclick="confirmCmd('SHUTDOWN', '¿Seguro que quieres APAGAR el PC?')">
+                        <i class="fas fa-power-off"></i>
+                        <span>Apagar</span>
+                    </div>
+                    <div class="action-btn" onclick="confirmCmd('RESTART', '¿Seguro que quieres REINICIAR el PC?')">
+                        <i class="fas fa-redo"></i>
+                        <span>Reiniciar</span>
+                    </div>
+                    <div class="action-btn" onclick="send('SLEEP')">
+                        <i class="fas fa-moon"></i>
+                        <span>Suspender</span>
+                    </div>
+                    <div class="action-btn" onclick="send('LOCK_PC')">
+                        <i class="fas fa-lock"></i>
+                        <span>Bloquear</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-keyboard"></i> Atajos Rápidos
+                </div>
+                <div class="actions-grid">
+                    <div class="action-btn" onclick="send('KEY_PRESS|13')">
+                        <i class="fas fa-level-down-alt fa-rotate-90"></i>
+                        <span>Enter</span>
+                    </div>
+                    <div class="action-btn" onclick="send('KEY_PRESS|8')">
+                        <i class="fas fa-backspace"></i>
+                        <span>Borrar</span>
+                    </div>
+                    <div class="action-btn" onclick="send('KEY_PRESS|91')">
+                        <i class="fab fa-windows"></i>
+                        <span>Windows</span>
+                    </div>
+                    <div class="action-btn" onclick="send('KEY_PRESS|27')">
+                        <i class="fas fa-times"></i>
+                        <span>Escape</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-link-slash"></i> Sesión
+                </div>
+                <button class="btn-premium" style="background: rgba(243, 139, 168, 0.1); border: 1px solid rgba(243, 139, 168, 0.2); color: var(--danger); font-size: 13px;" onclick="unlinkSession()">
+                    <i class="fas fa-unlink"></i> DESVINCULAR DISPOSITIVO
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Tab Bar -->
+        <div class="tab-bar-container">
+            <div class="tab-bar">
+                <div class="tab-item active" onclick="switchTab('control')">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Control</span>
+                </div>
+                <div class="tab-item" onclick="switchTab('tools')">
+                    <i class="fas fa-tools"></i>
+                    <span>Herramientas</span>
+                </div>
+                <div class="tab-item" onclick="switchTab('system')">
+                    <i class="fas fa-desktop"></i>
+                    <span>Sistema</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SDK de Firebase (Compat v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Scripts de Control -->
+    <script>
+        const projectId = "tosito-7f923";
+        const apiKey = "AIzaSyAcN-I95UikDa0DSUjEQEbjabX-WHulbHc";
+        
+        // Inicializar Firebase
+        const firebaseConfig = {
+            apiKey: apiKey,
+            authDomain: `${projectId}.firebaseapp.com`,
+            projectId: projectId,
+            storageBucket: `${projectId}.appspot.com`
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let ws;
+        let statsInterval;
+        let currentTunnelUrl = "";
+        let clientToken = "";
+        let currentUser = null;
+        let userPcs = [];
+        let pcsUnsubscribe = null;
+        let hasAutoConnected = false;
+        let isConnected = false;
+        let hasProcessedUrlPin = false;
+
+        const pinInput = document.getElementById('pairing-code');
+        const digits = Array.from({length: 6}, (_, i) => document.getElementById('d' + i));
+
+        // Obtener o inicializar un Token de Cliente persistente en el dispositivo móvil
+        function getOrCreateClientToken() {
+            let tok = localStorage.getItem('tosito_client_token');
+            if (!tok) {
+                tok = 'tok_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                localStorage.setItem('tosito_client_token', tok);
+            }
+            clientToken = tok;
+            return tok;
+        }
+
+        // Event Listeners y Carga inicial
+        window.addEventListener('load', () => {
+            getOrCreateClientToken();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlPin = urlParams.get('pin');
+            if (urlPin && urlPin.length === 6) {
+                pinInput.value = urlPin;
+                updateDigitsDisplay(urlPin);
+            }
+        });
+
+        // Eventos de Autenticación de Google
+        function signInWithGoogle() {
+            showStatus('info', 'Abriendo inicio de sesión de Google...');
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => {
+                    showStatus('info', 'Sesión iniciada correctamente.');
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showStatus('error', 'Error al iniciar sesión: ' + err.message);
+                });
+        }
+
+        function signOutUser(e) {
+            if (e) e.preventDefault();
+            if (confirm('¿Cerrar sesión de Google?')) {
+                auth.signOut().then(() => {
+                    localStorage.removeItem('tosito_pc_id');
+                    location.reload();
+                });
+            }
+        }
+
+        // Escuchar Computadoras del usuario en tiempo real en Firestore
+        function listenForUserPcs(uid) {
+            if (pcsUnsubscribe) pcsUnsubscribe();
+            
+            showStatus('info', 'Obteniendo tus ordenadores...');
+            pcsUnsubscribe = db.collection("pcs")
+                .where("ownerUid", "==", uid)
+                .onSnapshot((snapshot) => {
+                    userPcs = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        userPcs.push({
+                            id: doc.id,
+                            machineName: data.machineName || doc.id,
+                            tunnelUrl: data.tunnelUrl,
+                            pairingCode: data.pairingCode,
+                            updatedAt: data.updatedAt
+                        });
+                    });
+                    
+                    showStatus('info', '');
+                    renderPcsList();
+                    
+                    // Procesar PIN de la URL si existe y el usuario se acaba de loguear (solo una vez)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlPin = urlParams.get('pin');
+                    if (urlPin) {
+                        // Limpiar el parámetro de la URL inmediatamente para evitar ejecuciones repetidas
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        
+                        if (urlPin.length === 6 && !hasProcessedUrlPin) {
+                            hasProcessedUrlPin = true;
+                            resolveAndConnect(urlPin);
+                        }
+                    }
+                }, (err) => {
+                    console.error(err);
+                    showStatus('error', 'Error al sincronizar ordenadores: ' + err.message);
+                });
+        }
+
+        // Renderizar lista de computadoras con diseño premium
+        function renderPcsList() {
+            const listEl = document.getElementById('pcs-list');
+            listEl.innerHTML = '';
+            
+            if (userPcs.length === 0) {
+                document.getElementById('pcs-list-container').style.display = 'none';
+                document.getElementById('enter-pin-container').style.display = 'block';
+                document.getElementById('back-to-list-link').style.display = 'none';
+                focusPinInput();
+                return;
+            }
+            
+            document.getElementById('pcs-list-container').style.display = 'block';
+            document.getElementById('enter-pin-container').style.display = 'none';
+            document.getElementById('back-to-list-link').style.display = 'block';
+            
+            userPcs.forEach((pc) => {
+                const card = document.createElement('div');
+                card.className = 'pc-item-card';
+                card.style.background = 'rgba(255,255,255,0.02)';
+                card.style.border = '1px solid var(--glass-border)';
+                card.style.padding = '14px';
+                card.style.borderRadius = '16px';
+                card.style.cursor = 'pointer';
+                card.style.display = 'flex';
+                card.style.alignItems = 'center';
+                card.style.gap = '12px';
+                card.style.transition = 'all 0.2s';
+                card.style.marginBottom = '8px';
+                
+                card.onmouseover = () => {
+                    card.style.background = 'rgba(255,255,255,0.06)';
+                    card.style.borderColor = 'rgba(166, 227, 161, 0.3)';
+                };
+                card.onmouseout = () => {
+                    card.style.background = 'rgba(255,255,255,0.02)';
+                    card.style.borderColor = 'var(--glass-border)';
+                };
+                
+                card.onclick = () => selectPc(pc);
+                
+                const iconBox = document.createElement('div');
+                iconBox.style.width = '36px';
+                iconBox.style.height = '36px';
+                iconBox.style.background = 'rgba(255, 255, 255, 0.04)';
+                iconBox.style.borderRadius = '12px';
+                iconBox.style.display = 'flex';
+                iconBox.style.alignItems = 'center';
+                iconBox.style.justifyContent = 'center';
+                iconBox.style.color = 'var(--accent)';
+                iconBox.style.fontSize = '18px';
+                iconBox.innerHTML = '<i class="fas fa-desktop"></i>';
+                
+                const infoBox = document.createElement('div');
+                infoBox.style.flex = '1';
+                infoBox.style.minWidth = '0';
+                
+                const nameEl = document.createElement('div');
+                nameEl.style.fontSize = '13px';
+                nameEl.style.fontWeight = '700';
+                nameEl.style.color = '#ffffff';
+                nameEl.style.textOverflow = 'ellipsis';
+                nameEl.style.overflow = 'hidden';
+                nameEl.style.whiteSpace = 'nowrap';
+                nameEl.innerText = pc.machineName;
+                
+                const urlEl = document.createElement('div');
+                urlEl.style.fontSize = '10px';
+                urlEl.style.color = 'var(--text-muted)';
+                urlEl.style.textOverflow = 'ellipsis';
+                urlEl.style.overflow = 'hidden';
+                urlEl.style.whiteSpace = 'nowrap';
+                urlEl.innerText = pc.tunnelUrl ? new URL(pc.tunnelUrl).hostname : 'Sin túnel activo';
+                
+                infoBox.appendChild(nameEl);
+                infoBox.appendChild(urlEl);
+                
+                const activeDot = document.createElement('div');
+                activeDot.style.width = '8px';
+                activeDot.style.height = '8px';
+                activeDot.style.background = 'var(--success)';
+                activeDot.style.borderRadius = '50%';
+                activeDot.style.boxShadow = '0 0 8px var(--success)';
+                
+                card.appendChild(iconBox);
+                card.appendChild(infoBox);
+                card.appendChild(activeDot);
+                
+                listEl.appendChild(card);
+            });
+            
+            // Re-conexión automática si aplica
+            if (!hasAutoConnected) {
+                const savedPcId = localStorage.getItem('tosito_pc_id');
+                if (savedPcId) {
+                    const targetPc = userPcs.find(p => p.id === savedPcId);
+                    if (targetPc) {
+                        hasAutoConnected = true;
+                        selectPc(targetPc);
+                    }
+                } else if (userPcs.length === 1) {
+                    hasAutoConnected = true;
+                    selectPc(userPcs[0]);
+                }
+            }
+        }
+
+        function showEnterPinSection(e) {
+            if (e) e.preventDefault();
+            document.getElementById('pcs-list-container').style.display = 'none';
+            document.getElementById('enter-pin-container').style.display = 'block';
+            focusPinInput();
+        }
+        
+        function showPcsListSection(e) {
+            if (e) e.preventDefault();
+            document.getElementById('pcs-list-container').style.display = 'block';
+            document.getElementById('enter-pin-container').style.display = 'none';
+        }
+
+        function selectPc(pc) {
+            if (!pc.tunnelUrl) {
+                showStatus('error', 'El ordenador seleccionado no tiene un túnel activo.');
+                return;
+            }
+            currentTunnelUrl = pc.tunnelUrl;
+            document.getElementById('pc-display-name').innerText = pc.machineName;
+            
+            showStatus('info', 'Estableciendo enlace de sesión con ' + pc.machineName + '...');
+            localStorage.setItem('tosito_pc_id', pc.id);
+            
+            connectWebSocket(pc.tunnelUrl, "TOKEN", clientToken);
+        }
+
+        // Listener del Auth State de Firebase
+        auth.onAuthStateChanged((user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('google-auth-section').style.display = 'none';
+                document.getElementById('pairing-section').style.display = 'block';
+                
+                document.getElementById('user-avatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+                document.getElementById('user-name').innerText = user.displayName || user.email || 'Usuario';
+                
+                listenForUserPcs(user.uid);
+            } else {
+                document.getElementById('google-auth-section').style.display = 'block';
+                document.getElementById('pairing-section').style.display = 'none';
+                if (pcsUnsubscribe) {
+                    pcsUnsubscribe();
+                    pcsUnsubscribe = null;
+                }
+                userPcs = [];
+            }
+        });
+
+        // Eventos del input escondido de PIN
+        pinInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length > 6) val = val.slice(0, 6);
+            e.target.value = val;
+            
+            updateDigitsDisplay(val);
+
+            if (val.length === 6) {
+                resolveAndConnect(val);
+            }
+        });
+
+        function focusPinInput() {
+            pinInput.focus();
+            updateDigitsDisplay(pinInput.value);
+        }
+
+        function updateDigitsDisplay(val) {
+            for (let i = 0; i < 6; i++) {
+                digits[i].innerText = val[i] || '';
+                digits[i].classList.toggle('active', i === val.length);
+            }
+        }
+
+        function showStatus(type, message) {
+            const errEl = document.getElementById('error-msg');
+            const infoEl = document.getElementById('info-msg');
+            
+            errEl.style.display = 'none';
+            infoEl.style.display = 'none';
+            
+            if (type === 'error') {
+                document.getElementById('error-text').innerText = message;
+                errEl.style.display = 'flex';
+            } else if (type === 'info' && message) {
+                document.getElementById('info-text').innerText = message;
+                infoEl.style.display = 'flex';
+            }
+        }
+
+        function attemptManualSubmit() {
+            const code = pinInput.value;
+            if (code.length === 6) {
+                resolveAndConnect(code);
+            } else {
+                showStatus('error', 'El código PIN debe tener 6 dígitos');
+            }
+        }
+
+        // Vincular un nuevo PC por PIN y actualizar Firestore con ownerUid
+        async function resolveAndConnect(pin) {
+            if (!currentUser) {
+                showStatus('error', 'Debes iniciar sesión con Google para vincular un dispositivo.');
+                return;
+            }
+            showStatus('info', 'Buscando PC activo por código PIN...');
+            try {
+                const snapshot = await db.collection("pcs").where("pairingCode", "==", pin).limit(1).get();
+                
+                if (snapshot.empty) {
+                    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+                        console.warn("El PIN de la URL es inválido o expiró, pero ya estás conectado al PC.");
+                        showStatus('info', '');
+                        return;
+                    }
+                    throw new Error("PIN inválido o PC fuera de línea.");
+                }
+                
+                const doc = snapshot.docs[0];
+                const data = doc.data();
+                
+                showStatus('info', 'PC encontrado. Guardando vinculación en la nube...');
+                await doc.ref.update({
+                    ownerUid: currentUser.uid
+                });
+                
+                currentTunnelUrl = data.tunnelUrl;
+                document.getElementById('pc-display-name').innerText = data.machineName || "Estación Remota";
+                localStorage.setItem('tosito_pc_id', doc.id);
+                
+                showStatus('info', 'Estableciendo canal seguro con tu PC...');
+                connectWebSocket(data.tunnelUrl, "PAIR", pin);
+            } catch (err) {
+                console.error(err);
+                showStatus('error', err.message || "Error al vincular el PC.");
+                pinInput.value = '';
+                updateDigitsDisplay('');
+            }
+        }
+
+        // Conectar WebSocket usando el protocolo correspondiente (PAIR o TOKEN)
+        function connectWebSocket(tunnelUrl, authType, authValue) {
+            try {
+                const parsedUrl = new URL(tunnelUrl);
+                const protocol = parsedUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${parsedUrl.host}/ws`;
+
+                const socket = new WebSocket(wsUrl);
+                ws = socket;
+
+                socket.onopen = () => {
+                    if (authType === "PAIR") {
+                        socket.send(`PAIR|${authValue}|${clientToken}`);
+                    } else {
+                        socket.send(`AUTH_TOKEN|${clientToken}`);
+                    }
+                };
+
+                socket.onmessage = (e) => {
+                    const data = e.data;
+                    
+                    if (data.startsWith("AUTH_OK")) {
+                        isConnected = true;
+                        if (authType === "PAIR") {
+                            const parts = data.split('|');
+                            if (parts.length >= 2) {
+                                const pcId = parts[1].trim();
+                                localStorage.setItem('tosito_pc_id', pcId);
+                            }
+                            
+                            try {
+                                window.history.replaceState({}, document.title, window.location.pathname);
+                            } catch (hErr) {}
+                        }
+                        
+                        document.getElementById('login-screen').style.opacity = '0';
+                        document.getElementById('login-screen').style.transform = 'scale(0.95)';
+                        
+                        setTimeout(() => {
+                            document.getElementById('login-screen').style.display = 'none';
+                            document.getElementById('main-app').style.display = 'flex';
+                            
+                            document.getElementById('stream-img').src = `${tunnelUrl}/stream`;
+                            startStatsPolling();
+                        }, 400);
+                        
+                    } else if (data.startsWith("AUTH_FAIL")) {
+                        showStatus('error', 'Este dispositivo no está autorizado. Introduce el PIN actual del PC.');
+                        localStorage.removeItem('tosito_pc_id');
+                        pinInput.value = '';
+                        updateDigitsDisplay('');
+                        document.getElementById('pcs-list-container').style.display = 'none';
+                        document.getElementById('enter-pin-container').style.display = 'block';
+                        document.getElementById('back-to-list-link').style.display = userPcs.length > 0 ? 'block' : 'none';
+                        focusPinInput();
+                        socket.close();
+                    } else if (data.startsWith("STATS|")) {
+                        try {
+                            const stats = JSON.parse(data.substring(6));
+                            document.getElementById('cpu-stat').innerText = `${stats.cpu}%`;
+                            document.getElementById('ram-stat').innerText = `${stats.ramPct}%`;
+                        } catch (pErr) { }
+                    }
+                };
+
+                socket.onclose = () => {
+                    console.log("WebSocket cerrado");
+                    if (isConnected) {
+                        location.reload();
+                    }
+                };
+
+                socket.onerror = (e) => {
+                    console.error("WebSocket error:", e);
+                    showStatus('error', 'Error de enlace de red con tu PC.');
+                };
+
+            } catch (err) {
+                console.error(err);
+                showStatus('error', 'URL de túnel inválida.');
+            }
+        }
+
+        // Operaciones de Sesión y Comunicación
+        function send(cmd) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(cmd);
+            }
+        }
+
+        function confirmCmd(cmd, message) {
+            if (confirm(message)) {
+                send(cmd);
+            }
+        }
+
+        function startStatsPolling() {
+            if (statsInterval) clearInterval(statsInterval);
+            statsInterval = setInterval(() => {
+                send("GET_STATS");
+            }, 3000);
+        }
+
+        function typePrompt() {
+            const txt = prompt("Introduce el texto que quieres enviar al PC:");
+            if (txt) {
+                send("TYPE_TEXT|" + txt);
+            }
+        }
+
+        async function unlinkSession() {
+            const savedPcId = localStorage.getItem('tosito_pc_id');
+            if (confirm("¿Desvincular este PC de tu cuenta? Se eliminará de tu lista de computadoras.")) {
+                if (savedPcId && currentUser) {
+                    try {
+                        showStatus('info', 'Eliminando vinculación en la nube...');
+                        await db.collection("pcs").doc(savedPcId).update({
+                            ownerUid: firebase.firestore.FieldValue.delete()
+                        });
+                    } catch (err) {
+                        console.error("Error al desvincular en Firestore:", err);
+                    }
+                }
+                localStorage.removeItem('tosito_pc_id');
+                isConnected = false;
+                location.reload();
+            }
+        }
+
+        // Navegación de Pestañas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId + '-tab').classList.add('active');
+            
+            // Activar ícono
+            const items = Array.from(document.querySelectorAll('.tab-item'));
+            const targetItem = items.find(item => item.getAttribute('onclick').includes(tabId));
+            if (targetItem) targetItem.classList.add('active');
+        }
+
+        // Pantalla Completa
+        function toggleFullscreen() {
+            document.body.classList.toggle('fullscreen');
+            const icon = document.getElementById('fs-icon');
+            if (document.body.classList.contains('fullscreen')) {
+                icon.classList.replace('fa-expand', 'fa-compress');
+            } else {
+                icon.classList.replace('fa-compress', 'fa-expand');
+            }
+        }
+
+        // Lógica Avanzada del Trackpad (Gestos Relativos)
+        let lx, ly;
+        const trackpad = document.getElementById('trackpad-area');
+        const streamArea = document.getElementById('stream-area');
+
+        function handleTouchStart(e) {
+            lx = e.touches[0].clientX;
+            ly = e.touches[0].clientY;
+            
+            // Efecto visual de ripple en trackpad
+            if (e.currentTarget === trackpad) {
+                const rect = trackpad.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                const y = e.touches[0].clientY - rect.top;
+                
+                const ripple = document.createElement('div');
+                ripple.className = 'trackpad-ripple';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                trackpad.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    ripple.style.opacity = '0';
+                }, 10);
+                
+                setTimeout(() => ripple.remove(), 400);
+            }
+        }
+
+        function handleTouchMove(e) {
+            const t = e.touches[0];
+            const dx = t.clientX - lx;
+            const dy = t.clientY - ly;
+            
+            // Multiplicador de velocidad de movimiento
+            const speed = Math.sqrt(dx*dx + dy*dy);
+            const factor = speed > 6 ? 1.9 : 1.35;
+            
+            send(`MOUSE_MOVE_REL|${(dx * factor).toFixed(1)},${(dy * factor).toFixed(1)}`);
+            
+            lx = t.clientX;
+            ly = t.clientY;
+            e.preventDefault();
+        }
+
+        [trackpad, streamArea].forEach(el => {
+            el.addEventListener('touchstart', handleTouchStart, { passive: false });
+            el.addEventListener('touchmove', handleTouchMove, { passive: false });
+        });
+
+        // Click tocando el Stream
+        let isDraggingStream = false;
+        streamArea.addEventListener('touchmove', () => isDraggingStream = true);
+        streamArea.addEventListener('touchstart', () => isDraggingStream = false);
+        streamArea.addEventListener('touchend', (e) => {
+            if (!isDraggingStream && !e.target.closest('.fs-toggle')) {
+                send('MOUSE_CLICK|LEFT');
+            }
+        });
+    </script>
+</body>
+</html>

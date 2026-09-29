@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOUST | Haute Horlogerie & Relojes de Colección</title>
+    <meta name="description" content="Descubre la manufactura relojera TOUST. Relojes suizos de lujo, automáticos y cronógrafos de precisión con garantía de 5 años.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;800&family=Italiana&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⌚</text></svg>">
+</head>
+<body>
+    <!-- Global ambient background orbs (behind everything) -->
+    <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+        <div style="position:absolute;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.05) 0%,transparent 65%);filter:blur(120px);top:-200px;right:-200px;animation:orbFloat 18s ease-in-out infinite"></div>
+        <div style="position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(130,100,20,.04) 0%,transparent 65%);filter:blur(100px);bottom:-100px;left:-100px;animation:orbFloat 14s ease-in-out infinite reverse;animation-delay:-6s"></div>
+        <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.03) 0%,transparent 65%);filter:blur(80px);top:40%;left:40%;animation:orbFloat 20s ease-in-out infinite;animation-delay:-10s"></div>
+    </div>
+    <!-- NEW PRELOADER (V7) -->
+    <div id="page-loader" class="v7-loader">
+        <div class="loader-svg-wrap">
+            <svg viewBox="0 0 100 100" class="gear-svg" fill="none" stroke="var(--gold-primary)" stroke-width="0.5">
+                <circle cx="50" cy="50" r="45" class="draw-line" stroke-dasharray="283" stroke-dashoffset="283"/>
+                <circle cx="50" cy="50" r="35" class="draw-line-delay-1" stroke-dasharray="220" stroke-dashoffset="220"/>
+                <path d="M50 5 L50 20 M95 50 L80 50 M50 95 L50 80 M5 50 L20 50" class="draw-line-delay-2" stroke-width="1"/>
+                <path d="M25 25 L35 35 M75 25 L65 35 M75 75 L65 65 M25 75 L35 65" class="draw-line-delay-2" stroke-width="1"/>
+                <circle cx="50" cy="50" r="5" fill="var(--gold-primary)" class="draw-fade"/>
+            </svg>
+        </div>
+        <div class="loader-text draw-fade">
+            <span class="loader-brand">TOUST</span>
+            <span class="loader-tagline">HAUTE HORLOGERIE</span>
+        </div>
+        <div class="loader-progress draw-fade"><span id="loader-pct">0</span>%</div>
+    </div>
+
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
+
+    <!-- Custom Luxury Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- Dot Navigation lateral -->
+    <nav class="dot-nav" id="dot-nav" aria-label="Navegación por secciones">
+        <button class="dot-nav-item active" data-section="hero" data-label="Inicio" aria-label="Sección: Inicio"></button>
+        <button class="dot-nav-item" data-section="catalogo" data-label="Colección" aria-label="Sección: Colección"></button>
+        <button class="dot-nav-item" data-section="destacados" data-label="Ingeniería" aria-label="Sección: Ingeniería"></button>
+        <button class="dot-nav-item" data-section="contacto" data-label="Atelier" aria-label="Sección: Atelier"></button>
+    </nav>
+
+    <!-- Ticker de Novedades -->
+    <div class="ticker-bar" aria-hidden="true">
+        <div class="ticker-track" id="ticker-track">
+            <span class="ticker-item"><span class="dot"></span>NUEVO · GRAND AVIATOR XII</span>
+            <span class="ticker-item"><span class="dot"></span>ENVÍO GRATUITO EN PEDIDOS SUPERIORES A 500€</span>
+            <span class="ticker-item"><span class="dot"></span>GARANTÍA VITALICIA DE CALIBRE</span>
+            <span class="ticker-item"><span class="dot"></span>EDICIÓN LIMITADA · TITANIUM CHRONO PRO</span>
+            <span class="ticker-item"><span class="dot"></span>CERTIFICADOS DE AUTENTICIDAD NUMERADOS</span>
+            <span class="ticker-item"><span class="dot"></span>MANUFACTURE TOUST · EST. 2024</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="ticker-item"><span class="dot"></span>NUEVO · GRAND AVIATOR XII</span>
+            <span class="ticker-item"><span class="dot"></span>ENVÍO GRATUITO EN PEDIDOS SUPERIORES A 500€</span>
+            <span class="ticker-item"><span class="dot"></span>GARANTÍA VITALICIA DE CALIBRE</span>
+            <span class="ticker-item"><span class="dot"></span>EDICIÓN LIMITADA · TITANIUM CHRONO PRO</span>
+            <span class="ticker-item"><span class="dot"></span>CERTIFICADOS DE AUTENTICIDAD NUMERADOS</span>
+            <span class="ticker-item"><span class="dot"></span>MANUFACTURE TOUST · EST. 2024</span>
+        </div>
+    </div>
+    <!-- Header de Navegación -->
+    <header class="site-header" id="main-header">
+        <div class="container header-content">
+            <a href="#" class="brand-logo" id="brand-logo" aria-label="TOUST Haute Horlogerie">
+                <div class="logo-emblem">
+                    <svg viewBox="0 0 40 40" class="emblem-svg" fill="none" stroke="currentColor">
+                        <!-- Corona y engranaje relojero refinado -->
+                        <circle cx="20" cy="20" r="17" stroke-width="1" stroke-dasharray="2 2" opacity="0.6"/>
+                        <circle cx="20" cy="20" r="14" stroke-width="1.2"/>
+                        <path d="M12 12 L20 6 L28 12 L24 24 L16 24 Z" stroke-width="1" stroke-linejoin="round" opacity="0.4"/>
+                        <text x="20" y="24.5" font-family="'Cinzel Decorative', serif" font-size="13" font-weight="900" text-anchor="middle" fill="currentColor" stroke="none">T</text>
+                    </svg>
+                </div>
+                <div class="logo-typography">
+                    <span class="logo-lettering" id="toust-lettering">
+                        <span class="t-char">T</span><span class="t-char">O</span><span class="t-char">U</span><span class="t-char">S</span><span class="t-char">T</span>
+                    </span>
+                    <span class="logo-tagline">HAUTE HORLOGERIE</span>
+                </div>
+            </a>
+
+            <nav class="main-nav" id="main-nav">
+                <a href="#catalogo" class="nav-link active">Colección</a>
+                <a href="#destacados" class="nav-link">Ingeniería</a>
+                <a href="#contacto" class="nav-link">Atelier</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="search-box-wrap">
+                    <div class="search-box">
+                        <i data-lucide="search" class="icon"></i>
+                        <input type="text" id="search-input" placeholder="Buscar reloj..." aria-label="Buscar modelos" autocomplete="off">
+                    </div>
+                    <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+                </div>
+
+                <!-- Wishlist trigger -->
+                <button class="wish-trigger-btn" id="wish-btn" aria-label="Lista de deseos">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span class="wish-count-badge" id="wish-badge">0</span>
+                </button>
+
+                <!-- Theme toggle -->
+                <button id="theme-toggle" aria-label="Cambiar tema">
+                    <span class="moon-icon">🌙</span>
+                    <span class="sun-icon">☀️</span>
+                </button>
+
+                <!-- SOUND TOGGLE (V7) -->
+                <button id="sound-toggle" class="sound-toggle" aria-label="Toggle Sound">
+                    <i data-lucide="volume-2" class="icon icon-unmuted" style="display:none"></i>
+                    <i data-lucide="volume-x" class="icon icon-muted"></i>
+                </button>
+
+                <button class="cart-trigger-btn" id="cart-btn" aria-label="Abrir cesta de compras">
+                    <i data-lucide="shopping-bag" class="icon"></i>
+                    <span class="cart-count-badge" id="cart-badge">0</span>
+                </button>
+
+                <!-- Botón Panel de Admin (Oculto por defecto) -->
+                <a href="admin.html" id="admin-panel-link" style="display: none; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--gold-primary); font-weight: 600; font-size: 0.85rem; padding: 0.5rem 1rem; border: 1px solid var(--gold-primary); border-radius: 4px; transition: all 0.3s ease;">
+                    <i data-lucide="shield" class="icon"></i>
+                    <span>Panel</span>
+                </a>
+
+                <!-- Botón de Acceso Clientes / Login -->
+                <button class="auth-trigger-btn" id="auth-btn" aria-label="Acceso clientes">
+                    <i data-lucide="user" class="icon"></i>
+                    <span id="auth-btn-label">Entrar</span>
+                </button>
+                <!-- Botón Menú Móvil (V7.1) -->
+                <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Abrir menú"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Scroll Wrapper: contiene todas las secciones, permite scroll-snap -->
+    <div class="scroll-wrapper" id="scroll-wrapper">
+
+    <!-- Hero Section (V9 Cinematic Layout) -->
+    <section class="hero-section page-section" id="hero" style="padding:0;">
+        <div class="hero-v9-container">
+            <!-- Left: Text Content -->
+            <div class="hero-v9-content">
+                <div class="hero-kicker" id="hero-kicker" style="color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 4px; margin-bottom: 2rem;">
+                    <span class="hero-kicker-dot" style="display:inline-block; width:6px; height:6px; background:var(--gold-primary); border-radius:50%; margin-right:10px;"></span>
+                    MANUFACTURE TOUST &middot; HAUTE HORLOGERIE
+                </div>
+                
+                <h1 class="hero-title" id="hero-title">
+                    <span class="reveal-text-wrap" style="display:block;"><span class="reveal-text-inner" style="display:inline-block">La Excelencia</span></span>
+                    <span class="reveal-text-wrap" style="display:block;"><span class="reveal-text-inner" style="display:inline-block"><span class="line-gold" style="color:var(--gold-primary); font-style:italic;">en Cada Segundo</span></span></span>
+                </h1>
+                
+                <div class="hero-rule" id="hero-rule" style="margin: 2rem 0; width: 60px; height: 2px; background: var(--gold-primary);"></div>
+                
+                <p class="hero-description" id="hero-description" style="font-size: 1.2rem; max-width: 500px; color: var(--text-dim); margin-bottom: 3rem;">
+                    Relojes concebidos bajo los más exigentes estándares de la alta relojería. Cajas de titanio aeroespacial, calibres automáticos y cristales de zafiro iridiscente firmados por&nbsp;<strong>TOUST</strong>.
+                </p>
+                
+                <div class="hero-buttons" id="hero-buttons" style="display:flex; gap:1.5rem; align-items:center;">
+                    <a href="#catalogo" class="btn btn-primary" id="hero-cta-btn" style="padding: 1rem 2.5rem;">Explorar Colección</a>
+                    <button class="btn btn-secondary" id="hero-featured-btn" style="padding: 1rem 2.5rem;">Ver El Maestro</button>
+                </div>
+            </div>
+
+            <!-- Right: The Pure-Code Animated Master Watch -->
+            <div class="hero-v9-image" id="hero-v9-image">
+                <div class="pure-watch-container" id="pure-watch-container">
+                    
+                    <!-- Outer bezel ring -->
+                    <div class="pure-watch-bezel">
+                        <!-- Bezel screws -->
+                        <div class="screw screw-1"></div>
+                        <div class="screw screw-2"></div>
+                        <div class="screw screw-3"></div>
+                        <div class="screw screw-4"></div>
+                        <div class="screw screw-5"></div>
+                        <div class="screw screw-6"></div>
+                    </div>
+
+                    <!-- Inner dial -->
+                    <div class="pure-watch-dial">
+                        
+                        <!-- Skeleton Gears (Animated) -->
+                        <div class="pure-gears">
+                            <svg viewBox="0 0 200 200" class="gear gear-large">
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="var(--gold-primary)" stroke-width="10" stroke-dasharray="10 15"/>
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="#444" stroke-width="4"/>
+                                <path d="M100 20 L100 180 M20 100 L180 100 M43 43 L157 157 M157 43 L43 157" stroke="var(--gold-primary)" stroke-width="6"/>
+                                <circle cx="100" cy="100" r="15" fill="#222" stroke="var(--gold-primary)" stroke-width="3"/>
+                            </svg>
+
+                            <svg viewBox="0 0 100 100" class="gear gear-medium">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#aaa" stroke-width="8" stroke-dasharray="5 8"/>
+                                <path d="M50 10 L50 90 M10 50 L90 50 M21 21 L79 79 M79 21 L21 79" stroke="#888" stroke-width="4"/>
+                                <circle cx="50" cy="50" r="10" fill="#111" stroke="#aaa" stroke-width="2"/>
+                            </svg>
+                        </div>
+
+                        <!-- Tourbillon (Animated) -->
+                        <div class="pure-tourbillon">
+                            <div class="tourbillon-cage">
+                                <div class="tourbillon-bridge"></div>
+                                <div class="tourbillon-balance">
+                                    <div class="balance-spoke"></div>
+                                    <div class="balance-spoke" style="transform: rotate(120deg)"></div>
+                                    <div class="balance-spoke" style="transform: rotate(240deg)"></div>
+                                </div>
+                            </div>
+                            <div class="tourbillon-jewel"></div>
+                        </div>
+
+                        <!-- Minute & Hour Track (Populated by JS) -->
+                        <div class="pure-minute-track" id="pure-minute-track"></div>
+
+                        <!-- Real-Time Hands -->
+                        <div class="pure-hands">
+                            <div class="pure-hand hour-hand" id="pure-hour-hand"></div>
+                            <div class="pure-hand minute-hand" id="pure-minute-hand"></div>
+                            <div class="pure-hand second-hand" id="pure-second-hand">
+                                <div class="second-counterweight"></div>
+                            </div>
+                            <div class="pure-pinion"></div>
+                        </div>
+                        
+                        <!-- Glass Reflection -->
+                        <div class="pure-glass-glare"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ambient elements for depth -->
+        <canvas id="hero-particles" class="hero-particles-canvas" style="position:absolute; inset:0; z-index:2; pointer-events:none;"></canvas>
+        <div class="hero-golden-glow" style="position:absolute; top:20%; left:-10%; width:50%; height:50%; background:radial-gradient(circle, rgba(212,175,55,0.08), transparent 70%); z-index:1; pointer-events:none;"></div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" aria-hidden="true" style="position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 20;">
+            <div class="scroll-mouse"></div>
+            <span>Scroll</span>
+        </div>
+    </section><!-- /hero -->
+
+    <!-- Secciones eliminadas y movidas al capítulo de Ingeniería -->
+
+    <!-- Transición cinemática -->
+    <div class="section-transition" id="catalog-transition" aria-hidden="true">
+        <!-- Línea de oro superior -->
+        <div class="st-top-line"></div>
+        <!-- Marquee de texto -->
+        <div class="st-marquee-wrap">
+            <div class="st-marquee">
+                <span>TOUST</span><span class="st-sep">◆</span>
+                <span>COLLECTION 2026</span><span class="st-sep">◆</span>
+                <span>HAUTE HORLOGERIE</span><span class="st-sep">◆</span>
+                <span>MANUFACTURE SUISSE</span><span class="st-sep">◆</span>
+                <span>TOUST</span><span class="st-sep">◆</span>
+                <span>COLLECTION 2026</span><span class="st-sep">◆</span>
+                <span>HAUTE HORLOGERIE</span><span class="st-sep">◆</span>
+                <span>MANUFACTURE SUISSE</span><span class="st-sep">◆</span>
+            </div>
+        </div>
+        <!-- Marquee inverso -->
+        <div class="st-marquee-wrap st-marquee-reverse">
+            <div class="st-marquee">
+                <span>TITANIUM</span><span class="st-sep">◇</span>
+                <span>SAPPHIRE CRYSTAL</span><span class="st-sep">◇</span>
+                <span>AUTOMATIC MOVEMENT</span><span class="st-sep">◇</span>
+                <span>SWISS MADE</span><span class="st-sep">◇</span>
+                <span>TITANIUM</span><span class="st-sep">◇</span>
+                <span>SAPPHIRE CRYSTAL</span><span class="st-sep">◇</span>
+                <span>AUTOMATIC MOVEMENT</span><span class="st-sep">◇</span>
+                <span>SWISS MADE</span><span class="st-sep">◇</span>
+            </div>
+        </div>
+        <!-- Tercera fila de iconos -->
+        <div class="st-marquee-wrap st-marquee-icons">
+            <div class="st-marquee">
+                <span>⧖</span><span>◆</span><span>⌚</span><span>◆</span>
+                <span>⧗</span><span>◆</span><span>⌛</span><span>◆</span>
+                <span>⧖</span><span>◆</span><span>⌚</span><span>◆</span>
+                <span>⧗</span><span>◆</span><span>⌛</span><span>◆</span>
+            </div>
+        </div>
+        <!-- Línea de oro inferior -->
+        <div class="st-bottom-line"></div>
+    </div><!-- /section-transition -->
+
+        <!-- CATÁLOGO DE RELOJES -->
+    <section class="catalog-section page-section section-tall" id="catalogo">
+        <span class="section-chapter-label">CAP. 01 — COLECCIÓN</span>
+        <span class="section-number-badge">01</span>
+        <!-- Cabecera cinematográfica del catálogo -->
+        <div class="catalog-hero">
+            <div class="container">
+                <div class="catalog-hero-inner">
+                    <div class="catalog-hero-left">
+                        <div class="catalog-number">01</div>
+                        <div class="catalog-label-wrap">
+                            <span class="catalog-eyebrow">Catálogo Exclusivo</span>
+                            <h2 class="catalog-hero-title">Nuestras<br><em>Obras</em> Relojeras</h2>
+                            <p class="catalog-hero-desc">Cada pieza, una obra maestra. Cada detalle, un tributo al arte de la alta relojería suiza firmada por TOUST.</p>
+                        </div>
+                    </div>
+                    <div class="catalog-hero-right">
+                        <div class="catalog-count-live">
+                            <span class="catalog-count-num" id="catalog-count-display">8</span>
+                            <span class="catalog-count-label">piezas<br>exclusivas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Wipe animation bar -->
+            <div class="catalog-wipe-bar" id="catalog-wipe"></div>
+        </div>
+
+        <!-- Filtros rediseñados -->
+        <div class="catalog-filters-bar">
+            <div class="container">
+                <div class="filters-inner">
+                    <span class="filters-label">Filtrar por</span>
+                    <div class="category-filters" id="category-filters">
+                        <button class="filter-btn active" data-category="todos">
+                            <span class="filter-dot"></span>Todos
+                        </button>
+                        <button class="filter-btn" data-category="automatico">
+                            <span class="filter-dot"></span>Automáticos
+                        </button>
+                        <button class="filter-btn" data-category="cronografo">
+                            <span class="filter-dot"></span>Cronógrafos
+                        </button>
+                        <button class="filter-btn" data-category="lujo">
+                            <span class="filter-dot"></span>Oro &amp; Titanio
+                        </button>
+                        <button class="filter-btn" data-category="minimalista">
+                            <span class="filter-dot"></span>Minimalistas
+                        </button>
+                    </div>
+                    <div class="filters-view-toggle">
+                        <button class="view-btn active" id="view-grid" title="Vista cuadrícula" aria-label="Vista cuadrícula">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="0" width="6" height="6" rx="1"/><rect x="10" y="0" width="6" height="6" rx="1"/><rect x="0" y="10" width="6" height="6" rx="1"/><rect x="10" y="10" width="6" height="6" rx="1"/></svg>
+                        </button>
+                        <button class="view-btn" id="view-list" title="Vista lista" aria-label="Vista lista">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="0" y="0" width="16" height="3" rx="1"/><rect x="0" y="6" width="16" height="3" rx="1"/><rect x="0" y="12" width="16" height="3" rx="1"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Sort controls -->
+                    <div class="sort-controls">
+                        <span class="sort-label">Orden</span>
+                        <select class="sort-select" id="sort-select">
+                            <option value="default">Destacados</option>
+                            <option value="price-asc">Precio: menor</option>
+                            <option value="price-desc">Precio: mayor</option>
+                            <option value="name-az">Nombre A-Z</option>
+                        </select>
+                    </div>
+
+                    <!-- Price range slider -->
+                    <div class="price-range-wrap">
+                        <span class="price-range-label">Precio</span>
+                        <div class="dual-range-wrap" id="price-range-wrap">
+                            <div class="dual-range-track"></div>
+                            <div class="dual-range-fill" id="range-fill"></div>
+                            <input type="range" class="dual-range-input" id="price-min" min="0" max="20000" value="0" step="100">
+                            <input type="range" class="dual-range-input" id="price-max" min="0" max="20000" value="20000" step="100">
+                        </div>
+                        <span class="price-range-display" id="price-range-display">0€ — 20.000€</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de productos -->
+        <div class="catalog-body">
+            <div class="container">
+                <div class="products-grid" id="products-grid">
+                    <!-- Se cargará dinámicamente mediante JS -->
+                </div>
+            </div>
+        </div>
+    </section><!-- /catalogo -->
+
+<!-- Chapter 2: Ingeniería (Horizontal Scroll V7 & V8 Cinematic) -->
+        <section class="horizontal-scroll-container page-section" id="destacados" style="position: relative; overflow: hidden;">
+            
+            <!-- V8 GEARS SVG BACKGROUND -->
+            <div class="gears-container">
+                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                    <g class="gear gear-1" transform="translate(30, 30)">
+                        <circle cx="0" cy="0" r="15" class="gear-path" />
+                        <circle cx="0" cy="0" r="5" class="gear-path" />
+                        <path d="M0 -18 L3 -15 L3 15 L0 18 L-3 15 L-3 -15 Z" class="gear-path" />
+                        <path d="M-18 0 L-15 3 L15 3 L18 0 L15 -3 L-15 -3 Z" class="gear-path" />
+                        <path d="M-12 -12 L-10 -9 L10 9 L12 12 L9 10 L-9 -10 Z" class="gear-path" />
+                        <path d="M12 -12 L10 -9 L-10 9 L-12 12 L-9 10 L9 -10 Z" class="gear-path" />
+                    </g>
+                    <g class="gear gear-2" transform="translate(62, 50)">
+                        <circle cx="0" cy="0" r="20" class="gear-path" />
+                        <circle cx="0" cy="0" r="8" class="gear-path" />
+                        <path d="M0 -23 L3 -20 L3 20 L0 23 L-3 20 L-3 -20 Z" class="gear-path" />
+                        <path d="M-23 0 L-20 3 L20 3 L23 0 L20 -3 L-20 -3 Z" class="gear-path" />
+                        <path d="M-16 -16 L-14 -13 L14 13 L16 16 L13 14 L-13 -14 Z" class="gear-path" />
+                        <path d="M16 -16 L14 -13 L-14 13 L-16 16 L-13 14 L13 -14 Z" class="gear-path" />
+                        <circle cx="0" cy="0" r="14" class="gear-path" stroke-dasharray="2 4" />
+                    </g>
+                </svg>
+            </div>
+
+            <div class="horizontal-scroll-wrapper" id="horizontal-wrapper">
+                
+                <!-- Panel 1: Intro -->
+                <div class="horizontal-panel">
+                    <span class="section-chapter-label">CAP. 02 — INGENIERÍA</span>
+                    <span class="section-number-badge">02</span>
+                    <div class="container banner-grid">
+                        <div class="banner-image-wrap">
+                            <img src="/images/atelier_movement.jpg" alt="Manufactura" class="banner-img">
+                        </div>
+                        <div class="banner-text">
+                            <span class="sub-heading">INGENIERÍA & TRADICIÓN</span>
+                            <h2 class="hero-title">Más de 300 componentes en sincronía perpetua</h2>
+                            <p>Cada reloj TOUST pasa por más de 120 horas de rigurosos controles barométricos, pruebas de choque cinético y calibración acústica.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 2: Calibre -->
+                <div class="horizontal-panel">
+                    <div class="container banner-grid banner-reverse">
+                        <div class="banner-text">
+                            <span class="sub-heading">CALIBRE T-01</span>
+                            <h2 class="hero-title">El corazón latiendo a 28.800 A/h</h2>
+                            <p>Un volante de inercia variable esculpido en titanio grado 5 garantiza una precisión extrema. Ensamblado a mano por nuestros maestros relojeros en el valle de Joux.</p>
+                        </div>
+                        <div class="banner-image-wrap">
+                            <div class="balance-wheel-container">
+                                <svg viewBox="0 0 200 200" class="balance-wheel">
+                                    <circle cx="100" cy="100" r="90" class="balance-wheel-path" />
+                                    <!-- Inner rim -->
+                                    <circle cx="100" cy="100" r="75" class="balance-wheel-path" stroke-dasharray="10 15" />
+                                    <!-- Spokes -->
+                                    <line x1="100" y1="10" x2="100" y2="190" class="balance-wheel-path" />
+                                    <line x1="10" y1="100" x2="190" y2="100" class="balance-wheel-path" />
+                                    <line x1="36" y1="36" x2="164" y2="164" class="balance-wheel-path" />
+                                    <line x1="36" y1="164" x2="164" y2="36" class="balance-wheel-path" />
+                                    <!-- Weights / Screws -->
+                                    <circle cx="100" cy="10" r="6" fill="var(--gold-primary)" />
+                                    <circle cx="100" cy="190" r="6" fill="var(--gold-primary)" />
+                                    <circle cx="10" cy="100" r="6" fill="var(--gold-primary)" />
+                                    <circle cx="190" cy="100" r="6" fill="var(--gold-primary)" />
+                                    <circle cx="36" cy="36" r="6" fill="var(--gold-primary)" />
+                                    <circle cx="164" cy="164" r="6" fill="var(--gold-primary)" />
+                                    <!-- Center Jewel -->
+                                    <circle cx="100" cy="100" r="8" class="balance-jewel" />
+                                    <circle cx="100" cy="100" r="14" class="balance-wheel-path" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Zafiro -->
+                <div class="horizontal-panel">
+                    <div class="container banner-grid">
+                        <div class="banner-image-wrap" style="text-align:center; position: relative;">
+                            <div class="sapphire-container">
+                                <div class="sapphire-dome">
+                                    <div class="sapphire-reflection"></div>
+                                </div>
+                                <div class="sapphire-glow"></div>
+                            </div>
+                        </div>
+                        <div class="banner-text">
+                            <span class="sub-heading">RESISTENCIA ABSOLUTA</span>
+                            <h2 class="hero-title">Claridad iridiscente inalterable</h2>
+                            <p>Cristales de zafiro abombados con triple tratamiento antirreflejos. Dureza de 9 en la escala de Mohs, solo superada por el diamante.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section><!-- /destacados -->
+
+    
+    <!-- Stats & Trust Section -->
+    <section class="page-section" id="stats-trust">
+        <div class="container stats-grid" style="margin-top: 4rem; margin-bottom: 2rem;">
+            <div class="stat-block reveal-up">
+                <span class="stat-num" data-count="+2.400">+2.400</span>
+                <span class="stat-label">Relojes Entregados</span>
+            </div>
+            <div class="stat-block reveal-up">
+                <span class="stat-num" data-count="300+">300+</span>
+                <span class="stat-label">Componentes por Pieza</span>
+            </div>
+            <div class="stat-block reveal-up">
+                <span class="stat-num" data-count="±2s">±2s</span>
+                <span class="stat-label">Desviación Máx. Diaria</span>
+            </div>
+            <div class="stat-block reveal-up">
+                <span class="stat-num" data-count="5★">5★</span>
+                <span class="stat-label">Valoración Media</span>
+            </div>
+        </div>
+
+        <div class="container trust-grid" style="margin-top: 4rem; padding-bottom: 4rem;">
+            <div class="trust-item">
+                <div class="trust-icon"><i data-lucide="award"></i></div>
+                <div>
+                    <h4>Garantía de 5 Años</h4>
+                    <p>Cobertura internacional en cada pieza</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><i data-lucide="shield-check"></i></div>
+                <div>
+                    <h4>Autenticidad Certificada</h4>
+                    <p>Certificado numerado de manufactura</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><i data-lucide="plane"></i></div>
+                <div>
+                    <h4>Envío Asegurado Gratuito</h4>
+                    <p>Entrega en 24-48h con seguro a todo riesgo</p>
+                </div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon"><i data-lucide="watch"></i></div>
+                <div>
+                    <h4>Mantenimiento Vitalicio</h4>
+                    <p>Ajuste y revisión por maestros relojeros</p>
+                </div>
+            </div>
+        </div>
+    </section><!-- /stats-trust -->
+
+    <!-- Footer como page-section -->
+    <footer class="site-footer page-section" id="contacto">
+        <!-- Footer ambient orb -->
+        <div aria-hidden="true" style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.035) 0%,transparent 65%);filter:blur(80px);bottom:-100px;right:10%;pointer-events:none;z-index:0"></div>
+        <span class="section-chapter-label">CAP. 03 — ATELIER</span>
+        <span class="section-number-badge">03</span>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <div class="logo-typography">
+                        <span class="logo-lettering">TOUST</span>
+                        <span class="logo-tagline">HAUTE HORLOGERIE</span>
+                    </div>
+                </div>
+                <p>Relojería de precisión, diseño atemporal y piezas de coleccionista firmadas por TOUST.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Colecciones</h4>
+                <a href="#catalogo">Automáticos</a>
+                <a href="#catalogo">Cronógrafos</a>
+                <a href="#catalogo">Edición Titanio</a>
+                <a href="#catalogo">Accesorios y Estuches</a>
+            </div>
+
+            <div class="footer-status-box">
+                <h4>Conexión con Firestore</h4>
+                <div class="firestore-status-badge" id="firestore-badge">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="firestore-status-text">Detectando conexión...</span>
+                </div>
+                <button class="btn-seed-firestore" id="seed-firestore-btn" title="Carga el catálogo inicial directamente en tu base de datos Firestore">
+                    ⚡ Subir catálogo de muestra a Firestore
+                </button>
+            </div>
+        </div>
+
+        <!-- Newsletter section -->
+        <div class="container" style="position:relative;z-index:1;margin-bottom:3rem">
+            <div class="newsletter-section">
+                <div class="newsletter-inner">
+                    <h3 class="newsletter-title">Únete al Atelier TOUST</h3>
+                    <p class="newsletter-sub">Recibe primeras exclusivas, ediciones limitadas y acceso anticipado a nuevos calibres.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" class="newsletter-input" id="newsletter-email" placeholder="tu@correo.com" required>
+                        <button type="submit" class="newsletter-btn" id="newsletter-submit">Suscribirse</button>
+                    </form>
+                    <div class="newsletter-success" id="newsletter-success">
+                        <span class="newsletter-success-icon">✨</span>
+                        <span>¡Bienvenido al Atelier! Recibirás nuestras novedades pronto.</span>
+                    </div>
+                    <div class="newsletter-error" id="newsletter-error"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container copyright-bar">
+            <p>© 2026 TOUST Haute Horlogerie. Todos los derechos reservados. Desarrollado para Firebase Hosting &amp; Firestore.</p>
+        </div>
+    </footer><!-- /contacto -->
+
+    </div><!-- /scroll-wrapper -->
+
+    <!-- Drawer Lateral del Carrito de Compras (fuera del scroll-wrapper para no afectar snap) -->
+    <div class="cart-drawer-overlay" id="cart-overlay"></div>
+    <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+        <div class="cart-drawer-header">
+            <h3>Tu Cesta de Compras (<span id="cart-items-count">0</span>)</h3>
+            <button class="close-drawer-btn" id="close-cart-btn" aria-label="Cerrar cesta">&times;</button>
+        </div>
+
+        <div class="cart-items-list" id="cart-items-list">
+            <!-- Items renderizados dinámicamente -->
+        </div>
+
+        <div class="cart-drawer-footer" id="cart-footer">
+            <div class="cart-summary-row">
+                <span>Envío asegurado</span>
+                <span class="free-shipping">GRATIS</span>
+            </div>
+            <div class="cart-summary-row total-row">
+                <span>Total estimado</span>
+                <span class="total-price" id="cart-total-price">0 €</span>
+            </div>
+            <button class="btn btn-primary btn-block" id="proceed-checkout-btn">
+                Tramitar Pedido Seguro
+            </button>
+            <button class="btn-text-link" id="clear-cart-btn">Vaciar cesta</button>
+        </div>
+    </aside>
+
+    <!-- Modal de Checkout / Formulario de Pedido para Firestore -->
+    <div class="modal-backdrop" id="checkout-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <span class="sub-heading">FINALIZAR ADQUISICIÓN</span>
+                    <h3>Datos para tu Entrega Asegurada</h3>
+                </div>
+                <button class="modal-close" id="close-checkout-btn">&times;</button>
+            </div>
+            <form id="checkout-form" class="checkout-form">
+                <div id="checkout-autofill-notice" class="autofill-badge" style="display:none;">
+                    <span>✨ Datos completados automáticamente desde tu perfil TOUST</span>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="order-name">Nombre y Apellidos *</label>
+                        <input type="text" id="order-name" required placeholder="Ej: Carlos Mendía">
+                    </div>
+                    <div class="form-group">
+                        <label for="order-phone">Teléfono de Contacto *</label>
+                        <input type="tel" id="order-phone" required placeholder="+34 600 000 000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="order-email">Correo Electrónico *</label>
+                    <input type="email" id="order-email" required placeholder="tu@correo.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="order-address">Dirección Completa de Envío *</label>
+                    <input type="text" id="order-address" required placeholder="Calle, número, piso o urbanización">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="order-city">Ciudad *</label>
+                        <input type="text" id="order-city" required placeholder="Madrid, Barcelona...">
+                    </div>
+                    <div class="form-group">
+                        <label for="order-postal">Código Postal *</label>
+                        <input type="text" id="order-postal" required placeholder="28001">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="order-notes">Instrucciones o Dedicatoria (Opcional)</label>
+                    <textarea id="order-notes" rows="2" placeholder="Empaquetado de regalo, horario de entrega preferido..."></textarea>
+                </div>
+
+                <div class="checkout-summary-box">
+                    <div class="summary-line">
+                        <span>Total del pedido:</span>
+                        <strong id="checkout-summary-total">0 €</strong>
+                    </div>
+                    <p class="summary-notice">
+                        🔒 Tu pedido se registrará directamente en nuestro sistema (Cloud Firestore). Te contactaremos de inmediato para coordinar la entrega blindada.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="submit-order-btn">
+                    Confirmar Pedido y Registrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Detalle de Producto / Vista Rápida -->
+    <div class="modal-backdrop" id="product-modal">
+        <div class="modal-card product-detail-card">
+            <button class="modal-close" id="close-product-modal-btn">&times;</button>
+            <div class="product-detail-layout" id="product-detail-content">
+                <!-- Se llena dinámicamente con JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación Exitosa de Pedido -->
+    <div class="modal-backdrop" id="success-modal">
+        <div class="modal-card success-card">
+            <div class="success-icon">✓</div>
+            <h2>¡Pedido Registrado con Éxito!</h2>
+            <p id="success-message">
+                Hemos recibido tu solicitud y se ha guardado de forma segura en la base de datos de Firestore.
+            </p>
+            <div class="order-id-badge" id="order-id-badge">ID: #ORD-0000</div>
+            <p class="success-footnote">Un maestro relojero de TOUST se pondrá en contacto contigo para verificar la entrega asegurada.</p>
+            <button class="btn btn-primary" id="close-success-btn">Continuar Navegando</button>
+        </div>
+    </div>
+
+    <!-- Modal de Autenticación / Login TOUST -->
+    <div class="modal-backdrop" id="auth-modal">
+        <div class="modal-card auth-card">
+            <div class="modal-header">
+                <div>
+                    <span class="sub-heading">ACCESO EXCLUSIVO</span>
+                    <h3 id="auth-modal-title">Club de Clientes TOUST</h3>
+                </div>
+                <button class="modal-close" id="close-auth-btn">&times;</button>
+            </div>
+
+            <!-- Vista cuando el usuario NO está autenticado -->
+            <div id="auth-guest-view">
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tab-login-btn" type="button">Iniciar Sesión</button>
+                    <button class="auth-tab-btn" id="tab-register-btn" type="button">Crear Cuenta</button>
+                </div>
+
+                <!-- Formulario Iniciar Sesión -->
+                <form id="login-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="login-email">Correo Electrónico</label>
+                        <input type="email" id="login-email" required placeholder="tu@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="submit-login-btn">
+                        Acceder a mi Cuenta
+                    </button>
+                </form>
+
+                <!-- Formulario Registro -->
+                <form id="register-form" class="auth-form" style="display:none;">
+                    <div class="form-group">
+                        <label for="register-name">Nombre Completo</label>
+                        <input type="text" id="register-name" required placeholder="Carlos Mendía">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Correo Electrónico</label>
+                        <input type="email" id="register-email" required placeholder="tu@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Contraseña (Mínimo 6 caracteres)</label>
+                        <input type="password" id="register-password" required minlength="6" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="submit-register-btn">
+                        Crear Cuenta TOUST
+                    </button>
+                </form>
+
+                <div class="auth-divider">
+                    <span>O BIEN</span>
+                </div>
+
+                <button class="btn btn-google btn-block" id="google-login-btn" type="button">
+                    <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    Continuar con Google
+                </button>
+            </div>
+            <!-- Vista cuando el usuario ESTÁ autenticado -->
+            <div id="auth-logged-view" style="display:none;">
+                <div class="user-profile-summary" id="user-profile-summary">
+                    <div class="user-avatar-circle" id="user-avatar-circle">U</div>
+                    <div class="user-info-text">
+                        <h4 id="user-display-name">Usuario</h4>
+                        <p id="user-display-email">email@correo.com</p>
+                    </div>
+                </div>
+
+                <!-- Historial de Pedidos -->
+                <div class="orders-section">
+                    <div class="orders-header">
+                        <h4>Mis Pedidos</h4>
+                        <button style="font-size:.72rem;color:var(--text-dim);cursor:pointer;" id="refresh-orders-btn">↻ Actualizar</button>
+                    </div>
+                    <div class="orders-list" id="orders-list"><div class="orders-loading">Cargando pedidos...</div></div>
+                </div>
+
+                <button class="btn btn-secondary btn-block" id="logout-btn" style="margin-top:1.2rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toast"></div>
+
+    <!-- Image Lightbox -->
+    <div class="lightbox-overlay" id="lightbox-overlay">
+        <button class="lightbox-close" id="lightbox-close">&times;</button>
+        <div class="lightbox-img-wrap" id="lightbox-img-wrap">
+            <img src="" alt="" id="lightbox-img">
+        </div>
+        <span class="lightbox-caption" id="lightbox-caption"></span>
+        <span class="lightbox-zoom-hint">Scroll para zoom · Arrastra para mover</span>
+    </div>
+
+    <!-- Wishlist Drawer -->
+    <div class="cart-drawer-overlay" id="wish-overlay"></div>
+    <div class="wishlist-drawer" id="wish-drawer">
+        <div class="wishlist-drawer-header">
+            <h3>Lista de Deseos</h3>
+            <button class="close-drawer-btn" id="close-wish-btn">&times;</button>
+        </div>
+        <div class="wish-items-list" id="wish-items-list"></div>
+        <div class="wishlist-footer">
+            <button class="btn btn-secondary btn-block" id="add-all-to-cart-btn">Añadir Todo al Carrito</button>
+        </div>
+    </div>
+
+    <!-- Compare Float Panel -->
+    <div class="compare-float" id="compare-float">
+        <span class="compare-float-label">Comparar</span>
+        <div class="compare-slots" id="compare-slots">
+            <div class="compare-slot empty" id="compare-slot-0"><span class="compare-slot-plus">+</span></div>
+            <div class="compare-slot empty" id="compare-slot-1"><span class="compare-slot-plus">+</span></div>
+            <div class="compare-slot empty" id="compare-slot-2"><span class="compare-slot-plus">+</span></div>
+        </div>
+        <button class="btn-open-compare" id="btn-open-compare" disabled>Ver Comparativa</button>
+        <button class="btn-clear-compare" id="btn-clear-compare">Limpiar</button>
+    </div>
+
+    <!-- Compare Modal -->
+    <div class="modal-backdrop" id="compare-modal">
+        <div class="modal-card compare-card">
+            <div class="modal-header">
+                <h3>Comparativa de Relojes</h3>
+                <button class="modal-close" id="close-compare-modal">&times;</button>
+            </div>
+            <div class="compare-table-wrap" id="compare-table-wrap"></div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" aria-label="Volver arriba">
+        <svg><polyline points="12 8 8 4 4 8"></polyline><line x1="8" y1="4" x2="8" y2="16"></line></svg>
+    </button>
+
+    <!-- Librerías Externas de Élite (CDN) -->
+    <!-- 1. Motion (antes Framer Motion para JavaScript) -->
+    <script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+    <!-- 2. Anime.js (Micro-animaciones, trazado SVG e interpolación numérica) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <!-- 3. GSAP & ScrollTrigger (Cinemáticas y orquestación de scroll) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- 4. Smooth Scroll Lenis -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <!-- 5. Vanilla-Tilt para efecto 3D Parallax en tarjetas y cristal de zafiro -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <!-- 6. Canvas Confetti para celebración de compra -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- 7. Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Lógica de la aplicación -->
+    <script type="module" src="app.js"></script>
+    <!-- MOBILE MENU DRAWER (V7.1) -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer">
+        <div class="mobile-nav-header">
+            <span class="mobile-nav-brand">TOUST</span>
+            <button id="close-mobile-nav" class="close-mobile-nav" aria-label="Cerrar menú"><i data-lucide="x"></i></button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#catalogo" class="mobile-link">Colección</a>
+            <a href="#destacados" class="mobile-link">Ingeniería</a>
+            <a href="#contacto" class="mobile-link">Atelier</a>
+            <a href="admin.html" class="mobile-link" id="mobile-admin-link" style="display:none; color: var(--gold-primary);">Panel Admin</a>
+        </div>
+    </div>
+
+</body>
+</html>

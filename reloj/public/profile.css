@@ -1,0 +1,101 @@
+/* profile.css */
+
+/* Profile Form Layout */
+.profile-card {
+    padding: 3rem;
+}
+
+.profile-header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 1rem;
+}
+
+.profile-header h2 {
+    font-family: var(--font-heading);
+    color: var(--gold-primary);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.profile-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .profile-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gold-primary);
+    background: rgba(212, 175, 55, 0.05);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.save-indicator {
+    color: #10b981;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.save-indicator.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Orders specific */
+.admin-table td.status-pendiente {
+    color: #f59e0b;
+}
+
+.admin-table td.status-enviado {
+    color: #10b981;
+}
+
+.admin-table td.status-cancelado {
+    color: #ef4444;
+}

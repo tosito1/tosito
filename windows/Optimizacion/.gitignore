@@ -1,0 +1,90 @@
+# ==========================================
+# GITIGNORE PARA TOSITO REMOTE PC & OPTIMIZER
+# ==========================================
+
+# --- Visual Studio & .NET (C#) ---
+[Bb]in/
+[Oo]bj/
+[Log]/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.patch
+*.diff
+*.suo
+*.user
+*.userOSSCache
+*.sln.docstates
+.metadata
+.recommenders
+_ReSharper*/
+[Tt]emp/
+[Tt]mp/
+
+# --- Android & Gradle (Kotlin) ---
+.gradle/
+/build/
+[Aa]pp/build/
+local.properties
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries/
+.idea/caches/
+.idea/modules.xml
+.idea/navEditor.xml
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aar
+*.ap_
+/remotepc/.gradle/
+/remotepc/build/
+/remotepc/app/build/
+/remotepc/local.properties
+/remotepc/.idea/workspace.xml
+/remotepc/.idea/libraries/
+/remotepc/.idea/caches/
+/remotepc/.idea/modules.xml
+
+# --- Node / Web (Firebase) ---
+node_modules/
+.firebase/
+.firebaserc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- OS / IDEs ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+
+# --- Exclusiones Globales de Compilación y Binarios ---
+*.dll
+*.pdb
+*.exe
+*.zip
+*.rar
+*.msi
+*.cab
+
+# --- Archivos Específicos del Proyecto ---
+src/Optimizador/TestClient/
+src/temp_pack/
+src/Final_Installer/
+log_remoto.txt
+src/Optimizador/Instalador_Optimizador_Cliente.cmd
+src/Optimizador/Instalador_Optimizador_Suite.cmd

@@ -1,0 +1,860 @@
+<!DOCTYPE html >
+    <html lang="es" >
+        <head>
+        <meta charset="UTF-8" >
+            <meta name="viewport" content = "width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" >
+                <title>Palabritas GO — Scrabble Multiplayer </title>
+                    < script src = "https://unpkg.com/react@18/umd/react.production.min.js" > </script>
+                        < script src = "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" > </script>
+                            < script src = "https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js" > </script>
+                                < script src = "https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js" > </script>
+                                    < script src = "https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js" > </script>
+                                        < script src = "https://unpkg.com/@babel/standalone/babel.min.js" > </script>
+                                            < script src = "https://cdn.tailwindcss.com" > </script>
+                                                < script src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" > </script>
+                                                    < script src = "https://unpkg.com/lucide@latest" > </script>
+                                                        < link href = "https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Inter:wght@400;700&display=swap" rel = "stylesheet" >
+                                                            <style>
+                                                            body { margin: 0; background: #020617; font - family: 'Inter', sans - serif; color: white; overflow: hidden; touch - action: none; }
+        .custom - scrollbar:: -webkit - scrollbar { width: 4px; }
+        .custom - scrollbar:: -webkit - scrollbar - thumb { background: #334155; border - radius: 4px; }
+
+@keyframes float - bg { 0 % { transform: translateY(0px) rotate(0deg); } 50 % { transform: translateY(-10px) rotate(3deg); } 100 % { transform: translateY(0px) rotate(0deg); } }
+        .bg - shape { position: absolute; filter: blur(60px); opacity: 0.2; animation: float - bg 15s infinite ease -in -out; pointer - events: none; z - index: 0; }
+        .shape - 1 { background: #3b82f6; width: 40vw; height: 40vw; top: -10 %; left: -10 %; animation - delay: 0s; }
+        .shape - 2 { background: #a855f7; width: 50vw; height: 50vw; bottom: -10 %; right: -10 %; animation - delay: -5s; }
+
+@keyframes tile - float - anim {
+    0 %, 100 % { transform: translateY(-16px) scale(1.05); }
+    50 % { transform: translateY(-22px) scale(1.05); }
+}
+        .tile - selected {
+    animation: tile - float - anim 1.5s ease -in -out infinite!important;
+    box - shadow: 0 20px 30px rgba(52, 211, 153, 0.5)!important;
+    border - bottom - width: 2px!important;
+    z - index: 50;
+}
+
+@keyframes radar - pop {
+    0 % { transform: scale(0) rotate(45deg); opacity: 0; }
+    50 % { transform: scale(1.2) rotate(- 10deg); opacity: 1;
+}
+100 % { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .radar - highlight {
+    animation: radar - pop 0.5s cubic - bezier(0.175, 0.885, 0.32, 1.275) forwards, pulse 2s cubic - bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes ghost - pop {
+    0 % { transform: scale(0) translateY(- 50px) rotate(15deg); opacity: 0;
+}
+100 % { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+        }
+        .ghost - tile {
+    animation: ghost - pop 0.5s cubic - bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+        .roulette - wheel {
+    background: conic - gradient(
+                #94a3b8 0deg 90deg,
+                #4ade80 90deg 180deg,
+        #a855f7 180deg 270deg,
+        #fbbf24 270deg 360deg
+    );
+    border - radius: 50 %;
+}
+</style>
+    </head>
+    < body >
+    <div id="root" > </div>
+
+        < script type = "text/babel" >
+        const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+/* ─ ICON WRAPPER ─ */
+const toKebab = s => s.replace(/([A-Z])/g, m => '-' + m.toLowerCase()).replace(/^-/, '');
+const Icon = ({ name, size = 20, className = "" }) => {
+    const r = useRef(null);
+    useEffect(() => {
+        if (!window.lucide || !r.current) return;
+        r.current.innerHTML = `<i data-lucide="${toKebab(name)}"></i>`;
+        window.lucide.createIcons({ el: r.current });
+        const s = r.current.querySelector('svg');
+        if (s) {
+            s.setAttribute('width', size);
+            s.setAttribute('height', size);
+            if (className) s.setAttribute('class', className);
+        }
+    }, [name, size, className]);
+    return <span ref={ r } className = {`inline-flex items-center justify-center flex-shrink-0 ${className}`
+} />;
+        };
+
+// --- FIREBASE V9 to V8 ADAPTER ---
+const firebaseConfig = {
+    apiKey: "AIzaSyCrwGSWveA5a5W-onJzDblydfLQKPIyGLQ",
+    authDomain: "tosito-games-303f5.firebaseapp.com",
+    projectId: "tosito-games-303f5",
+    storageBucket: "tosito-games-303f5.firebasestorage.app",
+    messagingSenderId: "595440969464",
+    appId: "1:595440969464:web:450d63fa91e64b4e773d0d",
+    measurementId: "G-HWCMG00CTT"
+};
+
+const initializeApp = (config) => firebase.initializeApp(config);
+const getAuth = (app) => firebase.auth(app);
+const getFirestore = (app) => firebase.firestore(app);
+const GoogleAuthProvider = firebase.auth.GoogleAuthProvider;
+const signInWithPopup = (auth, provider) => auth.signInWithPopup(provider);
+const signOut = (auth) => auth.signOut();
+const onAuthStateChanged = (auth, cb) => auth.onAuthStateChanged(cb);
+const doc = (db, ...paths) => db.doc(paths.join('/'));
+const getDoc = (ref) => ref.get();
+const setDoc = (ref, data) => ref.set(data);
+const updateDoc = (ref, data) => ref.update(data);
+const onSnapshot = (ref, cb, err) => ref.onSnapshot(cb, err);
+
+let app, auth, db;
+let globalAppId = 'palabritas-go';
+
+try {
+    if (!firebase.apps.length) app = initializeApp(firebaseConfig);
+    else app = firebase.app();
+    auth = getAuth(app);
+    db = getFirestore(app);
+} catch (e) { console.warn("Firebase Error:", e); }
+
+// --- CONSTANTES ---
+const TURN_TIME_LIMIT = 90;
+const TILE_DISTRIBUTION = [
+    { letter: 'A', value: 1, count: 12 }, { letter: 'E', value: 1, count: 12 },
+    { letter: 'O', value: 1, count: 9 }, { letter: 'I', value: 1, count: 6 },
+    { letter: 'S', value: 1, count: 6 }, { letter: 'N', value: 1, count: 5 },
+    { letter: 'R', value: 1, count: 5 }, { letter: 'U', value: 1, count: 5 },
+    { letter: 'L', value: 1, count: 4 }, { letter: 'T', value: 1, count: 4 },
+    { letter: 'D', value: 2, count: 5 }, { letter: 'G', value: 2, count: 2 },
+    { letter: 'C', value: 3, count: 4 }, { letter: 'B', value: 3, count: 2 },
+    { letter: 'M', value: 3, count: 2 }, { letter: 'P', value: 3, count: 2 },
+    { letter: 'H', value: 4, count: 2 }, { letter: 'F', value: 4, count: 1 },
+    { letter: 'V', value: 4, count: 1 }, { letter: 'Y', value: 4, count: 1 },
+    { letter: 'Q', value: 5, count: 1 },
+    { letter: 'J', value: 8, count: 1 }, { letter: 'Ñ', value: 8, count: 1 },
+    { letter: 'X', value: 8, count: 1 },
+    { letter: 'Z', value: 10, count: 1 },
+    { letter: '', value: 0, count: 2 }
+];
+const EMOTES = ['😂', '😡', '🤯', '🥳', '🥺', '👏', '🔥', '🥶'];
+const ALPHABET = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split('');
+const BOARD_SIZE = 15;
+const MULTIPLIERS = {
+    '0,0': 'TW', '0,7': 'TW', '0,14': 'TW', '7,0': 'TW', '7,14': 'TW', '14,0': 'TW', '14,7': 'TW', '14,14': 'TW',
+    '1,1': 'DW', '2,2': 'DW', '3,3': 'DW', '4,4': 'DW', '10,10': 'DW', '11,11': 'DW', '12,12': 'DW', '13,13': 'DW',
+    '1,13': 'DW', '2,12': 'DW', '3,11': 'DW', '4,10': 'DW', '10,4': 'DW', '11,3': 'DW', '12,2': 'DW', '13,1': 'DW',
+    '7,7': 'STAR',
+    '1,5': 'TL', '1,9': 'TL', '5,1': 'TL', '5,5': 'TL', '5,9': 'TL', '5,13': 'TL', '9,1': 'TL', '9,5': 'TL', '9,9': 'TL', '9,13': 'TL', '13,5': 'TL', '13,9': 'TL',
+    '0,3': 'DL', '0,11': 'DL', '2,6': 'DL', '2,8': 'DL', '3,0': 'DL', '3,7': 'DL', '3,14': 'DL', '6,2': 'DL', '6,6': 'DL', '6,8': 'DL', '6,12': 'DL',
+    '7,3': 'DL', '7,11': 'DL', '8,2': 'DL', '8,6': 'DL', '8,8': 'DL', '8,12': 'DL', '11,0': 'DL', '11,7': 'DL', '11,14': 'DL', '12,6': 'DL', '12,8': 'DL', '14,3': 'DL', '14,11': 'DL'
+};
+
+const THEMES = [
+    {
+        id: 'classic', name: 'Clásico (Madera)', price: 'Gratis',
+        boardBg: 'bg-[#7a5937]', boardBorder: 'border-[#52391e]',
+        cellEmpty: 'bg-[#d3b589]', textEmpty: 'text-stone-800',
+        tileBg: 'bg-gradient-to-b from-[#fdf8f0] to-[#f3e5ce]', tileBorder: 'border-[#e8d5b5]',
+        tileText: 'text-stone-800', tileShadow: 'shadow-[0_3px_10px_rgba(0,0,0,0.3)]',
+        rackBg: 'bg-black/20 border-white/30 backdrop-blur-md', rackTileEmpty: 'bg-black/10 border-black/5',
+        tw: 'bg-[#ef4444]', dw: 'bg-[#f59850]', tl: 'bg-[#1e7ec8]', dl: 'bg-[#1fa95b]',
+        centerStar: 'text-orange-400 drop-shadow-sm'
+    },
+    {
+        id: 'cyber', name: 'Neón Cyberpunk', price: '4.99€',
+        boardBg: 'bg-slate-900', boardBorder: 'border-fuchsia-900',
+        cellEmpty: 'bg-slate-800/80', textEmpty: 'text-slate-500',
+        tileBg: 'bg-slate-900', tileBorder: 'border-cyan-500',
+        tileText: 'text-cyan-400 drop-shadow-[0_0_5px_#22d3ee]', tileShadow: 'shadow-[0_0_12px_rgba(34,211,238,0.5)]',
+        rackBg: 'bg-slate-900/80 border-cyan-500/50 backdrop-blur-lg shadow-[0_0_20px_rgba(192,38,211,0.2)]', rackTileEmpty: 'bg-slate-800 border-slate-700',
+        tw: 'bg-rose-600 shadow-[0_0_10px_#e11d48]', dw: 'bg-fuchsia-600 shadow-[0_0_10px_#c026d3]', tl: 'bg-cyan-600 shadow-[0_0_10px_#0891b2]', dl: 'bg-emerald-600 shadow-[0_0_10px_#059669]',
+        centerStar: 'text-cyan-400 drop-shadow-[0_0_8px_#22d3ee]'
+    },
+    {
+        id: 'luxury', name: 'Oro y Ébano (VIP)', price: '9.99€',
+        boardBg: 'bg-zinc-950', boardBorder: 'border-amber-700',
+        cellEmpty: 'bg-zinc-900', textEmpty: 'text-zinc-600',
+        tileBg: 'bg-gradient-to-br from-amber-200 via-yellow-500 to-amber-600', tileBorder: 'border-amber-300',
+        tileText: 'text-zinc-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]', tileShadow: 'shadow-[0_6px_15px_rgba(0,0,0,0.9)]',
+        rackBg: 'bg-zinc-950/90 border-amber-600/50 backdrop-blur-xl', rackTileEmpty: 'bg-zinc-900 border-zinc-800',
+        tw: 'bg-red-950 border border-red-800', dw: 'bg-orange-950 border border-orange-800', tl: 'bg-blue-950 border border-blue-800', dl: 'bg-emerald-950 border border-emerald-800',
+        centerStar: 'text-amber-400 drop-shadow-[0_0_5px_#fbbf24]'
+    }
+];
+
+// --- FUNCIONES AUXILIARES ---
+const generateBag = () => {
+    let bag = [];
+    let idCounter = 0;
+    TILE_DISTRIBUTION.forEach(dist => {
+        for (let i = 0; i < dist.count; i++) {
+            bag.push({ id: `t_${idCounter++}`, letter: dist.letter, value: dist.value, isBlank: dist.letter === '' });
+        }
+    });
+    for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    return bag;
+};
+
+const generateEmptyBoard = () => {
+    let b = [];
+    for (let r = 0; r < BOARD_SIZE; r++) {
+        let row = [];
+        for (let c = 0; c < BOARD_SIZE; c++) {
+            row.push({ r, c, mult: MULTIPLIERS[`${r},${c}`] || '', tile: null, locked: false });
+        }
+        b.push(row);
+    }
+    return b;
+};
+
+const normalizeWord = (w) => {
+    return w.toUpperCase()
+        .replace(/[ÁÄÀÂ]/g, 'A')
+        .replace(/[ÉËÈÊ]/g, 'E')
+        .replace(/[ÍÏÌÎ]/g, 'I')
+        .replace(/[ÓÖÒÔ]/g, 'O')
+        .replace(/[ÚÜÙÛ]/g, 'U');
+};
+
+const AnimatedNumber = ({ value }) => {
+    const [displayValue, setDisplayValue] = useState(value);
+    const valueRef = useRef(value);
+    useEffect(() => {
+        if (!window.gsap) { setDisplayValue(value); return; }
+        const obj = { val: valueRef.current };
+        window.gsap.to(obj, { val: value, duration: 1, ease: "power3.out", onUpdate: () => setDisplayValue(Math.round(obj.val)) });
+        valueRef.current = value;
+    }, [value]);
+    return <span>{ displayValue } </span>;
+};
+
+// --- COMPONENTE PRINCIPAL ---
+function App() {
+    const [user, setUser] = useState(null);
+    const [userName, setUserName] = useState('');
+    const [roomCode, setRoomCode] = useState('');
+    const [joinCode, setJoinCode] = useState('');
+    const [roomState, setRoomState] = useState(null);
+
+    const [localRack, setLocalRack] = useState(Array(7).fill(null));
+    const [pendingPlacements, setPendingPlacements] = useState([]);
+    const [selectedRackIdx, setSelectedRackIdx] = useState(null);
+    const [pendingBlank, setPendingBlank] = useState(null);
+
+    const [errorMsg, setErrorMsg] = useState('');
+    const [showProfile, setShowProfile] = useState(false);
+    const [showShop, setShowShop] = useState(false);
+    const [showEmotes, setShowEmotes] = useState(false);
+
+    const [showHints, setShowHints] = useState(false);
+    const [isSpinning, setIsSpinning] = useState(false);
+    const [hintResult, setHintResult] = useState(null);
+    const [hintHighlights, setHintHighlights] = useState([]);
+    const [hintGhost, setHintGhost] = useState([]);
+
+    const [dictionary, setDictionary] = useState(new Set());
+    const [dictLoaded, setDictLoaded] = useState(false);
+
+    const [timeLeft, setTimeLeft] = useState(TURN_TIME_LIMIT);
+    const [preview, setPreview] = useState({ valid: false, score: 0, words: [], error: '' });
+    const lastEmoteIdRef = useRef(0);
+
+    const [unlockedThemes, setUnlockedThemes] = useState(['classic']);
+    const [currentTheme, setCurrentTheme] = useState(THEMES[0]);
+    const [camTransform, setCamTransform] = useState({ x: 0, y: 0, scale: 1 });
+    const boardWrapperRef = useRef(null);
+    const pointerState = useRef({ isDragging: false, dist: 0, lastX: 0, lastY: 0, pointers: new Map(), initialPinchDist: null, initialScale: 1 });
+
+    // Carga de Diccionario
+    useEffect(() => {
+        const loadDict = async () => {
+            const cached = localStorage.getItem('palabritas_rae_full');
+            if (cached) {
+                setDictionary(new Set(JSON.parse(cached)));
+                setDictLoaded(true);
+                return;
+            }
+            try {
+                const res = await fetch('https://raw.githubusercontent.com/javierarce/palabras/master/listado-general.txt');
+                if (!res.ok) throw new Error("Net Error");
+                const text = await res.text();
+                const words = text.split('\n')
+                    .map(w => normalizeWord(w.trim()))
+                    .filter(w => w.length >= 2 && w.length <= 15);
+                const uniqueWords = Array.from(new Set(words));
+                localStorage.setItem('palabritas_rae_full', JSON.stringify(uniqueWords));
+                setDictionary(new Set(uniqueWords));
+                setDictLoaded(true);
+            } catch (e) {
+                setDictLoaded(true);
+            }
+        };
+        loadDict();
+    }, []);
+
+    // Temas
+    useEffect(() => {
+        const savedUnlocked = localStorage.getItem('palabritas_unlocked_themes');
+        const savedThemeId = localStorage.getItem('palabritas_current_theme');
+        if (savedUnlocked) setUnlockedThemes(JSON.parse(savedUnlocked));
+        if (savedThemeId) {
+            const t = THEMES.find(th => th.id === savedThemeId);
+            if (t) setCurrentTheme(t);
+        }
+    }, []);
+
+    const purchaseTheme = (themeId) => {
+        if (window.confirm("Simulación de Compra: ¿Deseas adquirir este aspecto premium?")) {
+            const newUnlocked = [...unlockedThemes, themeId];
+            setUnlockedThemes(newUnlocked);
+            localStorage.setItem('palabritas_unlocked_themes', JSON.stringify(newUnlocked));
+            equipTheme(themeId);
+            spawnFloatingText("¡COMPRA EXITOSA!", "body");
+        }
+    };
+    const equipTheme = (themeId) => {
+        const t = THEMES.find(th => th.id === themeId);
+        if (t) {
+            setCurrentTheme(t);
+            localStorage.setItem('palabritas_current_theme', themeId);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            if (result.user && result.user.displayName) {
+                setUserName(result.user.displayName.toUpperCase());
+            }
+        } catch (e) {
+            showError("Error al iniciar sesión con Google");
+        }
+    };
+
+    const handleLogout = () => {
+        signOut(auth);
+        setRoomCode('');
+        setRoomState(null);
+    };
+
+    // Firebase Auth
+    useEffect(() => {
+        if (!auth) return;
+        const unsub = onAuthStateChanged(auth, u => {
+            setUser(u);
+            if (u && u.displayName) setUserName(u.displayName.toUpperCase());
+        });
+        return () => unsub();
+    }, []);
+
+    // Firebase Sync
+    useEffect(() => {
+        if (!user || !roomCode || !db) return;
+        const docRef = doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode);
+        const unsub = onSnapshot(docRef, (snap) => {
+            if (snap.exists) {
+                const data = snap.data();
+                if (typeof data.board === 'string') data.board = JSON.parse(data.board);
+                setRoomState(data);
+            } else {
+                setErrorMsg("La sala no existe");
+                setRoomCode('');
+            }
+        }, (error) => console.error(error));
+        return () => unsub();
+    }, [user, roomCode]);
+
+    useEffect(() => {
+        if (roomState && user && roomState.players[user.uid]) {
+            if (pendingPlacements.length === 0) setLocalRack(roomState.players[user.uid].rack);
+        }
+    }, [roomState?.players, roomState?.turnIndex, user]);
+
+    useEffect(() => {
+        if (roomState?.lastEmote && roomState.lastEmote.id !== lastEmoteIdRef.current) {
+            lastEmoteIdRef.current = roomState.lastEmote.id;
+            spawnEmote(roomState.lastEmote.emoji, roomState.lastEmote.uid === user?.uid);
+        }
+    }, [roomState?.lastEmote]);
+
+    const isMyTurn = useMemo(() => {
+        if (!roomState || !user) return false;
+        return roomState.status === 'playing' && roomState.playerIds[roomState.turnIndex] === user.uid;
+    }, [roomState, user]);
+
+    const displayBoard = useMemo(() => {
+        if (!roomState) return generateEmptyBoard();
+        let b = roomState.board.map(row => row.map(cell => ({ ...cell })));
+        pendingPlacements.forEach(p => { b[p.r][p.c].tile = p.tile; });
+        return b;
+    }, [roomState?.board, pendingPlacements]);
+
+    useEffect(() => {
+        if (!roomState || roomState.status !== 'playing') return;
+        const interval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - roomState.turnStartTime) / 1000);
+            const remaining = Math.max(0, TURN_TIME_LIMIT - elapsed);
+            setTimeLeft(remaining);
+            if (remaining <= 0 && isMyTurn) skipTurn(true);
+        }, 500);
+        return () => clearInterval(interval);
+    }, [roomState?.turnStartTime, roomState?.status, isMyTurn]);
+
+    const handleCreateRoom = async () => {
+        if (!userName.trim() || !user || !db) return;
+        const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const newRoom = {
+            status: 'waiting', host: user.uid,
+            players: { [user.uid]: { name: userName.trim(), score: 0, rack: Array(7).fill(null), diamonds: 50 } },
+            playerIds: [user.uid], turnIndex: 0, turnStartTime: Date.now(),
+            board: JSON.stringify(generateEmptyBoard()),
+            bag: generateBag(), logs: [{ id: Date.now(), text: `Sala creada por ${userName.trim()}`, icon: '👑' }], lastEmote: null
+        };
+        try {
+            await setDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', code), newRoom);
+            setRoomCode(code);
+        } catch (e) { showError("Error al crear la sala"); }
+    };
+
+    const handleJoinRoom = async () => {
+        if (!userName.trim() || !joinCode.trim() || !user || !db) return;
+        const code = joinCode.trim().toUpperCase();
+        const docRef = doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', code);
+        try {
+            const snap = await getDoc(docRef);
+            if (!snap.exists()) return showError("Sala no encontrada");
+            const data = snap.data();
+            if (data.status !== 'waiting') return showError("Partida en curso");
+            if (data.playerIds.length >= 4) return showError("Sala llena");
+            if (!data.playerIds.includes(user.uid)) {
+                await updateDoc(docRef, {
+                    [`players.${user.uid}`]: { name: userName.trim(), score: 0, rack: Array(7).fill(null), diamonds: 50 },
+                    playerIds: [...data.playerIds, user.uid],
+                    logs: [...(data.logs || []), { id: Date.now(), text: `${userName.trim()} se unió`, icon: '👋' }].slice(-5)
+                });
+            }
+            setRoomCode(code);
+        } catch (e) { showError("Error al unirse"); }
+    };
+
+    const handleStartGame = async () => {
+        if (!roomState || !user || roomState.host !== user.uid) return;
+        const docRef = doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode);
+        let currentBag = [...roomState.bag];
+        let newPlayers = { ...roomState.players };
+        roomState.playerIds.forEach(uid => {
+            let newRack = [];
+            for (let i = 0; i < 7; i++) { if (currentBag.length > 0) newRack.push(currentBag.pop()); else newRack.push(null); }
+            newPlayers[uid].rack = newRack;
+        });
+        let shuffledIds = [...roomState.playerIds].sort(() => Math.random() - 0.5);
+        await updateDoc(docRef, {
+            status: 'playing', bag: currentBag, players: newPlayers, playerIds: shuffledIds,
+            turnIndex: 0, turnStartTime: Date.now(),
+            logs: [...(roomState.logs || []), { id: Date.now(), text: `¡Comienza el juego!`, icon: '🎮' }].slice(-5)
+        });
+    };
+
+    const canBeMadeFrom = (word, rackLetters) => {
+        let tempRack = [...rackLetters];
+        for (let char of word) {
+            let idx = tempRack.indexOf(char);
+            if (idx !== -1) tempRack.splice(idx, 1);
+            else {
+                let blankIdx = tempRack.indexOf('');
+                if (blankIdx !== -1) tempRack.splice(blankIdx, 1);
+                else return false;
+            }
+        }
+        return true;
+    };
+
+    const deductDiamonds = async (amount) => {
+        if (!roomState || !user) return false;
+        const myData = roomState.players[user.uid];
+        if (!myData || myData.diamonds < amount) { showError("Sin diamantes"); return false; }
+        const newPlayers = { ...roomState.players };
+        newPlayers[user.uid].diamonds -= amount;
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), { players: newPlayers });
+        return true;
+    };
+
+    const activateRadar = async () => {
+        if (!isMyTurn || pendingPlacements.length > 0) return;
+        if (!await deductDiamonds(10)) return;
+        const typedBoard = roomState.board;
+        const isFirstTurn = typedBoard[7][7].tile === null;
+        let h = [];
+        if (isFirstTurn) h.push({ r: 7, c: 7 });
+        else {
+            for (let r = 0; r < 15; r++) {
+                for (let c = 0; c < 15; c++) {
+                    if (!typedBoard[r][c].tile) {
+                        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                        if (dirs.some(d => { const nr = r + d[0], nc = c + d[1]; return nr >= 0 && nr < 15 && nc >= 0 && nc < 15 && typedBoard[nr][nc].tile; })) h.push({ r, c });
+                    }
+                }
+            }
+        }
+        setHintHighlights(h);
+        spawnFloatingText("¡RADAR!", "body");
+        setTimeout(() => setHintHighlights([]), 6000);
+    };
+
+    const activateMagicSwap = async () => {
+        if (!isMyTurn || pendingPlacements.length > 0 || roomState.bag.length === 0) return;
+        if (!await deductDiamonds(10)) return;
+        let currentBag = [...roomState.bag];
+        let newRack = [...localRack];
+        let indices = newRack.map((t, i) => t ? i : null).filter(i => i !== null).sort(() => Math.random() - 0.5).slice(0, 3);
+        indices.forEach(idx => { currentBag.push(newRack[idx]); newRack[idx] = null; });
+        currentBag.sort(() => Math.random() - 0.5);
+        indices.forEach(idx => { if (currentBag.length) newRack[idx] = currentBag.pop(); });
+        const newPlayers = { ...roomState.players }; newPlayers[user.uid].rack = newRack;
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), { bag: currentBag, players: newPlayers });
+        setLocalRack(newRack);
+        spawnFloatingText("¡MAGIA!", "body");
+    };
+
+    const spinRoulette = async () => {
+        if (!isMyTurn || isSpinning || !await deductDiamonds(10)) return;
+        setIsSpinning(true); setHintResult(null);
+        const tier = Math.random() < 0.4 ? 'Normal' : (Math.random() < 0.7 ? 'Buena' : 'Mejor');
+        if (window.gsap) {
+            window.gsap.to(".roulette-wheel", { rotation: 1800 + (Math.random() * 360), duration: 3, ease: "power4.out", onComplete: () => { generateHintWords(tier); setIsSpinning(false); } });
+        } else { generateHintWords(tier); setIsSpinning(false); }
+    };
+
+    const generateHintWords = (tier) => {
+        const letters = localRack.filter(t => t).map(t => t.letter);
+        const words = Array.from(dictionary).filter(w => w.length >= 2 && w.length <= 7 && canBeMadeFrom(w, letters)).sort((a, b) => b.length - a.length);
+        if (!words.length) return setHintResult({ tier: 'Error', text: 'No se encontraron palabras.' });
+        const word = words[tier === 'Mejor' ? 0 : Math.floor(words.length / 2)];
+        setHintResult({ tier, text: `Sugiero: ${word}` });
+    };
+
+    // Previsión de jugada
+    useEffect(() => {
+        if (!isMyTurn || !pendingPlacements.length || !roomState) { setPreview({ valid: false, score: 0, words: [], error: '' }); return; }
+        const sameRow = pendingPlacements.every(p => p.r === pendingPlacements[0].r);
+        const sameCol = pendingPlacements.every(p => p.c === pendingPlacements[0].c);
+        if (!sameRow && !sameCol) return setPreview({ valid: false, score: 0, words: [], error: 'No alineadas' });
+
+        const typedBoard = roomState.board;
+        const isFirstTurn = typedBoard[7][7].tile === null;
+        const coversCenter = pendingPlacements.some(p => p.r === 7 && p.c === 7);
+        if (isFirstTurn && !coversCenter) return setPreview({ valid: false, score: 0, words: [], error: 'Tocar estrella' });
+
+        let score = pendingPlacements.reduce((s, p) => s + p.tile.value, 0);
+        setPreview({ valid: true, score, words: [{ word: '...', points: score }], error: '' });
+    }, [pendingPlacements, isMyTurn, roomState]);
+
+    const handlePlay = async () => {
+        if (!preview.valid) return;
+        let newBoard = roomState.board.map(row => row.map(c => ({ ...c })));
+        pendingPlacements.forEach(p => { newBoard[p.r][p.c].tile = p.tile; newBoard[p.r][p.c].locked = true; });
+        let newBag = [...roomState.bag];
+        let newRack = [...localRack];
+        for (let i = 0; i < 7; i++) { if (newRack[i] === null && newBag.length) newRack[i] = newBag.pop(); }
+        const nextTurn = (roomState.turnIndex + 1) % roomState.playerIds.length;
+        const newPlayers = { ...roomState.players };
+        newPlayers[user.uid].score += preview.score;
+        newPlayers[user.uid].rack = newRack;
+        const log = { id: Date.now(), text: `${newPlayers[user.uid].name} jugó (+${preview.score})`, icon: '✨' };
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), {
+            board: JSON.stringify(newBoard), bag: newBag, players: newPlayers, turnIndex: nextTurn, turnStartTime: Date.now(), logs: [...(roomState.logs || []), log].slice(-5)
+        });
+        setPendingPlacements([]);
+    };
+
+    const skipTurn = async (forced = false) => {
+        if (!isMyTurn) return;
+        const nextTurn = (roomState.turnIndex + 1) % roomState.playerIds.length;
+        const log = { id: Date.now(), text: `${roomState.players[user.uid].name} pasó`, icon: '⏭️' };
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), {
+            turnIndex: nextTurn, turnStartTime: Date.now(), logs: [...(roomState.logs || []), log].slice(-5)
+        });
+    };
+
+    const swapTiles = async () => {
+        if (!isMyTurn || roomState.bag.length === 0) return;
+        let currentBag = [...roomState.bag];
+        let newRack = [...localRack];
+        newRack.forEach((t, i) => { if (t) { currentBag.push(t); newRack[i] = null; } });
+        currentBag.sort(() => Math.random() - 0.5);
+        newRack.forEach((t, i) => { if (currentBag.length) newRack[i] = currentBag.pop(); });
+        const nextTurn = (roomState.turnIndex + 1) % roomState.playerIds.length;
+        const newPlayers = { ...roomState.players };
+        newPlayers[user.uid].rack = newRack;
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), {
+            bag: currentBag, players: newPlayers, turnIndex: nextTurn, turnStartTime: Date.now()
+        });
+        setLocalRack(newRack);
+    };
+
+    const showError = (msg) => { setErrorMsg(msg); setTimeout(() => setErrorMsg(''), 3000); };
+
+    const spawnFloatingText = (text, parent) => {
+        const el = document.createElement('div');
+        el.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 z-[200] font-black text-2xl text-emerald-400 drop-shadow-lg pointer-events-none';
+        el.innerText = text;
+        document.body.appendChild(el);
+        if (window.gsap) window.gsap.to(el, { y: -100, opacity: 0, duration: 1.5, onComplete: () => el.remove() });
+        else setTimeout(() => el.remove(), 1500);
+    };
+
+    const spawnEmote = (emoji, isMe) => {
+        const el = document.createElement('div');
+        el.className = `fixed ${isMe ? 'bottom-32 left-8' : 'top-32 right-8'} z-[100] text-6xl pointer-events-none`;
+        el.innerText = emoji;
+        document.body.appendChild(el);
+        if (window.gsap) window.gsap.fromTo(el, { scale: 0 }, { scale: 1.5, duration: 0.5, onComplete: () => { window.gsap.to(el, { opacity: 0, duration: 1, delay: 1, onComplete: () => el.remove() }) } });
+        else setTimeout(() => el.remove(), 2000);
+    };
+
+    const sendEmote = async (emoji) => {
+        setShowEmotes(false);
+        await updateDoc(doc(db, 'artifacts', globalAppId, 'public', 'data', 'palabritas_rooms', roomCode), {
+            lastEmote: { uid: user.uid, emoji, id: Date.now() }
+        });
+    };
+
+    const handleRackClick = (i) => {
+        if (!isMyTurn) return;
+        if (selectedRackIdx === i) setSelectedRackIdx(null);
+        else if (localRack[i]) setSelectedRackIdx(i);
+    };
+
+    const handleBoardClick = (r, c) => {
+        if (!isMyTurn) return;
+        const p = pendingPlacements.find(x => x.r === r && x.c === c);
+        if (p) {
+            setPendingPlacements(pendingPlacements.filter(x => x !== p));
+            let nr = [...localRack]; nr[p.rackIdx] = p.tile; setLocalRack(nr);
+        } else if (selectedRackIdx !== null && !displayBoard[r][c].tile) {
+            const tile = localRack[selectedRackIdx];
+            setPendingPlacements([...pendingPlacements, { r, c, tile, rackIdx: selectedRackIdx }]);
+            let nr = [...localRack]; nr[selectedRackIdx] = null; setLocalRack(nr); setSelectedRackIdx(null);
+        }
+    };
+
+    const shuffleRack = () => {
+        let nr = [...localRack];
+        const tiles = nr.filter(t => t);
+        tiles.sort(() => Math.random() - 0.5);
+        let ptr = 0;
+        for (let i = 0; i < 7; i++) { if (nr[i]) nr[i] = tiles[ptr++]; }
+        setLocalRack(nr);
+    };
+
+    if (!user) {
+        return (
+            <div className= "fixed inset-0 bg-slate-950 flex items-center justify-center p-4" >
+            <div className="bg-slate-900 p-10 rounded-[2.5rem] shadow-2xl border border-white/5 flex flex-col items-center max-w-sm w-full text-center" >
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-lg mb-8 rotate-3" >
+                    <span className="text-4xl font-black text-white" > P </span>
+                        </div>
+                        < h1 className = "text-3xl font-black text-white mb-2 uppercase italic tracking-tighter" > Palabritas < span className = "text-rose-500" > GO < /span></h1 >
+                            <p className="text-slate-400 font-bold text-sm mb-10 px-4" > Conéctate para competir con tus amigos y guardar tu progreso.</p>
+
+                                < button
+        onClick = { handleGoogleLogin }
+        className = "w-full bg-white text-slate-900 py-4 px-6 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-slate-100 transition-all active:scale-95 shadow-xl mb-4"
+            >
+            <svg className="w-5 h-5" viewBox = "0 0 24 24" >
+                <path fill="#4285F4" d = "M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d = "M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d = "M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                            <path fill="#EA4335" d = "M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                ENTRAR CON GOOGLE
+            </button>
+            < button onClick = {() => window.parent.exitCurrentGame && window.parent.exitCurrentGame()
+    } className = "text-slate-500 font-bold hover:text-slate-300 transition-colors" > Volver al menú </button>
+        </div>
+        </div>
+                );
+}
+
+// Renderizado Lobby
+if (!roomCode || roomState?.status === 'waiting') {
+    return (
+        <div className= "fixed inset-0 bg-slate-900 flex items-center justify-center p-4" >
+        <div className="bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm flex flex-col items-center" >
+            <div className="flex items-center gap-3 mb-8" >
+                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-black" >
+                    { user.photoURL ? <img src={ user.photoURL } className = "w-full h-full rounded-full" /> : userName[0]
+}
+</div>
+    < div className = "flex flex-col" >
+        <span className="text-white font-black text-sm" > { userName } </span>
+            < button onClick = { handleLogout } className = "text-rose-400 text-[10px] font-bold uppercase text-left" > Cerrar Sesión </button>
+                </div>
+                </div>
+                < h1 className = "text-3xl font-black text-white mb-8 uppercase italic" > Palabritas < span className = "text-rose-500" > GO < /span></h1 >
+                    {!roomCode ? (
+                        <div className= "w-full space-y-4" >
+                        <div className="flex gap-2" >
+                            <input type="text" value = { joinCode } onChange = { e => setJoinCode(e.target.value.toUpperCase()) } placeholder = "CÓDIGO" className = "w-1/2 bg-slate-900 border border-slate-700 rounded-xl p-4 text-white font-black text-center" />
+                                <button onClick={ handleJoinRoom } className = "w-1/2 bg-blue-600 rounded-xl font-black text-white active:scale-95 transition-transform" > UNIRSE </button>
+                                    </div>
+                                    < button onClick = { handleCreateRoom } className = "w-full bg-rose-600 py-4 rounded-xl font-black text-white active:scale-95 transition-transform" > CREAR SALA </button>
+                                        < button onClick = {() => window.parent.exitCurrentGame && window.parent.exitCurrentGame()} className = "w-full bg-slate-700 py-3 rounded-xl font-bold text-slate-400" > SALIR AL HUB </button>
+                                            </div>
+                            ) : !roomState ? (
+    <div className= "text-white font-bold animate-pulse" > CARGANDO SALA...</div>
+                            ) : (
+    <div className= "w-full flex flex-col items-center" >
+    <div className="text-4xl font-black text-white mb-6 tracking-widest bg-black/20 px-6 py-2 rounded-xl border border-white/5" > { roomCode } </div>
+        < div className = "w-full bg-slate-900 p-4 rounded-xl mb-6" >
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3" > Jugadores en sala </h3>
+{
+    roomState.playerIds.map(uid => (
+        <div key= { uid } className = "flex items-center gap-3 py-2 text-white font-bold border-b border-white/5 last:border-0" >
+        <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs" > { roomState.players[uid]?.name[0] || '?' } </div>
+                                                { roomState.players[uid]?.name || '...' } { uid === roomState.host && '👑'}
+</div>
+                                        ))}
+</div>
+{
+    user.uid === roomState.host ? (
+        <button onClick= { handleStartGame } className = "w-full bg-emerald-600 py-4 rounded-xl font-black text-white shadow-lg active:scale-95 transition-transform" > EMPEZAR PARTIDA </button>
+                                    ) : (
+        <div className= "text-amber-500 font-bold animate-pulse text-sm" > Esperando al anfitrión...</div>
+                                    )
+}
+<button onClick={ () => setRoomCode('') } className = "mt-4 text-slate-500 text-xs font-bold uppercase" > Abandonar Sala </button>
+    </div>
+                            )}
+</div>
+    </div>
+                );
+            }
+
+// Fallback para cuando roomState es null pero no estamos en el lobby
+if (!roomState) return <div className="fixed inset-0 bg-slate-950 flex items-center justify-center text-white font-black animate-pulse" > SINCRONIZANDO...</div>;
+
+const myPlayer = roomState.players[user.uid];
+
+// Renderizado Juego
+return (
+    <div className= "fixed inset-0 bg-slate-950 flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden" >
+    <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-50" >
+        <div className="flex flex-col gap-2 pointer-events-auto" >
+            <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700 px-4 py-2 rounded-2xl flex items-center gap-3" >
+                <button onClick={ () => { if (window.confirm("¿Cerrar sesión?")) handleLogout(); } } className = "hover:opacity-80 transition-opacity" >
+                    <Icon name="LogOut" size = { 16} className = "text-rose-400" />
+                        </button>
+                        < span className = "text-white font-black text-xl" > <AnimatedNumber value={ myPlayer?.score || 0 } /></span >
+                            </div>
+                            < div className = "bg-slate-900/80 backdrop-blur-md border border-slate-700 px-3 py-1 rounded-xl text-cyan-400 text-xs font-bold" >
+                                💎 { roomState.players[user.uid].diamonds }
+</div>
+    </div>
+    < div className = "flex flex-col items-end gap-2 pointer-events-auto" >
+        <div className={ `px-4 py-2 rounded-2xl border font-black ${isMyTurn ? 'bg-emerald-600 border-emerald-400 text-white' : 'bg-slate-900 border-slate-700 text-slate-400'}` }>
+            { isMyTurn? `TU TURNO: ${timeLeft}s` : `TURNO DE ${roomState.players[roomState.playerIds[roomState.turnIndex]]?.name || '...'}`}
+</div>
+    < button onClick = {() => setShowEmotes(!showEmotes)} className = "w-10 h-10 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center text-xl" >😊</button>
+{
+    showEmotes && (
+        <div className="bg-slate-900 border border-slate-700 p-2 rounded-2xl grid grid-cols-4 gap-1" >
+            { EMOTES.map(e => <button key={ e } onClick = {() => sendEmote(e)} className = "w-8 h-8 flex items-center justify-center text-lg hover:scale-125 transition-transform" > { e } </button>)
+}
+</div>
+                            )}
+</div>
+    </div>
+
+{/* Tablero */ }
+<div className="relative w-full aspect-square max-w-[600px] bg-slate-900 rounded-xl p-1 grid gap-[1px]" style = {{ gridTemplateColumns: 'repeat(15, 1fr)' }}>
+{
+    displayBoard.map((row, r) => row.map((cell, c) => (
+        <div key= {`${r}-${c}`} onClick = {() => handleBoardClick(r, c)} className = {`aspect-square flex items-center justify-center rounded-sm transition-colors ${cell.tile ? 'bg-amber-100 border border-amber-300' : (MULTIPLIERS[`${r},${c}`] === 'TW' ? 'bg-rose-500' : (MULTIPLIERS[`${r},${c}`] === 'DW' ? 'bg-orange-400' : (MULTIPLIERS[`${r},${c}`] === 'TL' ? 'bg-blue-500' : (MULTIPLIERS[`${r},${c}`] === 'DL' ? 'bg-emerald-500' : (r === 7 && c === 7 ? 'bg-indigo-600' : 'bg-slate-800')))))}`}>
+            {
+                cell.tile ? (
+                    <div className= "relative w-full h-full flex flex-col items-center justify-center" >
+                    <span className="text-slate-900 font-black text-[clamp(10px,2vw,24px)] leading-none"> { cell.tile.letter } </span>
+                        < span className="absolute bottom-0 right-0.5 text-[clamp(6px,1vw,10px)] font-bold text-slate-500" > { cell.tile.value } </span>
+                        </div>
+                                ) : (
+                            <span className="text-[8px] font-bold text-white/20" > { cell.mult } </span>
+                        )}
+{ hintHighlights.some(h => h.r === r && h.c === c) && <div className="absolute inset-0 border-2 border-cyan-400 animate-pulse" > </div> }
+</div>
+                        )))}
+</div>
+
+{/* Rack */ }
+<div className="mt-8 flex flex-col items-center gap-4 w-full max-w-[600px]" >
+    <div className="flex gap-2" >
+    {
+        localRack.map((tile, i) => (
+            <div key= { i } onClick = {() => handleRackClick(i)} className = {`w-12 h-14 sm:w-16 sm:h-20 rounded-xl flex flex-col items-center justify-center border-b-4 transition-all ${tile ? (selectedRackIdx === i ? 'bg-emerald-400 border-emerald-600 -translate-y-2' : 'bg-amber-100 border-amber-300 cursor-pointer hover:-translate-y-1') : 'bg-slate-800 border-slate-950 opacity-50'}`}>
+                { tile && (
+                    <>
+                    <span className="text-2xl sm:text-4xl font-black text-slate-900" > { tile.letter } </span>
+                        < span className = "text-xs font-bold text-slate-500" > { tile.value } </span>
+                            </>
+                                    )}
+</div>
+                            ))}
+</div>
+    < div className = "flex gap-4 w-full px-4" >
+        <button onClick={ shuffleRack } className = "flex-1 bg-slate-800 py-4 rounded-2xl font-black text-white" > BARAJAR </button>
+            < button onClick = { swapTiles } disabled = {!isMyTurn} className = "flex-1 bg-blue-600 py-4 rounded-2xl font-black text-white disabled:opacity-50" > CAMBIAR </button>
+{
+    pendingPlacements.length > 0 ? (
+        <button onClick= { handlePlay } className = "flex-[2] bg-emerald-600 py-4 rounded-2xl font-black text-white animate-pulse" > JUGAR(+{ preview.score }) </button>
+                            ) : (
+        <button onClick= {() => skipTurn(false)
+} className = "flex-[2] bg-slate-700 py-4 rounded-2xl font-black text-white" > PASAR </button>
+                            )}
+</div>
+    </div>
+
+{/* Botones Pistas */ }
+<div className="absolute bottom-4 right-4 flex flex-col gap-2" >
+    <button onClick={ activateRadar } className = "w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-xl shadow-lg" >📡</button>
+        < button onClick = { activateMagicSwap } className = "w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-xl shadow-lg" >🪄</button>
+            < button onClick = {() => setShowHints(true)} className = "w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-xl shadow-lg" >💡</button>
+                </div>
+
+{
+    showHints && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100]" >
+            <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-sm flex flex-col items-center" >
+                <h2 className="text-2xl font-black text-white mb-6 uppercase" > Cerebro IA </h2>
+                    < div className = "roulette-wheel w-32 h-32 mb-6 border-4 border-white" > </div>
+    {
+        hintResult ? (
+            <div className= "text-emerald-400 font-bold text-lg mb-6" > { hintResult.text } </div>
+                                ) : (
+            <button onClick= { spinRoulette } className = "w-full bg-amber-500 py-4 rounded-xl font-black text-orange-950" > GIRAR(10💎) </button>
+                                )
+    }
+    <button onClick={ () => setShowHints(false) } className = "mt-4 text-slate-400 font-bold" > CERRAR </button>
+        </div>
+        </div>
+                    )
+}
+</div>
+            );
+        }
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+    </body>
+    </html>

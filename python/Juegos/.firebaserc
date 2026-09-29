@@ -1,0 +1,34 @@
+{
+  "projects": {
+    "default": "tosito-games-303f5"
+  },
+  "targets": {
+    "tosito-chest": {
+      "hosting": {
+        "games-site": [
+          "tosito-games"
+        ],
+        "chess-site": [
+          "tosito-chest"
+        ]
+      }
+    },
+    "tosito-games-303f5": {
+      "hosting": {
+        "hub": [
+          "tosito-games-303f5"
+        ],
+        "semantika": [
+          "semantika"
+        ],
+        "palabritas-go": [
+          "palabritas-go"
+        ],
+        "plata-o-plomo": [
+          "plataoplomo-tycoon"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

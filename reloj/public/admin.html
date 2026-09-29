@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOUST - Dashboard Administrativo</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Base Styles from shop + Admin Specific Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("JS ERROR:", message, "at line", lineno, source);
+        };
+    </script>
+</head>
+<body>
+
+    <!-- Pantalla de Carga/No Autorizado (se oculta al verificar admin) -->
+    <div id="unauthorized-screen">
+        <h2 style="color: var(--gold-primary); font-family: var(--font-heading); margin-bottom: 1rem;">Verificando Credenciales...</h2>
+        <p style="color: var(--text-dim); margin-bottom: 2rem;">Acceso restringido a Maestros Relojeros</p>
+        <div id="auth-buttons" style="display: none;">
+            <a href="index.html" class="btn btn-secondary">Volver a la Tienda</a>
+        </div>
+    </div>
+
+    <!-- App Principal (Oculto inicialmente) -->
+    <div id="admin-app" style="display: none; width: 100%;">
+        
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-brand">
+                    TOUST
+                    <span class="sidebar-brand-sub">HAUTE HORLOGERIE</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active" data-view="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    Panel de Control
+                </a>
+                <a href="#" class="sidebar-link" data-view="inventory">
+                    <i data-lucide="package"></i>
+                    Inventario
+                </a>
+                <a href="#" class="sidebar-link" data-view="orders">
+                    <i data-lucide="shopping-cart"></i>
+                    Pedidos
+                </a>
+                <a href="#" class="sidebar-link" data-view="parts">
+                    <i data-lucide="wrench"></i>
+                    Componentes
+                </a>
+                <a href="#" class="sidebar-link" data-view="calculator">
+                    <i data-lucide="calculator"></i>
+                    Ensamblaje
+                </a>
+                <a href="#" class="sidebar-link" data-view="usuarios">
+                    <i data-lucide="users"></i>
+                    Usuarios y Roles
+                </a>
+                <a href="#" class="sidebar-link" data-view="settings">
+                    <i data-lucide="settings"></i>
+                    Ajustes
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="admin-logout-btn" class="btn btn-secondary" style="width: 100%; border-color: #8b0000; color: #ff4d4d;">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
+            <!-- TOPBAR -->
+            <header class="admin-topbar">
+                <h1 class="topbar-title">Resumen de Colección</h1>
+                <div class="topbar-actions">
+                    
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold-primary); display: flex; align-items: center; justify-content: center; color: black; font-weight: bold;">
+                        A
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-dashboard" class="admin-view active">
+                    <!-- OVERVIEW METRICS -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i data-lucide="watch"></i>
+                            </div>
+                            <div class="metric-data">
+                                <h4>Total Modelos</h4>
+                                <div class="metric-value" id="metric-total-watches">0</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i data-lucide="gem"></i>
+                            </div>
+                            <div class="metric-data">
+                                <h4>Valor Estimado</h4>
+                                <div class="metric-value" id="metric-total-value">0 €</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <div class="metric-data">
+                                <h4>Estado del Taller</h4>
+                                <div class="metric-value" style="color: #4ade80; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #4ade80;"></div> Activo
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: INVENTORY -->
+                <div id="view-inventory" class="admin-view" style="display:none;">
+                    <!-- TABLA PREMIUM -->
+                    <div class="panel-card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 class="panel-title">Catálogo Vigente</h2>
+                            <button id="add-product-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Añadir Reloj</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pieza</th>
+                                        <th>Material / Serie</th>
+                                        <th>Etiqueta</th>
+                                        <th>Precio de Catálogo</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-watches-list">
+                                    <!-- Renderizado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: ORDERS -->
+                <div id="view-orders" class="admin-view" style="display:none;">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h2 class="panel-title">Gestión de Pedidos</h2>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-orders-list">
+                                    <!-- Renderizado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: PARTS & SUPPLIERS -->
+                <div id="view-parts" class="admin-view" style="display:none;">
+                    <div class="panel-card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 class="panel-title">Piezas & Proveedores</h2>
+                                <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.3rem;">Inventario de componentes y enlaces de compra</p>
+                            </div>
+                            <div style="display:flex; gap: 0.5rem;">
+                                
+                                <button id="add-part-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Nueva Pieza</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtro por categoría de piezas -->
+                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                            <button class="btn btn-secondary part-filter-btn active" data-filter="todos" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Todos</button>
+                            <button class="btn btn-secondary part-filter-btn" data-filter="movimiento" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Movimientos</button>
+                            <button class="btn btn-secondary part-filter-btn" data-filter="caja" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Cajas</button>
+                            <button class="btn btn-secondary part-filter-btn" data-filter="esfera" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Esferas & Agujas</button>
+                            <button class="btn btn-secondary part-filter-btn" data-filter="correa" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Correas</button>
+                            <button class="btn btn-secondary part-filter-btn" data-filter="cristal" style="padding: 0.3rem 0.8rem; font-size: 0.75rem;">Cristales</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Componente</th>
+                                        <th>Tipo</th>
+                                        <th>Stock</th>
+                                        <th>Coste Est.</th>
+                                        <th>Proveedor</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-parts-list">
+                                    <!-- Renderizado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: CALCULATOR (ENSAMBLAJE) -->
+                <div id="view-calculator" class="admin-view" style="display:none;">
+                    <div class="calculator-grid" style="display: grid; grid-template-columns: 320px 1fr 320px; gap: 1.5rem; align-items: start; height: calc(100vh - 120px);">
+                        <!-- Columna Izquierda: Catálogo Visual de Piezas -->
+                        <div class="panel-card" style="margin-bottom: 0; display: flex; flex-direction: column; height: 100%;">
+                            <div class="panel-header">
+                                <h2 class="panel-title">Catálogo</h2>
+                                <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.3rem;">Haz clic para añadir piezas al ensamblaje</p>
+                            </div>
+                            
+                            <div class="premium-input-group" style="margin-bottom: 1rem;">
+                                <label for="calc-model-filter" style="font-size: 0.75rem;">Compatibilidad / Modelo Base</label>
+                                <select id="calc-model-filter" class="premium-input" style="padding: 0.5rem; font-size: 0.85rem;">
+                                    <option value="todos">Todos los modelos</option>
+                                    <option value="Daytona VK63">Daytona VK63</option>
+                                    <option value="Submariner NH35">Submariner NH35</option>
+                                    <option value="Universal">Universal</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Filtros rápidos para la calculadora -->
+                            <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; overflow-x: auto;">
+                                <button class="btn btn-secondary calc-filter-btn active" data-filter="todos" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Todos</button>
+                                <button class="btn btn-secondary calc-filter-btn" data-filter="caja" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Cajas</button>
+                                <button class="btn btn-secondary calc-filter-btn" data-filter="movimiento" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Movimientos</button>
+                                <button class="btn btn-secondary calc-filter-btn" data-filter="esfera" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Esferas</button>
+                                <button class="btn btn-secondary calc-filter-btn" data-filter="correa" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Correas</button>
+                            </div>
+
+                            <div class="calc-parts-grid" id="calc-parts-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; overflow-y: auto; padding-right: 0.5rem; flex: 1;">
+                                <!-- Renderizado por JS -->
+                            </div>
+                        </div>
+
+                        <!-- Columna Central: Visor Visual (Render 2D) -->
+                        <div class="panel-card" style="margin-bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; position: relative; overflow: hidden; background: radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 70%);">
+                            <h3 style="position: absolute; top: 1.5rem; left: 1.5rem; font-family: var(--font-heading); color: var(--gold-primary); opacity: 0.8;">Simulador</h3>
+                            
+                            <div id="visual-builder-canvas" style="position: relative; width: 400px; height: 400px; display: flex; align-items: center; justify-content: center;">
+                                <div id="vb-placeholder" style="color: var(--text-dim); text-align: center; font-size: 0.9rem;">
+                                    <i data-lucide="layers" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 1rem;"></i><br>
+                                    Añade piezas compatibles<br>para ver el resultado
+                                </div>
+                                <!-- Las imágenes se inyectarán aquí con position:absolute y z-index -->
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Ensamblaje Actual -->
+                        <div class="panel-card assembly-panel" style="margin-bottom: 0; display: flex; flex-direction: column; height: 100%;">
+                            <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem; margin-bottom: 1rem;">
+                                <h2 class="panel-title" style="font-size: 1.2rem;">Ensamblaje Actual</h2>
+                                <button class="btn btn-secondary" id="clear-assembly-btn" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" title="Vaciar">
+                                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+
+                            <div id="assembly-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; padding-right: 0.5rem;">
+                                <!-- Renderizado por JS -->
+                                <div style="text-align:center; color: var(--text-dim); font-size: 0.85rem; padding: 2rem 0;">No hay piezas seleccionadas</div>
+                            </div>
+
+                            <div class="assembly-totals" style="border-top: 1px solid rgba(212, 175, 55, 0.3); padding-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.95rem;">
+                                    <span>Costo Base (Materiales):</span>
+                                    <strong id="assembly-total-cost">0.00 €</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                    <label for="assembly-margin" style="font-size: 0.9rem; color: var(--text-dim);">Margen / Mano de obra (%):</label>
+                                    <input type="number" id="assembly-margin" class="premium-input" value="40" min="0" style="width: 80px; padding: 0.3rem 0.5rem; text-align: right;">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; color: var(--gold-primary);">
+                                    <span style="font-family: var(--font-heading); font-weight: 600;">Precio Sugerido:</span>
+                                    <strong id="assembly-suggested-price" style="font-weight: 700;">0.00 €</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: USUARIOS Y ROLES -->
+                <div id="view-usuarios" class="admin-view" style="display:none;">
+                    <div class="panel-card">
+                        <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 class="panel-title">Usuarios Registrados</h2>
+                                <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.3rem;">Gestiona los permisos y accesos al panel de administrador</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>ID de Autenticación</th>
+                                        <th>Rol Actual</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-list">
+                                    <!-- Renderizado por JS -->
+                                    <tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-dim);">Cargando usuarios...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: SETTINGS -->
+                <div id="view-settings" class="admin-view" style="display:none;">
+                    <div class="panel-card">
+                        <h2 class="panel-title" style="margin-bottom: 2rem;">Ajustes del Sistema</h2>
+                        <div style="color: var(--text-dim); line-height: 1.6;">
+                            <p><strong>Configuración Temporal</strong></p>
+                            <p>Las reglas de base de datos han sido blindadas. Tú eres el único administrador reconocido del sistema TOUST.</p>
+                            <p style="margin-top: 1rem;">Opciones avanzadas en construcción para futuras versiones del panel.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Modal Premium de Edición/Creación -->
+    <div id="edit-modal" class="modal-backdrop glass" style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-card premium">
+            <h3 id="modal-title" style="color: var(--gold-primary); font-family: var(--font-heading); margin-bottom: 2rem; font-size: 1.5rem;">Editar Reloj</h3>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="premium-input-group">
+                    <label for="edit-name">Nombre de la Pieza</label>
+                    <input type="text" id="edit-name" class="premium-input" required>
+                </div>
+                
+                <div style="display: flex; gap: 1.5rem;">
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="edit-price">Precio de Catálogo (€)</label>
+                        <input type="number" id="edit-price" class="premium-input" required min="0" step="0.01">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="edit-badge">Etiqueta/Badge (Ej. Limitado)</label>
+                        <input type="text" id="edit-badge" class="premium-input">
+                    </div>
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="edit-description">Descripción Detallada</label>
+                    <textarea id="edit-description" class="premium-input" style="min-height: 80px;" required></textarea>
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="edit-specs">Resumen de Características (3 puntos)</label>
+                    <textarea id="edit-specs" class="premium-input" style="min-height: 60px;" placeholder="Ej. Acero 316L • Bisel Cerámico • Válvula Helio"></textarea>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                    <div class="premium-input-group" style="flex: 1 1 45%;">
+                        <label for="edit-spec-caja">Material / Serie (Caja)</label>
+                        <input type="text" id="edit-spec-caja" class="premium-input" placeholder="Ej. Acero quirúrgico 316L (43 mm)">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1 1 45%;">
+                        <label for="edit-spec-cristal">Característica: Cristal</label>
+                        <input type="text" id="edit-spec-cristal" class="premium-input" placeholder="Ej. Zafiro de 4 mm">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1 1 45%;">
+                        <label for="edit-spec-movimiento">Característica: Movimiento</label>
+                        <input type="text" id="edit-spec-movimiento" class="premium-input" placeholder="Ej. Automático TOUST">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1 1 45%;">
+                        <label for="edit-spec-resistencia">Característica: Resistencia</label>
+                        <input type="text" id="edit-spec-resistencia" class="premium-input" placeholder="Ej. 300 metros / 30 ATM">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1 1 100%;">
+                        <label for="edit-spec-correa">Característica: Correa</label>
+                        <input type="text" id="edit-spec-correa" class="premium-input" placeholder="Ej. Brazalete de acero macizo">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1.5rem;">
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="edit-category">Categoría (ID)</label>
+                        <select id="edit-category" class="premium-input" required>
+                            <option value="coleccion">Colección (Tienda)</option>
+                            <option value="ingenieria">Ingeniería (Alta Complicación)</option>
+                            <option value="atelier">Atelier (Exclusivo)</option>
+                        </select>
+                    </div>
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="edit-category-label">Texto de Categoría</label>
+                        <input type="text" id="edit-category-label" class="premium-input" placeholder="Ej. HAUTE HORLOGERIE">
+                    </div>
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="edit-image">URL de la Imagen (PNG transparente ideal)</label>
+                    <input type="url" id="edit-image" class="premium-input" required>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" id="close-modal-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Edición/Creación de COMPONENTES -->
+    <div id="part-modal" class="modal-backdrop glass" style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-card premium" style="max-width: 600px;">
+            <h3 id="part-modal-title" style="color: var(--gold-primary); font-family: var(--font-heading); margin-bottom: 2rem; font-size: 1.5rem;">Añadir Componente</h3>
+            <form id="part-form">
+                <input type="hidden" id="part-id">
+                
+                <div class="premium-input-group">
+                    <label for="part-name">Nombre / Referencia de la pieza</label>
+                    <input type="text" id="part-name" class="premium-input" placeholder="Ej. ETA 2824-2 Automático" required>
+                </div>
+                
+                <div style="display: flex; gap: 1.5rem;">
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="part-category">Tipo de Componente</label>
+                        <select id="part-category" class="premium-input" required>
+                            <option value="movimiento">Movimiento / Calibre</option>
+                            <option value="caja">Caja</option>
+                            <option value="esfera">Esfera / Agujas</option>
+                            <option value="correa">Correa / Brazalete</option>
+                            <option value="cristal">Cristal</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="part-stock">Unidades en Stock</label>
+                        <input type="number" id="part-stock" class="premium-input" required min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="part-cost">Coste Unitario Estimado (€)</label>
+                    <input type="number" id="part-cost" class="premium-input" required min="0" step="0.01" value="0">
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="part-supplier">Nombre del Proveedor (Opcional)</label>
+                    <input type="text" id="part-supplier" class="premium-input" placeholder="Ej. AliExpress">
+                </div>
+
+                <div style="display: flex; gap: 1.5rem;">
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="part-model">Compatibilidad / Modelo</label>
+                        <input type="text" id="part-model" class="premium-input" placeholder="Ej. Daytona VK63">
+                    </div>
+                    <div class="premium-input-group" style="flex: 1;">
+                        <label for="part-link">Enlace de Compra (URL)</label>
+                        
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="url" id="part-link" class="premium-input" placeholder="https://..." style="flex: 1;">
+                            <button type="button" id="extract-url-btn" class="btn btn-secondary" style="padding: 0 1rem; font-size: 0.8rem; white-space: nowrap;">
+                                <i data-lucide="download" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i> Extraer
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="premium-input-group">
+                    <label for="part-image">URL de Imagen (o Sube tu propio PNG sin fondo)</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="url" id="part-image" class="premium-input" placeholder="https://.../imagen.png" style="flex: 1;">
+                        <label for="part-image-upload" class="btn btn-secondary" style="cursor: pointer; padding: 0.8rem; margin: 0; white-space: nowrap;" id="upload-label">
+                            <i data-lucide="upload" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Subir
+                        </label>
+                        <input type="file" id="part-image-upload" accept="image/png, image/jpeg" style="display: none;">
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" id="close-part-modal-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Pieza</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Importación Masiva -->
+    <div id="bulk-import-modal" class="modal-backdrop glass" style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-card premium" style="max-width: 800px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--gold-primary); font-family: var(--font-heading); font-size: 1.5rem; margin: 0;">📥 Importación Masiva</h3>
+                <button id="close-bulk-modal-icon" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">
+                Pega tu lista de enlaces aquí. Puedes usar nombres de modelos seguidos de dos puntos para agruparlos (ej. <code>Daytona VK63:</code>). Los enlaces de AliExpress que pongas debajo se guardarán como borradores asignados a ese modelo.
+            </p>
+
+            <textarea id="bulk-import-text" class="premium-input" style="width: 100%; height: 300px; padding: 1rem; font-family: monospace; font-size: 0.85rem; margin-bottom: 1rem; resize: vertical;" placeholder="Daytona VK63:
+https://es.aliexpress.com/item/1...
+https://es.aliexpress.com/item/2...
+
+Datejust:
+https://es.aliexpress.com/item/3..."></textarea>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" id="close-bulk-modal-btn">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="process-bulk-btn">Crear Borradores</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificaciones -->
+    <div id="admin-toast" class="toast-notification"></div>
+
+    <script type="module" src="admin-v8.js"></script>
+    <script>
+        // Inicializar iconos de interfaz básica
+        lucide.createIcons();
+    </script>
+</body>
+</html>

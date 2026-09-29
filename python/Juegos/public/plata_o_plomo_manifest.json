@@ -1,0 +1,17 @@
+{
+  "name": "Plata o Plomo Tycoon",
+  "short_name": "PlataOPlomo",
+  "description": "El simulador definitivo de imperio estratégico. Construye tu leyenda.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "assets/img/plata_o_plomo_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

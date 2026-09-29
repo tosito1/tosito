@@ -1,0 +1,21 @@
+{
+  "name": "Tosito Games",
+  "short_name": "TositoGames",
+  "description": "Plataforma de juegos de mesa y estrategia.",
+  "start_url": "/hub_main.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#38BDF8",
+  "icons": [
+    {
+      "src": "assets/img/tosito_games_logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/img/tosito_games_logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
