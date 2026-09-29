@@ -17,3 +17,17 @@ dist/
 build/
 *credentials*.json
 *token*.json
+
+# Android Studio ignores
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+.gradle/
+local.properties
+.idea/
+*.iml
+.cxx/
+*.jks
+*.keystore

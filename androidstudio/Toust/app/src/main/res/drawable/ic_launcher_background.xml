@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    El fondo del icono adaptativo usa el color directamente.
+    Es la forma más fiable y compatible con todos los lanzadores.
+    El degradado visual viene del vector foreground.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/ic_launcher_background" />
+</shape>
