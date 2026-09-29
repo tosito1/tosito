@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus — Acceso Seguro</title>
+    <meta name="description" content="Panel de control de red Nexus Network Controller V3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent2: #7c3aed;
+            --cyan: #06b6d4;
+            --text: #e8f0fe;
+            --muted: #4a6080;
+            --surface: rgba(8,15,30,0.85);
+            --border: rgba(255,255,255,0.10);
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #04080f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Three.js Canvas ── */
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* ── Vignette overlay ── */
+        .vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(4,8,15,0.7) 100%);
+            pointer-events: none;
+        }
+
+        /* ── Login container ── */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0; /* GSAP animates this in */
+        }
+
+        /* Top status bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+        .status-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--cyan);
+            animation: statusPing 2s ease infinite;
+        }
+        @keyframes statusPing {
+            0%,100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.5); }
+            50%      { box-shadow: 0 0 0 6px rgba(6,182,212,0); }
+        }
+
+        /* ── Login box ── */
+        .login-box {
+            position: relative;
+            background: var(--surface);
+            backdrop-filter: blur(32px) saturate(1.8);
+            -webkit-backdrop-filter: blur(32px) saturate(1.8);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.8rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.04) inset,
+                0 0 80px rgba(37,99,235,0.06);
+            overflow: hidden;
+        }
+
+        /* Top gradient line */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), var(--cyan), transparent);
+            animation: borderFlow 4s linear infinite;
+            background-size: 300% 100%;
+        }
+        @keyframes borderFlow {
+            0%   { background-position: 0% 0%; }
+            100% { background-position: 300% 0%; }
+        }
+
+        /* Corner accent */
+        .login-box::after {
+            content: '';
+            position: absolute;
+            bottom: -60px; right: -60px;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124,58,237,0.15), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── Logo area ── */
+        .logo-area {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .logo-icon-wrap {
+            width: 72px; height: 72px;
+            margin: 0 auto 1rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-hex {
+            font-size: 3rem;
+            line-height: 1;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 20px rgba(37,99,235,0.6));
+            animation: hexRotate 8s linear infinite;
+        }
+        @keyframes hexRotate {
+            0%   { filter: drop-shadow(0 0 12px rgba(37,99,235,0.5)); }
+            50%  { filter: drop-shadow(0 0 25px rgba(124,58,237,0.7)); }
+            100% { filter: drop-shadow(0 0 12px rgba(37,99,235,0.5)); }
+        }
+
+        /* Orbiting ring */
+        .orbit-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(37,99,235,0.3);
+            animation: orbitSpin 6s linear infinite;
+        }
+        .orbit-ring::before {
+            content: '';
+            position: absolute;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--cyan);
+            top: -3px; left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 8px var(--cyan);
+        }
+        @keyframes orbitSpin { to { transform: rotate(360deg); } }
+
+        .orbit-ring-2 {
+            position: absolute;
+            inset: -18px;
+            border-radius: 50%;
+            border: 1px dashed rgba(124,58,237,0.2);
+            animation: orbitSpin 10s linear infinite reverse;
+        }
+
+        .logo-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .logo-title .grad {
+            background: linear-gradient(135deg, #60a5fa, var(--accent2), var(--cyan));
+            -webkit-background-clip: text;
+            color: transparent;
+            background-size: 200% 200%;
+            animation: gradShift 4s ease infinite;
+        }
+        @keyframes gradShift {
+            0%,100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        .logo-sub {
+            color: var(--muted);
+            font-size: 0.82rem;
+            letter-spacing: 0.05em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── Form ── */
+        .form-group-login {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.8rem;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.08em;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        input[type="password"]:focus {
+            border-color: var(--accent);
+            background: rgba(37,99,235,0.06);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15), 0 0 20px rgba(37,99,235,0.08);
+        }
+        input[type="password"]:focus + .input-focus-line { transform: scaleX(1); }
+        input[type="password"]:focus ~ .input-icon { opacity: 0.9; }
+
+        .input-focus-line {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 0 0 12px 12px;
+            transform: scaleX(0);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        /* ── Error message ── */
+        .error-msg {
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+            color: #f87171;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 8px;
+            animation: errorShake 0.4s cubic-bezier(0.36,0.07,0.19,0.97);
+        }
+        @keyframes errorShake {
+            10%,90% { transform: translateX(-2px); }
+            20%,80% { transform: translateX(4px);  }
+            30%,50%,70% { transform: translateX(-4px); }
+            40%,60% { transform: translateX(4px); }
+        }
+
+        /* ── Login button ── */
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            font-family: inherit;
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Shine effect */
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.5s ease;
+        }
+        .login-btn:not(:disabled):hover::before { left: 150%; }
+        .login-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(37,99,235,0.4), 0 0 60px rgba(37,99,235,0.15);
+        }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Loading state */
+        .login-btn .btn-text { display: block; }
+        .login-btn .btn-loading { display: none; align-items: center; justify-content: center; gap: 0.5rem; }
+        .login-btn.loading .btn-text { display: none; }
+        .login-btn.loading .btn-loading { display: flex; }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Footer hint ── */
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(74,96,128,0.6);
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .login-footer code { color: rgba(148,163,184,0.6); }
+
+        /* ── Floating particles layer ── */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 2px; height: 2px;
+            border-radius: 50%;
+            background: rgba(37,99,235,0.6);
+            animation: particleFloat linear infinite;
+        }
+        @keyframes particleFloat {
+            0%   { transform: translateY(110vh) translateX(0); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.5; }
+            100% { transform: translateY(-10vh) translateX(calc(var(--dx, 0) * 1px)); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Three.js 3D background -->
+    <canvas id="bg-canvas"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Login UI -->
+    <div class="login-wrapper" id="login-wrapper">
+
+        <div class="status-bar">
+            <div class="status-dot"></div>
+            NEXUS_NET_CONTROLLER v3.0 — SECURE_CHANNEL_ACTIVE
+        </div>
+
+        <div class="login-box" id="login-box">
+
+            <div class="logo-area">
+                <div class="logo-icon-wrap">
+                    <div class="orbit-ring-2"></div>
+                    <div class="orbit-ring"></div>
+                    <span class="logo-hex">⬡</span>
+                </div>
+                <h1 class="logo-title">
+                    <span class="grad">Nexus</span> Controller
+                </h1>
+                <p class="logo-sub">ACCESO SEGURO AL PANEL DE RED</p>
+            </div>
+
+            <div class="form-group-login">
+                <label class="form-label" for="password">🔑 Contraseña de acceso</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" placeholder="••••••••••••" autofocus>
+                    <div class="input-focus-line"></div>
+                </div>
+                <div class="error-msg" id="error-msg">
+                    ⚠️ Contraseña incorrecta. Inténtalo de nuevo.
+                </div>
+            </div>
+
+            <button class="login-btn" id="login-btn" onclick="doLogin()">
+                <span class="btn-text">→ Entrar al Panel</span>
+                <span class="btn-loading">
+                    <span class="spinner"></span>
+                    Verificando...
+                </span>
+            </button>
+
+            <p class="login-footer">
+                Contraseña predeterminada: <code>admin</code>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════
+        // THREE.JS — Red de nodos 3D animada
+        // ═══════════════════════════════════════════
+        (function initThree() {
+            const canvas = document.getElementById('bg-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 180;
+
+            // ── Nodes ──
+            const NODE_COUNT = 90;
+            const nodePositions = [];
+            const nodeGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(NODE_COUNT * 3);
+            const colors = new Float32Array(NODE_COUNT * 3);
+
+            const palette = [
+                new THREE.Color(0x2563eb),
+                new THREE.Color(0x7c3aed),
+                new THREE.Color(0x06b6d4),
+                new THREE.Color(0x1d4ed8),
+            ];
+
+            for (let i = 0; i < NODE_COUNT; i++) {
+                const x = (Math.random() - 0.5) * 400;
+                const y = (Math.random() - 0.5) * 280;
+                const z = (Math.random() - 0.5) * 150;
+                nodePositions.push(new THREE.Vector3(x, y, z));
+                positions[i * 3]     = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+                const c = palette[Math.floor(Math.random() * palette.length)];
+                colors[i * 3]     = c.r;
+                colors[i * 3 + 1] = c.g;
+                colors[i * 3 + 2] = c.b;
+            }
+
+            nodeGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            nodeGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const nodeMaterial = new THREE.PointsMaterial({
+                size: 2.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.7,
+                sizeAttenuation: true,
+            });
+            const nodes = new THREE.Points(nodeGeometry, nodeMaterial);
+            scene.add(nodes);
+
+            // ── Edges (connections between nearby nodes) ──
+            const MAX_DIST = 80;
+            const edgePoints = [];
+            const edgeColors = [];
+
+            for (let i = 0; i < NODE_COUNT; i++) {
+                for (let j = i + 1; j < NODE_COUNT; j++) {
+                    const dist = nodePositions[i].distanceTo(nodePositions[j]);
+                    if (dist < MAX_DIST) {
+                        const opacity = 1 - dist / MAX_DIST;
+                        edgePoints.push(nodePositions[i].x, nodePositions[i].y, nodePositions[i].z);
+                        edgePoints.push(nodePositions[j].x, nodePositions[j].y, nodePositions[j].z);
+                        const c = new THREE.Color(0x2563eb);
+                        edgeColors.push(c.r * opacity, c.g * opacity, c.b * opacity);
+                        edgeColors.push(c.r * opacity * 0.3, c.g * opacity * 0.3, c.b * opacity * 0.5);
+                    }
+                }
+            }
+
+            const edgeGeo = new THREE.BufferGeometry();
+            edgeGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(edgePoints), 3));
+            edgeGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(edgeColors), 3));
+            const edgeMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.18 });
+            const edges = new THREE.LineSegments(edgeGeo, edgeMat);
+            scene.add(edges);
+
+            // ── Mouse parallax ──
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth  - 0.5) * 0.4;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 0.4;
+            });
+
+            // ── Resize ──
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // ── Animate ──
+            let frame = 0;
+            function animate() {
+                requestAnimationFrame(animate);
+                frame++;
+                const t = frame * 0.003;
+
+                nodes.rotation.y = t * 0.08 + mouseX;
+                nodes.rotation.x = mouseY * 0.5;
+                edges.rotation.y = nodes.rotation.y;
+                edges.rotation.x = nodes.rotation.x;
+
+                // Pulse node opacity
+                nodeMaterial.opacity = 0.55 + Math.sin(t * 2) * 0.1;
+                edgeMat.opacity = 0.12 + Math.sin(t * 1.5) * 0.04;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+
+        // ═══════════════════════════════════════════
+        // PARTICLES
+        // ═══════════════════════════════════════════
+        (function initParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['rgba(37,99,235,0.6)', 'rgba(124,58,237,0.5)', 'rgba(6,182,212,0.4)'];
+
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 3 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * -20;
+                const dx = (Math.random() - 0.5) * 200;
+
+                p.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    box-shadow: 0 0 ${size * 3}px ${color};
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                    --dx: ${dx};
+                `;
+                container.appendChild(p);
+            }
+        })();
+
+        // ═══════════════════════════════════════════
+        // GSAP — Entrance animation
+        // ═══════════════════════════════════════════
+        window.addEventListener('DOMContentLoaded', () => {
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            tl.to('#login-wrapper', { opacity: 1, duration: 0.01 })
+              .from('.status-bar', { y: -30, opacity: 0, duration: 0.6 })
+              .from('.logo-icon-wrap', { scale: 0, rotation: -180, opacity: 0, duration: 0.9, ease: 'back.out(2)' }, '-=0.2')
+              .from('.logo-title', { y: 20, opacity: 0, duration: 0.5 }, '-=0.4')
+              .from('.logo-sub', { y: 10, opacity: 0, duration: 0.4 }, '-=0.3')
+              .from('.form-group-login', { y: 20, opacity: 0, duration: 0.5 }, '-=0.2')
+              .from('.login-btn', { y: 20, opacity: 0, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.2')
+              .from('.login-footer', { opacity: 0, duration: 0.4 }, '-=0.1');
+        });
+
+        // ═══════════════════════════════════════════
+        // LOGIN LOGIC
+        // ═══════════════════════════════════════════
+        document.getElementById('password').addEventListener('keypress', e => {
+            if (e.key === 'Enter') doLogin();
+        });
+
+        async function doLogin() {
+            const pass = document.getElementById('password').value;
+            const btn  = document.getElementById('login-btn');
+            const err  = document.getElementById('error-msg');
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+            err.style.display = 'none';
+
+            try {
+                const res  = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+                const data = await res.json();
+
+                if (data.ok) {
+                    // Success animation
+                    gsap.to('.login-box', {
+                        scale: 0.98,
+                        opacity: 0,
+                        y: -20,
+                        duration: 0.4,
+                        ease: 'power2.in',
+                        onComplete: () => { window.location.href = '/'; }
+                    });
+                } else {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    err.style.display = 'flex';
+
+                    // Shake animation
+                    gsap.fromTo('#login-box',
+                        { x: 0 },
+                        { x: [-12, 10, -8, 6, -4, 2, 0], duration: 0.5, ease: 'none' }
+                    );
+                    // Red flash border
+                    gsap.to('#login-box', {
+                        boxShadow: '0 0 0 2px rgba(239,68,68,0.5), 0 30px 80px rgba(0,0,0,0.6)',
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1
+                    });
+                }
+            } catch {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

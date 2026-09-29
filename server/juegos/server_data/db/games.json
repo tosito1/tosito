@@ -1,0 +1,135 @@
+[
+    {
+        "id": 1,
+        "title": "Super Mario 64",
+        "platform": "retro",
+        "emulator": "n64",
+        "romFile": "mario64.n64",
+        "platformName": "N64",
+        "year": 1996,
+        "image": "assets/mario64_cover.jpg",
+        "genre": "Plataformas"
+    },
+    {
+        "id": 2,
+        "title": "Super Mario Bros",
+        "platform": "retro",
+        "emulator": "nes",
+        "romFile": "mariobros.nes",
+        "platformName": "NES",
+        "year": 1985,
+        "image": "assets/mariobros_cover.jpg",
+        "genre": "Plataformas"
+    },
+    {
+        "id": 3,
+        "title": "Crash Bandicoot",
+        "platform": "retro",
+        "emulator": "ps1",
+        "romFile": "crash.bin",
+        "platformName": "PlayStation",
+        "year": 1996,
+        "image": "assets/crash_cover.jpg",
+        "genre": "Plataformas"
+    },
+    {
+        "id": 4,
+        "title": "Resident Evil 3: Nemesis",
+        "platform": "retro",
+        "emulator": "ps1",
+        "romFile": "Resident Evil 3/Resident Evil 3 - Nemesis (USA).bin",
+        "platformName": "PlayStation",
+        "year": 1999,
+        "image": "assets/re3_cover.jpg",
+        "genre": "Survival Horror"
+    },
+    {
+        "id": 5,
+        "title": "Tekken 3",
+        "platform": "retro",
+        "emulator": "ps1",
+        "romFile": "Tekken 3/Tekken 3 (USA) (Track 1).bin",
+        "platformName": "PlayStation",
+        "year": 1997,
+        "image": "assets/tekken3_cover.jpg",
+        "genre": "Lucha"
+    },
+    {
+        "id": 6,
+        "title": "God of War",
+        "platform": "retro",
+        "emulator": "ps2",
+        "romFile": "God of War.iso",
+        "platformName": "PlayStation 2",
+        "year": 2005,
+        "image": "assets/gow_cover.jpg",
+        "genre": "Acción"
+    },
+
+    {
+        "id": 8,
+        "title": "Pokémon Esmeralda",
+        "platform": "retro",
+        "emulator": "gba",
+        "romFile": "Pokemon - Edicion Esmeralda.gba",
+        "platformName": "Game Boy Advance",
+        "year": 2004,
+        "image": "assets/pokemon_esmeralda_cover.jpg",
+        "genre": "RPG"
+    },
+    {
+        "id": 9,
+        "title": "Pokémon Rojo Fuego",
+        "platform": "retro",
+        "emulator": "gba",
+        "romFile": "Pokemon - Edicion Rojo Fuego.gba",
+        "platformName": "Game Boy Advance",
+        "year": 2004,
+        "image": "assets/pokemon_rojofuego_cover.jpg",
+        "genre": "RPG"
+    },
+    {
+        "id": 10,
+        "title": "Pokémon Rubí",
+        "platform": "retro",
+        "emulator": "gba",
+        "romFile": "Pokemon - Edicion Rubi.gba",
+        "platformName": "Game Boy Advance",
+        "year": 2002,
+        "image": "assets/pokemon_rubi_cover.jpg",
+        "genre": "RPG"
+    },
+    {
+        "id": 11,
+        "title": "Pokémon Zafiro",
+        "platform": "retro",
+        "emulator": "gba",
+        "romFile": "Pokemon - Edicion Zafiro.gba",
+        "platformName": "Game Boy Advance",
+        "year": 2002,
+        "image": "assets/pokemon_zafiro_cover.jpg",
+        "genre": "RPG"
+    },
+    {
+        "id": 12,
+        "title": "Pokémon Verde Hoja",
+        "platform": "retro",
+        "emulator": "gba",
+        "romFile": "Pokemon - Edicion Verde Hoja.gba",
+        "platformName": "Game Boy Advance",
+        "year": 2004,
+        "image": "assets/pokemon_verdehoja_cover.jpg",
+        "genre": "RPG"
+    },
+    {
+        "id": 13,
+        "title": "New Super Mario Bros.",
+        "platform": "retro",
+        "emulator": "nds",
+        "romFile": "New Super Mario Bros.nds",
+        "platformName": "Nintendo DS",
+        "year": 2006,
+        "image": "assets/nsmb_cover.jpg",
+        "genre": "Plataformas"
+    }
+]

@@ -1,0 +1,64 @@
+<Window x:Class="Apariencia.UI.Dock.DockWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Apariencia"
+        xmlns:core="clr-namespace:Apariencia.Core"
+        Title="macOS Dock" Height="100" Width="Auto"
+        WindowStyle="None" 
+        AllowsTransparency="True" 
+        Background="Transparent"
+        Topmost="True" 
+        ShowInTaskbar="False"
+        WindowStartupLocation="Manual"
+        SizeToContent="{Binding DockPosition, Converter={StaticResource PositionToSizeToContentConverter}}">
+    
+    <Window.DataContext>
+        <x:Static Member="local:App.Settings"/>
+    </Window.DataContext>
+
+    <Window.Visibility>
+        <Binding Path="DockEnabled" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+    </Window.Visibility>
+    
+    <Border Background="#40000000" CornerRadius="20" BorderBrush="#30FFFFFF" BorderThickness="1" Margin="10">
+        <Grid>
+            <ItemsControl x:Name="DockIcons" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="{Binding DockPosition, Converter={StaticResource DockPositionToOrientationConverter}}" Margin="5"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="IconContainer" 
+                              Width="{Binding DataContext.DockSize, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                              Height="{Binding DataContext.DockSize, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                              Cursor="Hand">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Margin" Value="10,0"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.DockPosition, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="left">
+                                            <Setter Property="Margin" Value="0,10"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding DataContext.DockPosition, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="right">
+                                            <Setter Property="Margin" Value="0,10"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.RenderTransform>
+                                <ScaleTransform x:Name="IconScale" 
+                                                CenterX="{Binding ActualWidth, ElementName=IconContainer, Converter={StaticResource HalfValueConverter}}" 
+                                                CenterY="{Binding ActualHeight, ElementName=IconContainer}"/>
+                            </Grid.RenderTransform>
+                            
+                            <Ellipse Fill="{Binding Color}"/>
+                            <Path Data="{Binding IconData}" Fill="White" Stretch="Uniform" Margin="12"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</Window>

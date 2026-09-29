@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <!-- Deep Rich Dark Background with subtle radial glow -->
+  <rect width="512" height="512" rx="140" fill="#0A0A0A"/>
+  <circle cx="256" cy="256" r="220" fill="url(#bgGlow)" opacity="0.15"/>
+  
+  <!-- Outer glowing circle accent -->
+  <circle cx="256" cy="256" r="210" stroke="url(#ringGradient)" stroke-width="6" opacity="0.2"/>
+
+  <!-- Branded "Spotis" Symbol: Stylized glowing 'S' constructed from soundwaves -->
+  <g transform="translate(116, 116)">
+    <!-- First Wave (Upper Arc) -->
+    <path d="M 40,80 A 100,100 0 0,1 240,80" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round" filter="url(#glowFilter)"/>
+    <path d="M 40,80 A 100,100 0 0,1 240,80" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round"/>
+
+    <!-- Second Wave (Middle Diagonal Wave forming S) -->
+    <path d="M 240,80 C 240,160 40,120 40,200" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round" filter="url(#glowFilter)"/>
+    <path d="M 240,80 C 240,160 40,120 40,200" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round"/>
+
+    <!-- Third Wave (Lower Arc) -->
+    <path d="M 40,200 A 100,100 0 0,0 240,200" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round" filter="url(#glowFilter)"/>
+    <path d="M 40,200 A 100,100 0 0,0 240,200" stroke="url(#spotifyGreen)" stroke-width="24" stroke-linecap="round"/>
+    
+    <!-- Central Sound Pulse / Sparkle -->
+    <circle cx="140" cy="140" r="18" fill="#FFFFFF" filter="url(#glowPulse)"/>
+    <circle cx="140" cy="140" r="10" fill="#E8FFF0"/>
+  </g>
+
+  <defs>
+    <!-- Premium Neon Green/Emerald Gradients -->
+    <linearGradient id="spotifyGreen" x1="0" y1="0" x2="280" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1DB954"/>
+      <stop offset="50%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    
+    <linearGradient id="ringGradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1DB954"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1DB954"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Neon Glow Filter -->
+    <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="glowPulse" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

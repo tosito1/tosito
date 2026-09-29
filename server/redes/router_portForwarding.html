@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>404 Not Found</title>
+        <script type="text/javascript">
+        try
+        {
+            var t = document.getElementById("tipLayer"); 
+            var b = document.getElementById("blackMask");
+            if(t!=null)
+            {
+               t.style.display="none";
+            }
+            if(b!=null)
+            {
+               b.style.display="none";
+            }
+        }
+        catch(err)
+        {
+        }
+
+        /* 需要重新刷新界面 
+        这种写法会导致未登录状态下直接访问http://192.168.1.1/?_type=menuView&_tag=mmTopology&Menu3Location=0
+        不停刷新问题
+        top.location.href = top.location.href;
+        */
+        top.location.href = location.origin;
+        </script>
+    </head>
+    <body bgcolor="#FFFFFF" text="#000000" link="#2020ff" vlink="#4040cc">
+        <h2>404 Not Found</h2>
+        <span>The requested URL was not found on this server.</span>
+        <div style="display:none">
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+            <span>Padding so that MSIE deigns to show this error instead of its own canned one.</span>
+        </div>
+        <hr/>
+    </body>
+</html>

@@ -1,0 +1,416 @@
+{
+  "deck1_play": {
+    "command": 9,
+    "channel": 0,
+    "data1": 11,
+    "isCC": false
+  },
+  "deck2_play": {
+    "command": 9,
+    "channel": 1,
+    "data1": 11,
+    "isCC": false
+  },
+  "deck1_cue": {
+    "command": 9,
+    "channel": 0,
+    "data1": 12,
+    "isCC": false
+  },
+  "deck2_cue": {
+    "command": 9,
+    "channel": 1,
+    "data1": 12,
+    "isCC": false
+  },
+  "deck1_sync": {
+    "command": 9,
+    "channel": 0,
+    "data1": 88,
+    "isCC": false
+  },
+  "deck2_sync": {
+    "command": 9,
+    "channel": 1,
+    "data1": 88,
+    "isCC": false
+  },
+  "deck1_pitch": {
+    "command": 11,
+    "channel": 0,
+    "data1": 0,
+    "isCC": true
+  },
+  "deck2_pitch": {
+    "command": 11,
+    "channel": 1,
+    "data1": 0,
+    "isCC": true
+  },
+  "deck1_jog": {
+    "command": 11,
+    "channel": 0,
+    "data1": 34,
+    "isCC": true
+  },
+  "deck2_jog": {
+    "command": 11,
+    "channel": 1,
+    "data1": 34,
+    "isCC": true
+  },
+  "deck1_loop_in": {
+    "command": 9,
+    "channel": 0,
+    "data1": 16,
+    "isCC": false
+  },
+  "deck2_loop_in": {
+    "command": 9,
+    "channel": 1,
+    "data1": 16,
+    "isCC": false
+  },
+  "deck1_loop_out": {
+    "command": 9,
+    "channel": 0,
+    "data1": 17,
+    "isCC": false
+  },
+  "deck2_loop_out": {
+    "command": 9,
+    "channel": 1,
+    "data1": 17,
+    "isCC": false
+  },
+  "deck1_loop_4beat_exit": {
+    "command": 9,
+    "channel": 0,
+    "data1": 77,
+    "isCC": false
+  },
+  "deck2_loop_4beat_exit": {
+    "command": 9,
+    "channel": 1,
+    "data1": 77,
+    "isCC": false
+  },
+  "deck1_loop_half": {
+    "command": 9,
+    "channel": 0,
+    "data1": 81,
+    "isCC": false
+  },
+  "deck2_loop_half": {
+    "command": 9,
+    "channel": 1,
+    "data1": 81,
+    "isCC": false
+  },
+  "deck1_loop_double": {
+    "command": 9,
+    "channel": 0,
+    "data1": 83,
+    "isCC": false
+  },
+  "deck2_loop_double": {
+    "command": 9,
+    "channel": 1,
+    "data1": 83,
+    "isCC": false
+  },
+  "deck1_mode_hotcue": {
+    "command": 9,
+    "channel": 0,
+    "data1": 27,
+    "isCC": false
+  },
+  "deck2_mode_hotcue": {
+    "command": 9,
+    "channel": 1,
+    "data1": 27,
+    "isCC": false
+  },
+  "deck1_mode_padfx1": {
+    "command": 9,
+    "channel": 0,
+    "data1": 30,
+    "isCC": false
+  },
+  "deck2_mode_padfx1": {
+    "command": 9,
+    "channel": 1,
+    "data1": 30,
+    "isCC": false
+  },
+  "deck1_mode_beatjump": {
+    "command": 9,
+    "channel": 0,
+    "data1": 32,
+    "isCC": false
+  },
+  "deck2_mode_beatjump": {
+    "command": 9,
+    "channel": 1,
+    "data1": 32,
+    "isCC": false
+  },
+  "deck1_mode_sampler": {
+    "command": 9,
+    "channel": 0,
+    "data1": 34,
+    "isCC": false
+  },
+  "deck2_mode_sampler": {
+    "command": 9,
+    "channel": 1,
+    "data1": 34,
+    "isCC": false
+  },
+  "deck1_pad1": {
+    "command": 9,
+    "channel": 7,
+    "data1": 16,
+    "isCC": false
+  },
+  "deck2_pad1": {
+    "command": 9,
+    "channel": 8,
+    "data1": 16,
+    "isCC": false
+  },
+  "deck1_pad2": {
+    "command": 9,
+    "channel": 7,
+    "data1": 17,
+    "isCC": false
+  },
+  "deck2_pad2": {
+    "command": 9,
+    "channel": 8,
+    "data1": 17,
+    "isCC": false
+  },
+  "deck1_pad3": {
+    "command": 9,
+    "channel": 7,
+    "data1": 18,
+    "isCC": false
+  },
+  "deck2_pad3": {
+    "command": 9,
+    "channel": 8,
+    "data1": 18,
+    "isCC": false
+  },
+  "deck1_pad4": {
+    "command": 9,
+    "channel": 7,
+    "data1": 19,
+    "isCC": false
+  },
+  "deck2_pad4": {
+    "command": 9,
+    "channel": 8,
+    "data1": 19,
+    "isCC": false
+  },
+  "deck1_pad5": {
+    "command": 9,
+    "channel": 7,
+    "data1": 20,
+    "isCC": false
+  },
+  "deck2_pad5": {
+    "command": 9,
+    "channel": 8,
+    "data1": 20,
+    "isCC": false
+  },
+  "deck1_pad6": {
+    "command": 9,
+    "channel": 7,
+    "data1": 21,
+    "isCC": false
+  },
+  "deck2_pad6": {
+    "command": 9,
+    "channel": 8,
+    "data1": 21,
+    "isCC": false
+  },
+  "deck1_pad7": {
+    "command": 9,
+    "channel": 7,
+    "data1": 22,
+    "isCC": false
+  },
+  "deck2_pad7": {
+    "command": 9,
+    "channel": 8,
+    "data1": 22,
+    "isCC": false
+  },
+  "deck1_pad8": {
+    "command": 9,
+    "channel": 7,
+    "data1": 23,
+    "isCC": false
+  },
+  "deck2_pad8": {
+    "command": 9,
+    "channel": 8,
+    "data1": 23,
+    "isCC": false
+  },
+  "deck1_load": {
+    "command": 9,
+    "channel": 6,
+    "data1": 70,
+    "isCC": false
+  },
+  "deck2_load": {
+    "command": 9,
+    "channel": 6,
+    "data1": 71,
+    "isCC": false
+  },
+  "mixer_ch1_trim": {
+    "command": 11,
+    "channel": 0,
+    "data1": 4,
+    "isCC": true
+  },
+  "mixer_ch1_eq_hi": {
+    "command": 11,
+    "channel": 0,
+    "data1": 7,
+    "isCC": true
+  },
+  "mixer_ch1_eq_mid": {
+    "command": 11,
+    "channel": 0,
+    "data1": 11,
+    "isCC": true
+  },
+  "mixer_ch1_eq_low": {
+    "command": 11,
+    "channel": 0,
+    "data1": 15,
+    "isCC": true
+  },
+  "mixer_ch1_cfx": {
+    "command": 11,
+    "channel": 6,
+    "data1": 23,
+    "isCC": true
+  },
+  "mixer_ch1_cue": {
+    "command": 9,
+    "channel": 0,
+    "data1": 84,
+    "isCC": false
+  },
+  "mixer_ch1_fader": {
+    "command": 11,
+    "channel": 0,
+    "data1": 19,
+    "isCC": true
+  },
+  "mixer_ch2_trim": {
+    "command": 11,
+    "channel": 1,
+    "data1": 4,
+    "isCC": true
+  },
+  "mixer_ch2_eq_hi": {
+    "command": 11,
+    "channel": 1,
+    "data1": 7,
+    "isCC": true
+  },
+  "mixer_ch2_eq_mid": {
+    "command": 11,
+    "channel": 1,
+    "data1": 11,
+    "isCC": true
+  },
+  "mixer_ch2_eq_low": {
+    "command": 11,
+    "channel": 1,
+    "data1": 15,
+    "isCC": true
+  },
+  "mixer_ch2_cfx": {
+    "command": 11,
+    "channel": 6,
+    "data1": 24,
+    "isCC": true
+  },
+  "mixer_ch2_cue": {
+    "command": 9,
+    "channel": 1,
+    "data1": 84,
+    "isCC": false
+  },
+  "mixer_ch2_fader": {
+    "command": 11,
+    "channel": 1,
+    "data1": 19,
+    "isCC": true
+  },
+  "mixer_crossfader": {
+    "command": 11,
+    "channel": 6,
+    "data1": 31,
+    "isCC": true
+  },
+  "mixer_master_level": {
+    "command": 11,
+    "channel": 6,
+    "data1": 8,
+    "isCC": true
+  },
+  "mixer_beatfx_on": {
+    "command": 9,
+    "channel": 4,
+    "data1": 71,
+    "isCC": false
+  },
+  "mixer_beatfx_level": {
+    "command": 11,
+    "channel": 4,
+    "data1": 2,
+    "isCC": true
+  },
+  "mixer_beatfx_select": {
+    "command": 9,
+    "channel": 4,
+    "data1": 99,
+    "isCC": false
+  },
+  "mixer_beatfx_beat_left": {
+    "command": 9,
+    "channel": 4,
+    "data1": 74,
+    "isCC": false
+  },
+  "mixer_beatfx_beat_right": {
+    "command": 9,
+    "channel": 4,
+    "data1": 75,
+    "isCC": false
+  },
+  "browser_scroll": {
+    "command": 11,
+    "channel": 6,
+    "data1": 64,
+    "isCC": true
+  },
+  "browser_enter": {
+    "command": 9,
+    "channel": 6,
+    "data1": 65,
+    "isCC": false
+  }
+}

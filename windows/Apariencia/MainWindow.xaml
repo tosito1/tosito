@@ -1,0 +1,572 @@
+<Window x:Class="Apariencia.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Apariencia"
+        xmlns:vm="clr-namespace:Apariencia.UI.Settings"
+        mc:Ignorable="d"
+        Title="WinmacOS Transform Engine" Height="750" Width="1200"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <x:Static Member="local:App.Settings"/>
+    </Window.DataContext>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="60" CornerRadius="0" GlassFrameThickness="0" ResizeBorderThickness="5"/>
+    </WindowChrome.WindowChrome>
+
+    <!-- Main Container matching body bg-zinc-950 text-gray-100 -->
+    <Border Background="{StaticResource BgDark}" CornerRadius="12" BorderBrush="#1AFFFFFF" BorderThickness="1" ClipToBounds="True">
+        <Grid>
+            <!-- BACKGROUND DECORATION -->
+            <Canvas IsHitTestVisible="False" Margin="-200">
+                <!-- Large top-left gradient -->
+                <Ellipse Width="800" Height="800" Canvas.Left="-100" Canvas.Top="-200" Opacity="0.25">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#3b82f6" Offset="0"/>
+                            <GradientStop Color="Transparent" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="180"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+                <!-- Large right gradient -->
+                <Ellipse Width="600" Height="600" Canvas.Right="100" Canvas.Top="200" Opacity="0.2">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#4f46e5" Offset="0"/>
+                            <GradientStop Color="Transparent" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="180"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+            </Canvas>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"/> <!-- HEADER -->
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- HEADER -->
+                <Border Grid.Row="0" Background="#8018181b" BorderBrush="#0DFFFFFF" BorderThickness="0,0,0,1" Panel.ZIndex="10" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Grid Margin="16,0">
+                        <!-- Left: Logo & Title -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Width="40" Height="40" CornerRadius="10" Background="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}" BorderBrush="#33FFFFFF" BorderThickness="1" Margin="0,0,12,0">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="2" BlurRadius="10" Opacity="0.3"/>
+                                </Border.Effect>
+                                <Path Data="{StaticResource Icon_Sparkles}" Fill="White" Stretch="Uniform" Width="20" Height="20"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="WinmacOS" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,2"/>
+                                <TextBlock Text="Transform Engine v3.0 Pro" Foreground="{StaticResource TextSecondaryDark}" FontSize="12" FontWeight="Medium"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Right: Actions -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <!-- Theme Toggle -->
+                            <Button Width="40" Height="40" Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" Margin="0,0,12,0" ToolTip="Cambiar tema claro/oscuro" Click="ThemeToggle_Click" WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Path Data="{StaticResource Icon_Moon}" Fill="Transparent" Stroke="White" StrokeThickness="1.5" Stretch="Uniform" Width="18" Height="18"/>
+                            </Button>
+                            
+                            <!-- Restore Windows -->
+                            <Button Background="Transparent" Foreground="#f87171" BorderBrush="#4Df87171" BorderThickness="1" Padding="16,10" Margin="0,0,12,0" Cursor="Hand" Click="RestoreButton_Click" WindowChrome.IsHitTestVisibleInChrome="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource Icon_RotateCcw}" Stroke="#f87171" StrokeThickness="1.5" Fill="Transparent" Stretch="Uniform" Width="16" Height="16" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Restaurar Windows" FontWeight="SemiBold" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Apply Changes -->
+                            <Button Background="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}" Foreground="White" BorderBrush="#33FFFFFF" BorderThickness="1" Padding="20,10" Cursor="Hand" Click="ApplyButton_Click" WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Effect>
+                                    <DropShadowEffect ShadowDepth="4" BlurRadius="15" Opacity="0.3" Color="#3b82f6"/>
+                                </Button.Effect>
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource Icon_Save}" Stroke="White" StrokeThickness="1.5" Fill="Transparent" Stretch="Uniform" Width="16" Height="16" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Aplicar Cambios" FontWeight="SemiBold" FontSize="14"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Window Controls (X) -->
+                            <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                                <Button Content="—" Width="30" Height="30" Background="Transparent" Foreground="White" BorderThickness="0" WindowChrome.IsHitTestVisibleInChrome="True" Click="MinimizeButton_Click"/>
+                                <Button Content="✕" Width="30" Height="30" Background="Transparent" Foreground="White" BorderThickness="0" WindowChrome.IsHitTestVisibleInChrome="True" Click="CloseButton_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- MAIN CONTENT AREA -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="280"/> <!-- SIDEBAR -->
+                        <ColumnDefinition Width="*"/>   <!-- CONFIG + PREVIEW -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- SIDEBAR -->
+                    <Border Grid.Column="0" Background="#4D18181b" BorderBrush="#0DFFFFFF" BorderThickness="0,0,1,0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="16">
+                                <TextBlock Text="ESTRUCTURA BASE" Foreground="{StaticResource TextSecondaryDark}" FontSize="11" FontWeight="Bold" Margin="8,8,0,8"/>
+                                <RadioButton Content="Dock Principal" Tag="{StaticResource Icon_Layout}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Dock Principal'}"/>
+                                <RadioButton Content="Barra Superior" Tag="{StaticResource Icon_Sliders}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Barra Superior'}"/>
+                                
+                                <TextBlock Text="DISEÑO Y COLOR" Foreground="{StaticResource TextSecondaryDark}" FontSize="11" FontWeight="Bold" Margin="8,16,0,8"/>
+                                <RadioButton Content="Motor de Temas" Tag="{StaticResource Icon_Palette}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Motor de Temas'}"/>
+                                <RadioButton Content="Paquetes de Iconos" Tag="{StaticResource Icon_Grid}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Paquetes de Iconos'}"/>
+                                <RadioButton Content="Fondos de Pantalla" Tag="{StaticResource Icon_Image}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Fondos de Pantalla'}"/>
+
+                                <TextBlock Text="SISTEMA" Foreground="{StaticResource TextSecondaryDark}" FontSize="11" FontWeight="Bold" Margin="8,16,0,8"/>
+                                <RadioButton Content="Motor de Ventanas" Tag="{StaticResource Icon_Layers}" Style="{StaticResource SidebarItem}" IsChecked="{Binding CurrentSection, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='Motor de Ventanas'}"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- CONTENT PANELS -->
+                    <ScrollViewer Grid.Column="1" Padding="32">
+                        <Grid MaxWidth="1400">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*"/> <!-- CONFIG LEFT -->
+                                <ColumnDefinition Width="7*"/> <!-- PREVIEW RIGHT -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- CONFIG PANEL (Dynamic Content based on Section) -->
+                            <Border Grid.Column="0" Background="#9918181b" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="24" Padding="24" Margin="0,0,32,0" VerticalAlignment="Stretch" MinHeight="500">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="5" BlurRadius="20" Opacity="0.2"/>
+                                </Border.Effect>
+                                <Grid>
+                                    
+                                    <!-- DOCK SECTION -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Dock Principal">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Configuración del Dock" Foreground="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <!-- Toggle: Habilitar Dock -->
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,24">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Habilitar Dock Interactivo" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Reemplaza la barra de tareas nativa." Foreground="{StaticResource TextSecondaryDark}" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding DockEnabled}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Dock Position -->
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,24">
+                                            <StackPanel>
+                                                <TextBlock Text="Posición en Pantalla" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                                <UniformGrid Columns="3">
+                                                    <RadioButton Content="Izquierda" GroupName="DockPos" Style="{StaticResource SegmentedItem}" IsChecked="{Binding DockPosition, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=left, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    <RadioButton Content="Abajo" GroupName="DockPos" Style="{StaticResource SegmentedItem}" IsChecked="{Binding DockPosition, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=bottom, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    <RadioButton Content="Derecha" GroupName="DockPos" Style="{StaticResource SegmentedItem}" IsChecked="{Binding DockPosition, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=right, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </UniformGrid>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Autohide Toggle -->
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,24">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Ocultar Automáticamente" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="El Dock se esconde cuando no está en uso." Foreground="{StaticResource TextSecondaryDark}" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding DockAutoHide}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Sliders -->
+                                        <Border Background="#3318181b" BorderBrush="#0DFFFFFF" BorderThickness="1" CornerRadius="16" Padding="20">
+                                            <StackPanel>
+                                                <Grid Margin="0,0,0,8">
+                                                    <TextBlock Text="Tamaño de Iconos" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                    <Border Background="#1A3b82f6" CornerRadius="6" Padding="8,2" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{Binding DockSize, StringFormat={}{0}px}" Foreground="{StaticResource AccentBlue}" FontSize="12" FontWeight="Bold"/>
+                                                    </Border>
+                                                </Grid>
+                                                <Slider Style="{StaticResource MockupSlider}" Minimum="32" Maximum="96" Value="{Binding DockSize}" Margin="0,0,0,20"/>
+                                                
+                                                <Grid Margin="0,0,0,8">
+                                                    <TextBlock Text="Nivel de Magnificación" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                    <Border Background="#1A3b82f6" CornerRadius="6" Padding="8,2" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{Binding Magnification, StringFormat={}{0}x}" Foreground="{StaticResource AccentBlue}" FontSize="12" FontWeight="Bold"/>
+                                                    </Border>
+                                                </Grid>
+                                                <Slider Style="{StaticResource MockupSlider}" Minimum="1" Maximum="2" TickFrequency="0.1" IsSnapToTickEnabled="True" Value="{Binding Magnification}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- OTHER SECTIONS (PLACEHOLDERS TO MATCH MOCKUP BEHAVIOR) -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Barra Superior">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Ajustes de Menu Bar" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,24">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Habilitar Barra Superior" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Barra global persistente." Foreground="{StaticResource TextSecondaryDark}" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding MenuBarEnabled}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Menu Bar Modules -->
+                                        <UniformGrid Columns="2" Margin="0,0,0,24">
+                                            <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="12" Padding="12" Margin="4">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Background="#333b82f6" Padding="6" CornerRadius="8" Margin="0,0,10,0">
+                                                        <Path Data="{StaticResource Icon_Monitor}" Stroke="#3b82f6" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform"/>
+                                                    </Border>
+                                                    <TextBlock Text="Red" Foreground="White" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="12" Padding="12" Margin="4">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Background="#333b82f6" Padding="6" CornerRadius="8" Margin="0,0,10,0">
+                                                        <Path Data="{StaticResource Icon_Monitor}" Stroke="#3b82f6" StrokeThickness="1.5" Width="14" Height="14" Stretch="Uniform"/>
+                                                    </Border>
+                                                    <TextBlock Text="Batería" Foreground="White" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </UniformGrid>
+                                    </StackPanel>
+
+                                    <!-- THEME SECTION -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Motor de Temas">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Motor de Temas y Color" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,12">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Tema Dinámico" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Cambia según la hora del día." Foreground="{StaticResource TextSecondaryDark}" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding DynamicTheme}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,24">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Materiales Translúcidos" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Usa Acrylic/Mica para fondos." Foreground="{StaticResource TextSecondaryDark}" FontSize="12" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding AcrylicEnabled}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16">
+                                            <StackPanel>
+                                                <TextBlock Text="Color de Acento Principal" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Width="40" Height="40" Background="#3b82f6" Margin="0,0,12,0" IsChecked="{Binding AccentColor, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='blue'}">
+                                                        <Border Background="#3b82f6" CornerRadius="20"/>
+                                                    </RadioButton>
+                                                    <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Width="40" Height="40" Background="#9333ea" Margin="0,0,12,0" IsChecked="{Binding AccentColor, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='purple'}">
+                                                        <Border Background="#9333ea" CornerRadius="20"/>
+                                                    </RadioButton>
+                                                    <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Width="40" Height="40" Background="#16a34a" Margin="0,0,12,0" IsChecked="{Binding AccentColor, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='green'}">
+                                                        <Border Background="#16a34a" CornerRadius="20"/>
+                                                    </RadioButton>
+                                                    <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Width="40" Height="40" Background="#ea580c" IsChecked="{Binding AccentColor, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='orange'}">
+                                                        <Border Background="#ea580c" CornerRadius="20"/>
+                                                    </RadioButton>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- ICONS SECTION -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Paquetes de Iconos">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Sistema de Iconos" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Margin="0,0,0,12" IsChecked="{Binding ActiveIconPack, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='sonoma'}">
+                                            <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="12" Padding="16">
+                                                <Grid>
+                                                    <StackPanel>
+                                                        <TextBlock Text="macOS Sonoma" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="Iconos estilo 3D fluido" Foreground="{StaticResource TextSecondaryDark}" FontSize="12"/>
+                                                    </StackPanel>
+                                                    <Path Data="{StaticResource Icon_Grid}" Fill="White" HorizontalAlignment="Right" Width="20" Height="20" Opacity="0.5"/>
+                                                </Grid>
+                                            </Border>
+                                        </RadioButton>
+
+                                        <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Margin="0,0,0,12" IsChecked="{Binding ActiveIconPack, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='bigsur'}">
+                                            <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="12" Padding="16">
+                                                <Grid>
+                                                    <StackPanel>
+                                                        <TextBlock Text="macOS Big Sur" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="Iconos cuadrados redondeados" Foreground="{StaticResource TextSecondaryDark}" FontSize="12"/>
+                                                    </StackPanel>
+                                                    <Path Data="{StaticResource Icon_Grid}" Fill="White" HorizontalAlignment="Right" Width="20" Height="20" Opacity="0.5"/>
+                                                </Grid>
+                                            </Border>
+                                        </RadioButton>
+
+                                        <Border Background="#1A3b82f6" BorderBrush="#333b82f6" BorderThickness="1" CornerRadius="12" Padding="16">
+                                            <TextBlock Text="El cambio de iconos modifica accesos directos de forma segura." Foreground="#3b82f6" FontSize="12" TextWrapping="Wrap"/>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <!-- WALLPAPER SECTION -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Fondos de Pantalla">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Gestión de Fondos" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <UniformGrid Columns="2">
+                                            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Margin="4" IsChecked="{Binding Wallpaper, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&amp;w=2564&amp;auto=format&amp;fit=crop'}">
+                                                <Border Background="#333" CornerRadius="12" Height="80" BorderThickness="2" BorderBrush="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}">
+                                                    <Image Source="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&amp;w=2564&amp;auto=format&amp;fit=crop" Stretch="UniformToFill" Opacity="0.8"/>
+                                                </Border>
+                                            </RadioButton>
+                                            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Margin="4" IsChecked="{Binding Wallpaper, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='https://images.unsplash.com/photo-1506744626753-dba37c25a1f1?q=80&amp;w=2070&amp;auto=format&amp;fit=crop'}">
+                                                <Border Background="#444" CornerRadius="12" Height="80" BorderThickness="2" BorderBrush="Transparent">
+                                                    <Image Source="https://images.unsplash.com/photo-1506744626753-dba37c25a1f1?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" Stretch="UniformToFill" Opacity="0.8"/>
+                                                </Border>
+                                            </RadioButton>
+                                            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Margin="4" IsChecked="{Binding Wallpaper, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter='https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&amp;w=2070&amp;auto=format&amp;fit=crop'}">
+                                                <Border Background="#555" CornerRadius="12" Height="80" BorderThickness="2" BorderBrush="Transparent">
+                                                    <Image Source="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&amp;w=2070&amp;auto=format&amp;fit=crop" Stretch="UniformToFill" Opacity="0.8"/>
+                                                </Border>
+                                            </RadioButton>
+                                        </UniformGrid>
+                                    </StackPanel>
+
+                                    <!-- ADVANCED SECTION -->
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Motor de Ventanas">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="Inyección de Ventanas" Foreground="{StaticResource AccentBlue}" FontSize="20" FontWeight="Bold" Margin="0,0,0,24"/>
+                                        
+                                        <Border Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="16" Padding="16" Margin="0,0,0,12">
+                                            <Grid>
+                                                <StackPanel>
+                                                    <TextBlock Text="Sombras Realistas" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Aplica sombras profundas." Foreground="{StaticResource TextSecondaryDark}" FontSize="12"/>
+                                                </StackPanel>
+                                                <CheckBox Style="{StaticResource MockupToggle}" HorizontalAlignment="Right" IsChecked="{Binding WindowShadows}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Background="#1Affa500" BorderBrush="#33ffa500" BorderThickness="1" CornerRadius="12" Padding="16">
+                                            <StackPanel>
+                                                <TextBlock Text="⚠ Cuidado (Hooks de Sistema)" Foreground="Orange" FontWeight="Bold" Margin="0,0,0,4"/>
+                                                <TextBlock Text="Estas opciones inyectan código en DWM." Foreground="Orange" FontSize="12" TextWrapping="Wrap" Opacity="0.8"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                </Grid>
+                            </Border>
+
+                            <!-- LIVE PREVIEW AREA -->
+                            <StackPanel Grid.Column="1">
+                                <Grid Margin="0,0,0,16">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path Data="{StaticResource Icon_Monitor}" Fill="Transparent" Stroke="{StaticResource TextSecondaryDark}" StrokeThickness="1.5" Width="16" Height="16" Margin="0,0,8,0" Stretch="Uniform"/>
+                                        <TextBlock Text="LIVE DESKTOP PREVIEW" Foreground="{StaticResource TextSecondaryDark}" FontSize="14" FontWeight="Bold"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <Ellipse Width="12" Height="12" Fill="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}" Opacity="0.5"/>
+                                        <Ellipse Width="12" Height="12" Fill="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}" Margin="-12,0,0,0">
+                                            <Ellipse.Triggers>
+                                                <EventTrigger RoutedEvent="Loaded">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" From="1" To="2" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                                                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" From="1" To="2" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Ellipse.Triggers>
+                                            <Ellipse.RenderTransform>
+                                                <ScaleTransform CenterX="6" CenterY="6"/>
+                                            </Ellipse.RenderTransform>
+                                        </Ellipse>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- FAKE DESKTOP -->
+                                <Border Background="#111" CornerRadius="24" BorderBrush="#3f3f46" BorderThickness="4" Height="400" ClipToBounds="True">
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="15" BlurRadius="30" Opacity="0.4"/>
+                                    </Border.Effect>
+                                    <Grid>
+                                        <!-- Fake Wallpaper (Placeholder color if URL fails) -->
+                                        <Image Stretch="UniformToFill">
+                                            <Image.Source>
+                                                <BitmapImage UriSource="{Binding Wallpaper}" CacheOption="OnLoad"/>
+                                            </Image.Source>
+                                        </Image>
+                                        
+                                        <!-- FAKE MENU BAR -->
+                                        <Border Height="28" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="#8018181b" Visibility="{Binding MenuBarEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid Margin="16,0">
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <TextBlock Text="" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,-2,16,0"/>
+                                                    <TextBlock Text="Finder" Foreground="White" FontWeight="Bold" FontSize="13" Margin="0,0,16,0"/>
+                                                    <TextBlock Text="File" Foreground="White" FontSize="13" Margin="0,0,16,0" Opacity="0.9"/>
+                                                    <TextBlock Text="Edit" Foreground="White" FontSize="13" Margin="0,0,16,0" Opacity="0.9"/>
+                                                    <TextBlock Text="View" Foreground="White" FontSize="13" Margin="0,0,16,0" Opacity="0.9"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- FAKE FINDER WINDOW -->
+                                        <Border Width="320" Height="220" Background="#CC18181b" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="12" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,45,0,0">
+                                            <Border.Effect>
+                                                <DropShadowEffect ShadowDepth="10" BlurRadius="25" Opacity="0.5"/>
+                                            </Border.Effect>
+                                            <Grid>
+                                                <Border Height="40" VerticalAlignment="Top" BorderBrush="#1AFFFFFF" BorderThickness="0,0,0,1">
+                                                    <StackPanel Orientation="Horizontal" Margin="12,0" VerticalAlignment="Center">
+                                                        <Ellipse Width="10" Height="10" Fill="#ff5f57" Margin="0,0,6,0"/>
+                                                        <Ellipse Width="10" Height="10" Fill="#febc2e" Margin="0,0,6,0"/>
+                                                        <Ellipse Width="10" Height="10" Fill="#28c840"/>
+                                                        <TextBlock Text="Recientes" Foreground="White" Opacity="0.6" FontSize="11" FontWeight="SemiBold" Margin="20,0,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <!-- Window Inner Content -->
+                                                <Grid Margin="0,40,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="80"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Grid.Column="0" Background="#1AFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="0,0,1,0"/>
+                                                    <UniformGrid Grid.Column="1" Columns="3" Margin="10">
+                                                        <Border Background="#20FFFFFF" CornerRadius="4" Margin="5" Height="40"/>
+                                                        <Border Background="#20FFFFFF" CornerRadius="4" Margin="5" Height="40"/>
+                                                        <Border Background="#20FFFFFF" CornerRadius="4" Margin="5" Height="40"/>
+                                                    </UniformGrid>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- FAKE DOCK -->
+                                        <Border Margin="0,4" Background="#40FFFFFF" BorderBrush="#33FFFFFF" BorderThickness="1" CornerRadius="20" Padding="8" Visibility="{Binding DockEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DockPosition}" Value="left">
+                                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                            <Setter Property="Margin" Value="8,0"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DockPosition}" Value="right">
+                                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                            <Setter Property="Margin" Value="8,0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Setter Property="Orientation" Value="Horizontal"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DockPosition}" Value="left">
+                                                                <Setter Property="Orientation" Value="Vertical"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding DockPosition}" Value="right">
+                                                                <Setter Property="Orientation" Value="Vertical"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <StackPanel Margin="4">
+                                                    <Border Width="40" Height="40" CornerRadius="8" Background="{Binding AccentColor, Converter={StaticResource AccentColorToBrushConverter}}"/>
+                                                    <Ellipse Width="4" Height="4" Fill="White" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                <Border Width="40" Height="40" CornerRadius="8" Background="White" Margin="4"/>
+                                                <Border Width="40" Height="40" CornerRadius="8" Background="#22c55e" Margin="4"/>
+                                                <Border Width="40" Height="40" CornerRadius="8" Background="#f97316" Margin="4"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+
+</Window>

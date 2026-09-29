@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusWin — Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="toast-container"></div>
+
+  <!-- Titlebar -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-left">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#g1)"/>
+          <path d="M2 17l10 5 10-5" stroke="url(#g1)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M2 12l10 5 10-5" stroke="url(#g1)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="g1" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#a78bfa"/><stop offset="1" stop-color="#38bdf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>NexusWin</span>
+      </div>
+      <div class="titlebar-tag"><span class="status-dot"></span>Sistema activo</div>
+    </div>
+    <div class="titlebar-controls">
+      <button class="ctrl-btn" id="btn-min"><i class="ph ph-minus"></i></button>
+      <button class="ctrl-btn" id="btn-max"><i class="ph ph-corners-out"></i></button>
+      <button class="ctrl-btn danger" id="btn-close"><i class="ph ph-x"></i></button>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-group-label">Principal</div>
+      <a class="nav-link active" data-page="dashboard"><i class="ph ph-squares-four"></i><span>Dashboard</span></a>
+      <a class="nav-link" data-page="sysinfo"><i class="ph ph-info"></i><span>Sistema</span></a>
+      <a class="nav-link" data-page="processes"><i class="ph ph-activity"></i><span>Procesos</span></a>
+
+      <div class="nav-group-label">Herramientas</div>
+      <a class="nav-link" data-page="lowend"><i class="ph ph-lightning"></i><span style="font-weight:bold;color:var(--accent)">Modo Low-End</span></a>
+      <a class="nav-link" data-page="optimize"><i class="ph ph-rocket-launch"></i><span>Optimización</span></a>
+      <a class="nav-link" data-page="bloatware"><i class="ph ph-trash"></i><span>App Manager</span></a>
+      <a class="nav-link" data-page="adblock"><i class="ph ph-shield-slash"></i><span>Ad-Blocker</span></a>
+      <a class="nav-link" data-page="ghosts"><i class="ph ph-plugs-connected"></i><span>Dispositivos</span></a>
+      <a class="nav-link" data-page="clean"><i class="ph ph-broom"></i><span>Limpieza</span></a>
+      <a class="nav-link" data-page="privacy"><i class="ph ph-shield-check"></i><span>Privacidad</span></a>
+      <a class="nav-link" data-page="network"><i class="ph ph-wifi-high"></i><span>Red</span></a>
+      <a class="nav-link" data-page="power"><i class="ph ph-lightning"></i><span>Energía</span></a>
+
+      <div class="nav-group-label">Windows</div>
+      <a class="nav-link" data-page="startup"><i class="ph ph-play-circle"></i><span>Arranque</span></a>
+      <a class="nav-link" data-page="services"><i class="ph ph-gear-six"></i><span>Servicios</span></a>
+      <a class="nav-link" data-page="appearance"><i class="ph ph-palette"></i><span>Apariencia</span></a>
+
+      <div class="nav-group-label">Avanzado</div>
+      <a class="nav-link" data-page="automation"><i class="ph ph-code"></i><span>Automatización</span></a>
+      <a class="nav-link" data-page="restore"><i class="ph ph-clock-counter-clockwise"></i><span>Restauración</span></a>
+      <a class="nav-link" data-page="gaming"><i class="ph ph-game-controller"></i><span>Gaming</span></a>
+      <a class="nav-link" data-page="registry"><i class="ph ph-database"></i><span>Registro</span></a>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-build">NexusWin v2.2.0</div>
+      </div>
+    </nav>
+
+    <main class="content">
+
+      <!-- ══════════════ DASHBOARD ══════════════ -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div><h1>Dashboard</h1><p>Vista general en tiempo real</p></div>
+          <button class="btn-icon-only" id="refresh-stats"><i class="ph ph-arrows-clockwise"></i></button>
+        </div>
+        <div class="rings-row">
+          <div class="ring-card">
+            <div class="ring-wrap">
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill" cx="60" cy="60" r="50" id="ring-cpu-fill"/>
+              </svg>
+              <div class="ring-inner"><span class="ring-val" id="cpu-val">--%</span><span class="ring-lbl">CPU</span></div>
+            </div>
+            <div class="ring-info"><div class="ring-name">Procesador</div><div class="ring-sub" id="cpu-cores">--</div></div>
+          </div>
+          <div class="ring-card">
+            <div class="ring-wrap">
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill blue" cx="60" cy="60" r="50" id="ring-ram-fill"/>
+              </svg>
+              <div class="ring-inner"><span class="ring-val" id="ram-val">--%</span><span class="ring-lbl">RAM</span></div>
+            </div>
+            <div class="ring-info"><div class="ring-name">Memoria</div><div class="ring-sub" id="ram-detail">-- GB</div></div>
+          </div>
+          <div class="ring-card">
+            <div class="ring-wrap">
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill green" cx="60" cy="60" r="50" id="ring-disk-fill"/>
+              </svg>
+              <div class="ring-inner"><span class="ring-val" id="disk-val">--%</span><span class="ring-lbl">DISCO</span></div>
+            </div>
+            <div class="ring-info"><div class="ring-name">Disco C:</div><div class="ring-sub" id="disk-detail">-- GB libres</div></div>
+          </div>
+          <div class="ring-card">
+            <div class="ring-wrap">
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-track" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill orange" cx="60" cy="60" r="50" id="ring-gpu-fill"/>
+              </svg>
+              <div class="ring-inner"><span class="ring-val" id="gpu-temp-val">--%</span><span class="ring-lbl">GPU</span></div>
+            </div>
+            <div class="ring-info"><div class="ring-name">Gráficos</div><div class="ring-sub" id="gpu-name">--</div></div>
+          </div>
+        </div>
+
+        <div class="section-title">Acciones Rápidas</div>
+        <div class="quick-grid">
+          <button class="quick-btn" onclick="runAndNotify('quick-optimize','Optimización completada')"><i class="ph ph-magic-wand"></i><span>Optimizar</span></button>
+          <button class="quick-btn" onclick="runAndNotify('clear-temp','Temp limpiada')"><i class="ph ph-trash"></i><span>Limpiar Temp</span></button>
+          <button class="quick-btn" onclick="runAndNotify('flush-dns','DNS limpiado')"><i class="ph ph-wifi-slash"></i><span>Flush DNS</span></button>
+          <button class="quick-btn" onclick="runAndNotify('dark-mode','Modo oscuro ON')"><i class="ph ph-moon"></i><span>Modo Oscuro</span></button>
+          <button class="quick-btn" onclick="runAndNotify('empty-recycle','Papelera vaciada')"><i class="ph ph-recycle"></i><span>Vaciar Papelera</span></button>
+          <button class="quick-btn" onclick="runAndNotify('create-restore-point','Punto creado')"><i class="ph ph-clock-counter-clockwise"></i><span>Crear Restore</span></button>
+        </div>
+
+        <div class="terminal">
+          <div class="terminal-header"><span><i class="ph ph-terminal"></i> Log del Sistema</span><button onclick="clearLog('dashboard-log')" class="btn-ghost">Limpiar</button></div>
+          <div class="terminal-body" id="dashboard-log"><span class="t-muted">// Esperando comandos...</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ SYSTEM INFO ══════════════ -->
+      <div class="page" id="page-sysinfo">
+        <div class="page-header">
+          <div><h1>Información del Sistema</h1><p>Hardware y software detallado</p></div>
+          <button class="btn-primary" onclick="loadSysInfo()"><i class="ph ph-arrows-clockwise"></i> Actualizar</button>
+        </div>
+        <div class="info-grid" id="sysinfo-grid">
+          <div class="info-card" id="si-os"><i class="ph ph-windows-logo"></i><div><b>Sistema Operativo</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-cpu"><i class="ph ph-cpu"></i><div><b>Procesador</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-ram"><i class="ph ph-memory"></i><div><b>RAM Total</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-gpu"><i class="ph ph-monitor"></i><div><b>GPU</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-pc"><i class="ph ph-desktop-tower"></i><div><b>Nombre del Equipo</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-disk"><i class="ph ph-hard-drive"></i><div><b>Disco C: (Total)</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-user"><i class="ph ph-user-circle"></i><div><b>Usuario Actual</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-uptime"><i class="ph ph-timer"></i><div><b>Tiempo Encendido</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-bios"><i class="ph ph-circuit-board"></i><div><b>BIOS / Firmware</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-mobo"><i class="ph ph-circuit-board"></i><div><b>Placa Base</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-net"><i class="ph ph-wifi-high"></i><div><b>IP Local</b><span class="si-val">Cargando...</span></div></div>
+          <div class="info-card" id="si-build"><i class="ph ph-tag"></i><div><b>Windows Build</b><span class="si-val">Cargando...</span></div></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ PROCESSES ══════════════ -->
+      <div class="page" id="page-processes">
+        <div class="page-header">
+          <div><h1>Procesos Activos</h1><p>Top procesos por uso de CPU y memoria</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="loadProcesses()"><i class="ph ph-arrows-clockwise"></i> Actualizar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="proc-table" id="proc-table">
+            <thead>
+              <tr>
+                <th>Proceso</th>
+                <th>PID</th>
+                <th>CPU %</th>
+                <th>RAM (MB)</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="proc-body">
+              <tr><td colspan="5" class="t-muted" style="text-align:center;padding:24px">Haz clic en Actualizar para cargar los procesos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════ OPTIMIZE ══════════════ -->
+      <div class="page" id="page-optimize">
+        <div class="page-header">
+          <div><h1>Optimización Standard</h1><p>Tweaks de rendimiento para Windows</p></div>
+          <button class="btn-primary" onclick="applyTweak('free-ram',this)"><i class="ph ph-memory"></i> Forzar Liberación de RAM</button>
+        </div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-ghost"></i></div><div class="tweak-info"><b>Deshabilitar Telemetría</b><span>Bloquea el envío de datos de diagnóstico a Microsoft</span></div><button class="btn-apply" onclick="applyTweak('disable-telemetry',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-game-controller"></i></div><div class="tweak-info"><b>Forzar Game Mode</b><span>Activa el modo juego de Windows para maximizar FPS</span></div><button class="btn-apply" onclick="applyTweak('game-mode',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-gauge"></i></div><div class="tweak-info"><b>Prioridad de CPU para aplicaciones</b><span>Ajusta el planificador para favorecer el primer plano</span></div><button class="btn-apply" onclick="applyTweak('cpu-priority',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-fast-forward"></i></div><div class="tweak-info"><b>Desactivar SysMain (SuperFetch)</b><span>Reduce uso de RAM en segundo plano</span></div><button class="btn-apply" onclick="applyTweak('disable-sysmain',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-magnifying-glass-minus"></i></div><div class="tweak-info"><b>Desactivar Búsqueda de Windows</b><span>Detiene el servicio de indexación (WSearch)</span></div><button class="btn-apply" onclick="applyTweak('disable-search',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-cpu"></i></div><div class="tweak-info"><b>Desactivar Core Parking</b><span>Evita que Windows "duerma" núcleos de CPU en carga</span></div><button class="btn-apply" onclick="applyTweak('disable-core-parking',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-timer"></i></div><div class="tweak-info"><b>Reducir Timer Resolution a 0.5ms</b><span>Mejora la latencia de juegos y audio (requiere reinicio)</span></div><button class="btn-apply" onclick="applyTweak('timer-resolution',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-hard-drive"></i></div><div class="tweak-info"><b>Optimizar SSD (TRIM + Defrag policy)</b><span>Activa TRIM y desactiva desfragmentación en SSDs</span></div><button class="btn-apply" onclick="applyTweak('optimize-ssd',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="opt-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ LOW END MODE ══════════════ -->
+      <div class="page" id="page-lowend">
+        <div class="page-header">
+          <div><h1>Modo Low-End <span style="color:var(--accent);font-size:16px">(Para PCs con pocos recursos)</span></h1><p>Estas optimizaciones extremas liberan hasta el último byte de RAM y ciclo de CPU, sacrificando estética por puro rendimiento.</p></div>
+        </div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-magic-wand"></i></div><div class="tweak-info"><b>Desactivar Efectos Visuales</b><span>Deshabilita sombras, animaciones y transparencias (Pura velocidad)</span></div><button class="btn-apply" onclick="applyTweak('lowend-visuals',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-prohibit"></i></div><div class="tweak-info"><b>Cortar Apps en Segundo Plano</b><span>Evita que aplicaciones secundarias consuman valiosa memoria RAM</span></div><button class="btn-apply" onclick="applyTweak('lowend-bgapps',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-plugs"></i></div><div class="tweak-info"><b>Activar Energía "Máximo Rendimiento"</b><span>Desbloquea el plan oculto para CPUs de bajas prestaciones</span></div><button class="btn-apply" onclick="applyTweak('lowend-power',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-stop-circle"></i></div><div class="tweak-info"><b>Congelar Servicios Basura</b><span>Deshabilita Print Spooler, Indexador, Telemetría y Mapas</span></div><button class="btn-apply" onclick="applyTweak('lowend-services',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-clock"></i></div><div class="tweak-info"><b>Limpiar Tareas Programadas</b><span>Borra tareas ocultas de Microsoft que despiertan el PC para espiarte</span></div><button class="btn-apply" onclick="applyTweak('lowend-tasks',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log Low-End</span></div><div class="terminal-body" id="lowend-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ BLOATWARE / APP MANAGER ══════════════ -->
+      <div class="page" id="page-bloatware">
+        <div class="page-header">
+          <div><h1>App Manager</h1><p>Desinstala aplicaciones (Appx) basura preinstaladas de Windows</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" onclick="runAndNotify('remove-all-bloatware','Bloatware común eliminado')"><i class="ph ph-trash"></i> Eliminar Telemetría Común</button>
+            <button class="btn-primary" onclick="loadApps()"><i class="ph ph-arrows-clockwise"></i> Listar Apps</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="proc-table" id="apps-table">
+            <thead>
+              <tr>
+                <th>Nombre de la Aplicación</th>
+                <th>Nombre del Paquete Completo</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="apps-body">
+              <tr><td colspan="3" class="t-muted" style="text-align:center;padding:24px">Haz clic en Listar Apps para cargar los paquetes instalados</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════ ADBLOCKER (HOSTS) ══════════════ -->
+      <div class="page" id="page-adblock">
+        <div class="page-header">
+          <div><h1>System Ad-Blocker</h1><p>Bloquea anuncios en todo Windows modificando el archivo <i>hosts</i> (StevenBlack's List)</p></div>
+        </div>
+        <div class="tweak-list">
+          <div class="tweak-item">
+            <div class="tweak-icon red"><i class="ph ph-shield-warning"></i></div>
+            <div class="tweak-info"><b>Inyectar Lista Anti-Ads</b><span>Descarga ~150,000 dominios de publicidad y los bloquea a nivel de sistema</span></div>
+            <button class="btn-apply" onclick="applyTweak('apply-adblock',this)">Inyectar</button>
+          </div>
+          <div class="tweak-item">
+            <div class="tweak-icon green"><i class="ph ph-arrow-counter-clockwise"></i></div>
+            <div class="tweak-info"><b>Restaurar Hosts Original</b><span>Borra todos los bloqueos y deja el archivo hosts de fábrica</span></div>
+            <button class="btn-apply" onclick="applyTweak('restore-hosts',this)">Restaurar</button>
+          </div>
+          <div class="tweak-item">
+            <div class="tweak-icon blue"><i class="ph ph-file-text"></i></div>
+            <div class="tweak-info"><b>Ver estado del archivo Hosts</b><span>Muestra cuántas líneas y bloqueos tiene tu sistema actualmente</span></div>
+            <button class="btn-apply" onclick="applyTweak('check-hosts',this)">Comprobar</button>
+          </div>
+        </div>
+        <div class="terminal" style="margin-top:20px">
+          <div class="terminal-header"><span><i class="ph ph-terminal"></i> Log de Ad-Blocker</span></div>
+          <div class="terminal-body" id="adblock-log"><span class="t-muted">// Esperando...</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ GHOST DEVICES ══════════════ -->
+      <div class="page" id="page-ghosts">
+        <div class="page-header">
+          <div><h1>Dispositivos Fantasma</h1><p>Elimina drivers viejos y dispositivos desconectados que ralentizan el arranque</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" onclick="runAndNotify('remove-all-ghosts','Dispositivos limpiados')"><i class="ph ph-trash"></i> Limpiar Todo</button>
+            <button class="btn-primary" onclick="loadGhosts()"><i class="ph ph-arrows-clockwise"></i> Listar Dispositivos</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="proc-table" id="ghost-table">
+            <thead>
+              <tr>
+                <th>Nombre del Dispositivo</th>
+                <th>Clase</th>
+                <th>ID Instancia (Hardware)</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="ghost-body">
+              <tr><td colspan="4" class="t-muted" style="text-align:center;padding:24px">Haz clic en Listar para escanear hardware desconectado...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════ CLEAN / ANALYZER ══════════════ -->
+      <div class="page" id="page-clean">
+        <div class="page-header">
+          <div><h1>Limpieza Profunda & Analizador</h1><p>Recupera espacio escaneando y eliminando archivos o carpetas muy pesados</p></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" onclick="analyzeSmart()"><i class="ph ph-brain"></i> Cachés de Programador (Smart)</button>
+            <button class="btn-primary" onclick="analyzeFolders()"><i class="ph ph-folder"></i> Escanear Carpetas</button>
+            <button class="btn-danger-full" onclick="analyzeFiles()"><i class="ph ph-file-pdf"></i> Archivos Gigantes</button>
+          </div>
+        </div>
+        
+        <div class="table-wrap" id="analyzer-box" style="display:none; margin-bottom: 20px;">
+          <h3 id="analyzer-title" style="padding: 16px; margin:0; border-bottom: 1px solid var(--border);">Resultados del Escáner</h3>
+          <table class="proc-table" id="disk-table">
+            <thead>
+              <tr>
+                <th>Nombre / Descripción</th>
+                <th>Tamaño</th>
+                <th>Ruta Completa</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="disk-body">
+              <tr><td colspan="4" class="t-muted" style="text-align:center;padding:24px"><i class="ph-spin ph-spinner"></i> Escaneando... (puede tardar un poco)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="clean-grid">
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-file-x"></i></div><div class="clean-title">Temp del Sistema</div><div class="clean-desc">%TEMP% y C:\Windows\Temp</div><button class="btn-danger-full" onclick="applyTweak('clear-temp',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-recycle"></i></div><div class="clean-title">Papelera de Reciclaje</div><div class="clean-desc">Vacía la papelera de todos los drives</div><button class="btn-danger-full" onclick="applyTweak('empty-recycle',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-download-simple"></i></div><div class="clean-title">Caché Windows Update</div><div class="clean-desc">SoftwareDistribution\Download</div><button class="btn-danger-full" onclick="applyTweak('clear-wucache',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-browsers"></i></div><div class="clean-title">Prefetch</div><div class="clean-desc">Archivos de precarga de aplicaciones</div><button class="btn-danger-full" onclick="applyTweak('clear-prefetch',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-image"></i></div><div class="clean-title">Miniaturas (Thumbnails)</div><div class="clean-desc">Caché de vistas previas del explorador</div><button class="btn-danger-full" onclick="applyTweak('clear-thumbcache',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-file-dashed"></i></div><div class="clean-title">Registros de Eventos</div><div class="clean-desc">Limpia todos los logs del Visor de Eventos</div><button class="btn-danger-full" onclick="applyTweak('clear-eventlogs',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-dots-three-outline"></i></div><div class="clean-title">Volcados de Memoria (Dumps)</div><div class="clean-desc">Archivos .dmp de pantallazos azules</div><button class="btn-danger-full" onclick="applyTweak('clear-dumps',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+          <div class="clean-card"><div class="clean-icon"><i class="ph ph-package"></i></div><div class="clean-title">WinSxS Component Store</div><div class="clean-desc">Limpia el almacén de componentes de Windows</div><button class="btn-danger-full" onclick="applyTweak('clean-winsxs',this)"><i class="ph ph-trash"></i> Limpiar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="clean-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ PRIVACY ══════════════ -->
+      <div class="page" id="page-privacy">
+        <div class="page-header"><div><h1>Privacidad</h1><p>Refuerza tu privacidad en Windows</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-eye-slash"></i></div><div class="tweak-info"><b>Desactivar anuncios personalizados</b><span>Elimina el ID de publicidad de Windows</span></div><button class="btn-apply" onclick="applyTweak('disable-ads',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-microphone-slash"></i></div><div class="tweak-info"><b>Bloquear Micrófono para apps</b><span>Deniega permiso global de micrófono a apps de la Store</span></div><button class="btn-apply" onclick="applyTweak('block-mic',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-camera-slash"></i></div><div class="tweak-info"><b>Bloquear Cámara para apps</b><span>Deniega permiso global de cámara a apps de la Store</span></div><button class="btn-apply" onclick="applyTweak('block-cam',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-map-pin-slash"></i></div><div class="tweak-info"><b>Desactivar Localización</b><span>Bloquea el servicio de ubicación del sistema</span></div><button class="btn-apply" onclick="applyTweak('disable-location',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-robot"></i></div><div class="tweak-info"><b>Desactivar Cortana</b><span>Deshabilita la recogida de datos de Cortana</span></div><button class="btn-apply" onclick="applyTweak('disable-cortana',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-bug"></i></div><div class="tweak-info"><b>Desactivar informe de errores (WER)</b><span>Evita el envío de crashdumps a Microsoft</span></div><button class="btn-apply" onclick="applyTweak('disable-wer',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-pencil-slash"></i></div><div class="tweak-info"><b>Desactivar historial de actividad</b><span>Bloquea el registro de actividades en el Timeline</span></div><button class="btn-apply" onclick="applyTweak('disable-activity',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="privacy-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ NETWORK ══════════════ -->
+      <div class="page" id="page-network">
+        <div class="page-header"><div><h1>Red</h1><p>Ajustes y diagnóstico de red</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-arrows-clockwise"></i></div><div class="tweak-info"><b>Flush DNS</b><span>Limpia la caché del resolver DNS</span></div><button class="btn-apply" onclick="applyTweak('flush-dns',this)">Ejecutar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-plug"></i></div><div class="tweak-info"><b>Resetear TCP/IP y Winsock</b><span>Reinicia el stack de red de Windows por completo</span></div><button class="btn-apply" onclick="applyTweak('reset-tcp',this)">Ejecutar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-speedometer"></i></div><div class="tweak-info"><b>DNS → Google (8.8.8.8)</b><span>Configura DNS de Google en el adaptador principal</span></div><button class="btn-apply" onclick="applyTweak('set-dns-google',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-lock"></i></div><div class="tweak-info"><b>DNS → Cloudflare (1.1.1.1)</b><span>DNS rápido y privado de Cloudflare</span></div><button class="btn-apply" onclick="applyTweak('set-dns-cloudflare',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-shield"></i></div><div class="tweak-info"><b>DNS → OpenDNS (208.67.222.222)</b><span>DNS con filtrado de contenido de OpenDNS</span></div><button class="btn-apply" onclick="applyTweak('set-dns-opendns',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-network"></i></div><div class="tweak-info"><b>Mostrar IP y MAC del sistema</b><span>Lista todos los adaptadores de red activos</span></div><button class="btn-apply" onclick="applyTweak('show-ipconfig',this)">Ejecutar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="net-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ POWER ══════════════ -->
+      <div class="page" id="page-power">
+        <div class="page-header"><div><h1>Energía</h1><p>Controla el plan de energía de Windows</p></div></div>
+        <div class="power-plans">
+          <div class="power-plan" id="plan-balanced" onclick="setPowerPlan('balanced')"><i class="ph ph-scales"></i><b>Equilibrado</b><span>Plan por defecto de Windows</span></div>
+          <div class="power-plan" id="plan-high" onclick="setPowerPlan('high')"><i class="ph ph-fire"></i><b>Alto Rendimiento</b><span>Máximo rendimiento, más consumo</span></div>
+          <div class="power-plan" id="plan-ultimate" onclick="setPowerPlan('ultimate')"><i class="ph ph-rocket-launch"></i><b>Máximo Rendimiento</b><span>Plan oculto de Windows — el más rápido</span></div>
+        </div>
+        <div class="tweak-list" style="margin-top:20px">
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-moon"></i></div><div class="tweak-info"><b>Desactivar Hibernación</b><span>Elimina hiberfil.sys y libera espacio en disco</span></div><button class="btn-apply" onclick="applyTweak('disable-hibernation',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-monitor"></i></div><div class="tweak-info"><b>Apagar pantalla: Nunca (enchufado)</b><span>Evita que el monitor se apague automáticamente</span></div><button class="btn-apply" onclick="applyTweak('screen-off-never',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-zzz"></i></div><div class="tweak-info"><b>Desactivar modo suspensión</b><span>El equipo no entrará en suspensión automáticamente</span></div><button class="btn-apply" onclick="applyTweak('disable-sleep',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="power-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ STARTUP ══════════════ -->
+      <div class="page" id="page-startup">
+        <div class="page-header">
+          <div><h1>Programas de Arranque</h1><p>Gestiona qué se inicia con Windows</p></div>
+          <button class="btn-primary" onclick="loadStartup()"><i class="ph ph-arrows-clockwise"></i> Actualizar</button>
+        </div>
+        <div class="table-wrap">
+          <table class="proc-table" id="startup-table">
+            <thead><tr><th>Nombre</th><th>Comando</th><th>Acción</th></tr></thead>
+            <tbody id="startup-body"><tr><td colspan="3" class="t-muted" style="text-align:center;padding:24px">Haz clic en Actualizar para cargar</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════ SERVICES ══════════════ -->
+      <div class="page" id="page-services">
+        <div class="page-header">
+          <div><h1>Servicios de Windows</h1><p>Controla los servicios del sistema</p></div>
+          <button class="btn-primary" onclick="loadServices()"><i class="ph ph-arrows-clockwise"></i> Actualizar</button>
+        </div>
+        <div class="table-wrap">
+          <table class="proc-table" id="svc-table">
+            <thead><tr><th>Nombre</th><th>DisplayName</th><th>Estado</th><th>Acción</th></tr></thead>
+            <tbody id="svc-body"><tr><td colspan="4" class="t-muted" style="text-align:center;padding:24px">Haz clic en Actualizar para cargar</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════════ APPEARANCE ══════════════ -->
+      <div class="page" id="page-appearance">
+        <div class="page-header"><div><h1>Apariencia</h1><p>Personaliza el aspecto de Windows</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-moon"></i></div><div class="tweak-info"><b>Modo Oscuro Global</b><span>Activa modo oscuro en sistema y apps</span></div><button class="btn-apply" onclick="applyTweak('dark-mode',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-sun"></i></div><div class="tweak-info"><b>Modo Claro Global</b><span>Vuelve al modo claro del sistema</span></div><button class="btn-apply" onclick="applyTweak('light-mode',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-cursor-click"></i></div><div class="tweak-info"><b>Desactivar Transparencias</b><span>Mejora el rendimiento visual</span></div><button class="btn-apply" onclick="applyTweak('disable-transparency',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-sparkle"></i></div><div class="tweak-info"><b>Desactivar Animaciones</b><span>Elimina animaciones del sistema para mayor fluidez</span></div><button class="btn-apply" onclick="applyTweak('disable-animations',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-desktop"></i></div><div class="tweak-info"><b>Ocultar iconos del escritorio</b><span>Limpia el escritorio ocultando todos los iconos</span></div><button class="btn-apply" onclick="applyTweak('hide-desktop-icons',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-layout"></i></div><div class="tweak-info"><b>Barra de tareas a la izquierda (Win11)</b><span>Mueve los iconos de la taskbar a la izquierda</span></div><button class="btn-apply" onclick="applyTweak('taskbar-left',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-arrow-clockwise"></i></div><div class="tweak-info"><b>Reiniciar Explorer.exe</b><span>Recarga el explorador de Windows sin reiniciar el PC</span></div><button class="btn-apply" onclick="applyTweak('restart-explorer',this)">Ejecutar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="appear-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ AUTOMATION ══════════════ -->
+      <div class="page" id="page-automation">
+        <div class="page-header"><div><h1>Automatización</h1><p>Crea y ejecuta tus propios scripts de PowerShell</p></div></div>
+        <div class="auto-layout">
+          <div class="auto-editor-section">
+            <div class="editor-header">
+              <input type="text" id="script-name" placeholder="Nombre del script..." class="script-name-input"/>
+              <button class="btn-primary" onclick="runCustomScript()"><i class="ph ph-play"></i> Ejecutar</button>
+              <button class="btn-ghost" onclick="saveScript()"><i class="ph ph-floppy-disk"></i> Guardar</button>
+            </div>
+            <textarea id="ps-editor" class="ps-editor" placeholder="# Escribe tu script de PowerShell aquí&#10;Write-Host 'Hola desde NexusWin!'&#10;Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 | Format-Table -AutoSize"></textarea>
+          </div>
+          <div class="auto-saved-section">
+            <div class="saved-title">Scripts de Ejemplo</div>
+            <div id="saved-scripts-list" class="saved-list">
+              <div class="saved-item" onclick="loadScript('Top Procesos','Get-Process | Sort-Object CPU -Descending | Select-Object -First 15 Name, @{N=\"CPU%\";E={[math]::Round($_.CPU,1)}}, @{N=\"RAM MB\";E={[math]::Round($_.WorkingSet/1MB,1)}} | Format-Table -AutoSize')"><i class="ph ph-file-code"></i><span>Top Procesos</span></div>
+              <div class="saved-item" onclick="loadScript('Info Red','Get-NetIPAddress | Where-Object AddressFamily -eq IPv4 | Select-Object InterfaceAlias, IPAddress | Format-Table -AutoSize')"><i class="ph ph-file-code"></i><span>Info Red</span></div>
+              <div class="saved-item" onclick="loadScript('Puertos Abiertos','Get-NetTCPConnection | Where-Object State -eq Listen | Select-Object LocalPort, OwningProcess | Sort-Object LocalPort | Format-Table')"><i class="ph ph-file-code"></i><span>Puertos Abiertos</span></div>
+              <div class="saved-item" onclick="loadScript('Usuarios del Sistema','Get-LocalUser | Select-Object Name, Enabled, LastLogon | Format-Table -AutoSize')"><i class="ph ph-file-code"></i><span>Usuarios del Sistema</span></div>
+              <div class="saved-item" onclick="loadScript('Drivers','Get-WmiObject Win32_PnPSignedDriver | Select-Object DeviceName, DriverVersion, DriverDate | Where-Object DeviceName | Format-Table -AutoSize')"><i class="ph ph-file-code"></i><span>Drivers instalados</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="terminal" style="margin-top:16px">
+          <div class="terminal-header"><span><i class="ph ph-terminal"></i> Output</span><button onclick="clearLog('auto-log')" class="btn-ghost">Limpiar</button></div>
+          <div class="terminal-body" id="auto-log"><span class="t-muted">// Ejecuta un script para ver la salida...</span></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ RESTORE ══════════════ -->
+      <div class="page" id="page-restore">
+        <div class="page-header"><div><h1>Restauración del Sistema</h1><p>Gestiona puntos de restauración de Windows</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-plus-circle"></i></div><div class="tweak-info"><b>Crear Punto de Restauración</b><span>Crea un snapshot del sistema con nombre "NexusWin Backup"</span></div><button class="btn-apply" onclick="applyTweak('create-restore-point',this)">Crear</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-list"></i></div><div class="tweak-info"><b>Listar Puntos de Restauración</b><span>Muestra todos los puntos disponibles</span></div><button class="btn-apply" onclick="applyTweak('list-restore-points',this)">Listar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-shield-check"></i></div><div class="tweak-info"><b>Activar Protección del Sistema en C:</b><span>Habilita la protección para crear puntos automáticos</span></div><button class="btn-apply" onclick="applyTweak('enable-sysprotect',this)">Activar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-wrench"></i></div><div class="tweak-info"><b>Reparar Windows (SFC + DISM)</b><span>Escanea y repara archivos del sistema corruptos</span></div><button class="btn-apply" onclick="applyTweak('repair-windows',this)">Ejecutar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="restore-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ GAMING ══════════════ -->
+      <div class="page" id="page-gaming">
+        <div class="page-header"><div><h1>Gaming</h1><p>Tweaks específicos para maximizar FPS y reducir latencia</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-x-circle"></i></div><div class="tweak-info"><b>Desactivar Xbox Game Bar</b><span>Elimina el overlay de Xbox que consume recursos en juegos</span></div><button class="btn-apply" onclick="applyTweak('disable-gamebar',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-gpu"></i></div><div class="tweak-info"><b>Activar Hardware-Accelerated GPU Scheduling (HAGS)</b><span>Reduce la latencia GPU transfiriendo el control al driver de gráficos</span></div><button class="btn-apply" onclick="applyTweak('enable-hags',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-frame-corners"></i></div><div class="tweak-info"><b>Desactivar Fullscreen Optimizations globalmente</b><span>Mejora la compatibilidad y estabilidad en modo exclusivo</span></div><button class="btn-apply" onclick="applyTweak('disable-fullscreen-opt',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-cursor"></i></div><div class="tweak-info"><b>Desactivar Aceleración del Ratón</b><span>Desactiva el pointer precision para mayor consistencia en FPS</span></div><button class="btn-apply" onclick="applyTweak('disable-mouse-accel',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-timer"></i></div><div class="tweak-info"><b>Activar HPET (High Precision Event Timer)</b><span>Mejora la precisión del temporizador del sistema para juegos</span></div><button class="btn-apply" onclick="applyTweak('enable-hpet',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-lightning"></i></div><div class="tweak-info"><b>Desactivar Power Throttling</b><span>Evita que Windows limite la velocidad del CPU por ahorro de energía</span></div><button class="btn-apply" onclick="applyTweak('disable-power-throttle',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-notification-slash"></i></div><div class="tweak-info"><b>Desactivar Notificaciones durante juego</b><span>Activa modo No Molestar automático al jugar</span></div><button class="btn-apply" onclick="applyTweak('disable-game-notif',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-network"></i></div><div class="tweak-info"><b>Desactivar Nagle's Algorithm (menor latencia online)</b><span>Reduce el buffering de paquetes TCP para conexiones más rápidas</span></div><button class="btn-apply" onclick="applyTweak('disable-nagle',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-monitor-play"></i></div><div class="tweak-info"><b>GPU a Máximo Rendimiento (NVIDIA via Registro)</b><span>Fuerza el modo de rendimiento máximo en tarjetas NVIDIA</span></div><button class="btn-apply" onclick="applyTweak('nvidia-max-perf',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-hard-drive"></i></div><div class="tweak-info"><b>Prioridad alta para procesos de juego</b><span>Ajusta el planificador para que los juegos no cedan CPU a servicios</span></div><button class="btn-apply" onclick="applyTweak('game-scheduler',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="gaming-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+      <!-- ══════════════ REGISTRY ══════════════ -->
+      <div class="page" id="page-registry">
+        <div class="page-header"><div><h1>Tweaks de Registro</h1><p>Ajustes avanzados del registro de Windows</p></div></div>
+        <div class="tweak-list">
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-hand-waving"></i></div><div class="tweak-info"><b>Menú contextual clásico (Win11)</b><span>Restaura el menú derecho clásico sin el paso extra de "Mostrar más"</span></div><button class="btn-apply" onclick="applyTweak('classic-context-menu',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-clock"></i></div><div class="tweak-info"><b>Reducir tiempo de apagado del sistema</b><span>Baja el timeout de WaitToKillServiceTimeout de 5s a 2s</span></div><button class="btn-apply" onclick="applyTweak('fast-shutdown',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-folder"></i></div><div class="tweak-info"><b>Mostrar extensiones de archivo</b><span>El explorador mostrará .exe, .txt, .jpg, etc.</span></div><button class="btn-apply" onclick="applyTweak('show-extensions',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-eye"></i></div><div class="tweak-info"><b>Mostrar archivos ocultos</b><span>El explorador mostrará carpetas y archivos ocultos del sistema</span></div><button class="btn-apply" onclick="applyTweak('show-hidden',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon red"><i class="ph ph-seal-warning"></i></div><div class="tweak-info"><b>Desactivar UAC (Pedir permisos de admin)</b><span>Elimina los popups de confirmación de administrador</span></div><button class="btn-apply" onclick="applyTweak('disable-uac',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon purple"><i class="ph ph-lock-open"></i></div><div class="tweak-info"><b>Desactivar bloqueo de pantalla automático</b><span>Evita que Windows bloquee el PC por inactividad</span></div><button class="btn-apply" onclick="applyTweak('disable-autolock',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon blue"><i class="ph ph-device-tablet-speaker"></i></div><div class="tweak-info"><b>Desactivar Sonidos del Sistema</b><span>Silencia todos los sonidos de eventos de Windows</span></div><button class="btn-apply" onclick="applyTweak('disable-sounds',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon green"><i class="ph ph-arrows-merge"></i></div><div class="tweak-info"><b>Liberar RAM inactiva automáticamente</b><span>Ajusta la gestión de memoria para liberar RAM libre más agresivamente</span></div><button class="btn-apply" onclick="applyTweak('free-inactive-ram',this)">Aplicar</button></div>
+          <div class="tweak-item"><div class="tweak-icon orange"><i class="ph ph-number-nine"></i></div><div class="tweak-info"><b>Deshabilitar Paginación del Kernel en RAM</b><span>Si tienes más de 8 GB de RAM, fuerza el kernel a quedarse en memoria</span></div><button class="btn-apply" onclick="applyTweak('disable-kernel-paging',this)">Aplicar</button></div>
+        </div>
+        <div class="terminal" style="margin-top:20px"><div class="terminal-header"><span><i class="ph ph-terminal"></i> Log</span></div><div class="terminal-body" id="registry-log"><span class="t-muted">// Esperando...</span></div></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

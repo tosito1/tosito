@@ -1,0 +1,1599 @@
+https://series.ly/peliculas
+
+
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth dark">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Películas | Series.ly</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="V423zb5xTearAy766ZmkS6iVDBrz4Y4mBaH6P8EU">
+    <meta name="author" content="Jack" />
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://series.ly/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://series.ly/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://series.ly/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://series.ly/images/favicon-16x16.png">
+    <link rel="manifest" href="https://series.ly/images/site.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#20212d" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Series.ly">
+    <!-- Styles -->
+    <link rel="preload" as="style" href="https://series.ly/build/assets/app.aebcb50f.css" />
+    <link rel="stylesheet" href="https://series.ly/build/assets/app.aebcb50f.css"
+        data-navigate-track="data-navigate-track" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Livewire Styles -->
+    <style>
+        [wire\:loading][wire\:loading],
+        [wire\:loading\.delay][wire\:loading\.delay],
+        [wire\:loading\.inline-block][wire\:loading\.inline-block],
+        [wire\:loading\.inline][wire\:loading\.inline],
+        [wire\:loading\.block][wire\:loading\.block],
+        [wire\:loading\.flex][wire\:loading\.flex],
+        [wire\:loading\.table][wire\:loading\.table],
+        [wire\:loading\.grid][wire\:loading\.grid],
+        [wire\:loading\.inline-flex][wire\:loading\.inline-flex] {
+            display: none;
+        }
+
+        [wire\:loading\.delay\.none][wire\:loading\.delay\.none],
+        [wire\:loading\.delay\.shortest][wire\:loading\.delay\.shortest],
+        [wire\:loading\.delay\.shorter][wire\:loading\.delay\.shorter],
+        [wire\:loading\.delay\.short][wire\:loading\.delay\.short],
+        [wire\:loading\.delay\.default][wire\:loading\.delay\.default],
+        [wire\:loading\.delay\.long][wire\:loading\.delay\.long],
+        [wire\:loading\.delay\.longer][wire\:loading\.delay\.longer],
+        [wire\:loading\.delay\.longest][wire\:loading\.delay\.longest] {
+            display: none;
+        }
+
+        [wire\:offline][wire\:offline] {
+            display: none;
+        }
+
+        [wire\:dirty]:not(textarea):not(input):not(select) {
+            display: none;
+        }
+
+        :root {
+            --livewire-progress-bar-color: #2299dd;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        [wire\:cloak] {
+            display: none !important;
+        }
+
+        dialog#livewire-error::backdrop {
+            background-color: rgba(0, 0, 0, .6);
+        }
+    </style>
+    <link rel="modulepreload" href="https://series.ly/build/assets/app.38250aa5.js" />
+    <link rel="modulepreload" href="https://series.ly/build/assets/bootstrap.ab2132db.js" />
+    <script type="module" src="https://series.ly/build/assets/app.38250aa5.js"
+        data-navigate-track="data-navigate-track"></script>
+    <script src="https://series.ly/build/assets/calendar.1b8775f9.js" data-navigate-once></script>
+
+    <script defer src="https://datosly.com/script.js" data-website-id="ea6fe0e1-e9ce-4886-8a74-f27f181add83"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.umami) {
+                umami.identify('antonio5186');
+            } else {
+                var _checkUmami = setInterval(function () {
+                    if (window.umami) {
+                        clearInterval(_checkUmami);
+                        umami.identify('antonio5186');
+                    }
+                }, 200);
+                setTimeout(function () { clearInterval(_checkUmami); }, 5000);
+            }
+        });
+    </script>
+</head>
+
+<body class="antialiased">
+    <div class="wrapper dark:bg-gray-900 bg-gray-100">
+        <nav class="w-full bg-white border-b border-gray-200 dark:border-gray-700 dark:bg-gray-800 "
+            x-data="{ openMobileMenu: false, openNotifications: false, openSearch: false }">
+            <div class="max-w-screen-2xl mx-auto px-2 sm:px-4 lg:px-8 lg:h-14">
+                <div class="flex justify-between">
+                    <div id="main-navigation" class="flex items-center px-2 lg:px-0 py-3 lg:py-0 lg:gap-x-3">
+                        <div class="hidden md:flex justify-between h-auto">
+                            <a href="/" class="items-center flex dark:hidden" wire:navigate>
+                                <img src="https://series.ly/images/logo.png" class="mr-2 p-2 logo" alt="Series.ly Logo">
+                                <div class="absolute">
+                                    <svg viewBox="0 0 78 33" fill="one" xmlns="http://www.w3.org/2000/svg"
+                                        style="position: relative;right: 5px;width: -moz-available;top: 3px;"
+                                        height="33">
+                                        <path
+                                            d="M55 27H58.4432C59.0057 27 59.4201 27.1275 59.6838 27.3825C59.9475 27.6375 60.0806 28.025 60.0806 28.545C60.0806 28.8875 60.0053 29.1675 59.8571 29.38C59.7089 29.595 59.5231 29.745 59.3071 29.83C59.7717 29.955 60.0881 30.265 60.2539 30.755C60.3116 30.9325 60.3393 31.1375 60.3393 31.3725C60.3393 31.9325 60.2062 32.345 59.9425 32.6075C59.6788 32.87 59.2644 33.0025 58.7018 33.0025H55V27ZM58.5311 28.715C58.5311 28.3725 58.3578 28.2 58.0137 28.2H56.5495V29.4H58.0137C58.3578 29.4 58.5311 29.2275 58.5311 28.885V28.7125V28.715ZM58.7897 31.115C58.7897 30.7725 58.6164 30.6 58.2724 30.6H56.5495V31.8H58.2724C58.6164 31.8 58.7897 31.6275 58.7897 31.285V31.1125V31.115Z"
+                                            fill="#6b7280"></path>
+                                        <path
+                                            d="M65.8925 33H61.1133V27H65.8925V28.2H62.6628V29.3575H65.2019V30.5575H62.6628V31.8H65.8925V33Z"
+                                            fill="#6b7280"></path>
+                                        <path d="M69.5101 33H67.9606V28.2H66.1523V27H71.3183V28.2H69.5101V33Z"
+                                            fill="#6b7280"></path>
+                                        <path
+                                            d="M72.395 33H70.7148L72.9977 27H74.7206L77.0034 33H75.3233L74.9365 31.9275H72.7842L72.3975 33H72.395ZM73.171 30.815H74.5498L73.8616 28.8L73.1735 30.815H73.171Z"
+                                            fill="#6b7280"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="/" class="items-center hidden dark:flex" wire:navigate>
+                                <img src="https://series.ly/images/logo-dark.png" class="mr-2 p-2 logo"
+                                    alt="Series.ly Logo">
+                                <div class="absolute">
+                                    <svg viewBox="0 0 78 33" fill="one" xmlns="http://www.w3.org/2000/svg"
+                                        style="position: relative;right: 5px;width: -moz-available;top: 3px;"
+                                        height="33">
+                                        <path
+                                            d="M55 27H58.4432C59.0057 27 59.4201 27.1275 59.6838 27.3825C59.9475 27.6375 60.0806 28.025 60.0806 28.545C60.0806 28.8875 60.0053 29.1675 59.8571 29.38C59.7089 29.595 59.5231 29.745 59.3071 29.83C59.7717 29.955 60.0881 30.265 60.2539 30.755C60.3116 30.9325 60.3393 31.1375 60.3393 31.3725C60.3393 31.9325 60.2062 32.345 59.9425 32.6075C59.6788 32.87 59.2644 33.0025 58.7018 33.0025H55V27ZM58.5311 28.715C58.5311 28.3725 58.3578 28.2 58.0137 28.2H56.5495V29.4H58.0137C58.3578 29.4 58.5311 29.2275 58.5311 28.885V28.7125V28.715ZM58.7897 31.115C58.7897 30.7725 58.6164 30.6 58.2724 30.6H56.5495V31.8H58.2724C58.6164 31.8 58.7897 31.6275 58.7897 31.285V31.1125V31.115Z"
+                                            fill="#9ca0af"></path>
+                                        <path
+                                            d="M65.8925 33H61.1133V27H65.8925V28.2H62.6628V29.3575H65.2019V30.5575H62.6628V31.8H65.8925V33Z"
+                                            fill="#9ca0af"></path>
+                                        <path d="M69.5101 33H67.9606V28.2H66.1523V27H71.3183V28.2H69.5101V33Z"
+                                            fill="#9ca0af"></path>
+                                        <path
+                                            d="M72.395 33H70.7148L72.9977 27H74.7206L77.0034 33H75.3233L74.9365 31.9275H72.7842L72.3975 33H72.395ZM73.171 30.815H74.5498L73.8616 28.8L73.1735 30.815H73.171Z"
+                                            fill="#9ca0af"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="flex md:hidden justify-between h-auto">
+                            <a href="/" class="items-center flex lg:hidden" wire:navigate>
+                                <img src="https://series.ly/images/icon.png" class="mr-2 p-2 max-w-[3rem]"
+                                    alt="Series.ly Logo">
+                            </a>
+                        </div>
+                        <div class="hidden lg:flex h-14" x-show="!openSearch">
+                            <a href="https://series.ly" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Inicio
+                            </a>
+                            <div class="inline-flex xl:hidden items-center" x-cloak>
+                                <div class="relative px-4 xl.5:px-6 pt-0.5" x-data="{ showCatalog: false }">
+                                    <button x-on:click="showCatalog = !showCatalog" type="button"
+                                        class="group inline-flex items-center rounded-md text-sm font-medium tracking-wide uppercase border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200"
+                                        aria-expanded="false">
+                                        <span>Catálogo</span>
+                                        <svg class="ml-1.5 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                            aria-hidden="true">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="showCatalog" x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-1"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        x-transition:leave="transition ease-in duration-150"
+                                        x-transition:leave-start="opacity-100 translate-y-0"
+                                        x-transition:leave-end="opacity-0 translate-y-1"
+                                        class="w-42 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 dark:bg-gray-800 dark:border dark:border-gray-700">
+                                        <a href="https://series.ly/peliculas" wire:navigate
+                                            class="block px-4 py-2 text-sm font-medium uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 bg-gray-100 dark:text-white dark:bg-gray-700"
+                                            role="menuitem" tabindex="-1" id="catalog-menu-item-0">Películas</a>
+                                        <a href="https://series.ly/series" wire:navigate
+                                            class="block px-4 py-2 text-sm font-medium uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 "
+                                            role="menuitem" tabindex="-1" id="catalog-menu-item-1">Series</a>
+                                        <a href="https://series.ly/animes" wire:navigate
+                                            class="block px-4 py-2 text-sm font-medium uppercase text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 "
+                                            role="menuitem" tabindex="-1" id="catalog-menu-item-2">Animes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="https://series.ly/peliculas" wire:navigate
+                                class="text-blue-500 dark:text-white bg-gray-50 dark:bg-gray-700 hidden xl:inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Películas
+                            </a>
+                            <a href="https://series.ly/series" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 hidden xl:inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Series
+                            </a>
+                            <a href="https://series.ly/animes" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 hidden xl:inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Animes
+                            </a>
+                            <a href="https://series.ly/listas" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Listas
+                            </a>
+                            <a href="https://series.ly/calendario" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Calendario
+                            </a>
+                            <a href="https://series.ly/solicitudes" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase relative">
+                                Solicitudes
+                                <span class="flex absolute h-2 w-2 top-5 right-5 -mt-1 -mr-1">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                </span>
+                            </a>
+                            <a href="https://series.ly/soporte" wire:navigate
+                                class="border-transparent text-gray-600  hover:text-blue-600 dark:text-gray-400 dark:hover:text-gray-200 inline-flex items-center px-4 xl.5:px-6 pt-1 text-sm font-medium tracking-wide uppercase">
+                                Soporte
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex-grow flex items-center px-2 h-14 mt-2 lg:mt-0">
+                        <div class="flex-1 flex justify-end lg:ml-2">
+                            <a id="search-button" x-data="{ opened: false }" href="javascript:void(0);"
+                                x-on:click=" opened = !opened; $dispatch(opened ? 'open-search-modal' : 'close-search-modal');"
+                                class="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                <span class="sr-only">Search</span>
+                                <svg class="w-6 h-6" x-description="Heroicon name: outline/search"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <!-- Mobile menu button -->
+                        <button
+                            wire:snapshot="{&quot;data&quot;:[],&quot;memo&quot;:{&quot;id&quot;:&quot;whtmovgCRxYsNv8lhVG2&quot;,&quot;name&quot;:&quot;shared.dark-mode&quot;,&quot;path&quot;:&quot;peliculas&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;release&quot;:&quot;a-a-a&quot;,&quot;children&quot;:[],&quot;scripts&quot;:[],&quot;assets&quot;:[],&quot;errors&quot;:[],&quot;locale&quot;:&quot;es&quot;},&quot;checksum&quot;:&quot;7ed62ea12c8264218e3cf739021f3877efff1a6a7fe1cb6fdcd5bfdb5694bd96&quot;}"
+                            wire:effects="{&quot;listeners&quot;:[&quot;toggleDarkMode&quot;]}"
+                            wire:id="whtmovgCRxYsNv8lhVG2" id="darkmode-button" x-cloak x-data="{ isDarkMode: true }"
+                            x-on:click="isDarkMode = !isDarkMode; toggleDarkMode(); Livewire.dispatch('toggleDarkMode');"
+                            type="button"
+                            class="-mt-1 inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-400">
+                            <svg id="dark-mode-icon" x-bind:style="!isDarkMode ? 'display: none;' : ''"
+                                viewBox="0 0 24 24" fill="none" class="w-7 h-7">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M17.715 15.15A6.5 6.5 0 0 1 9 6.035C6.106 6.922 4 9.645 4 12.867c0 3.94 3.153 7.136 7.042 7.136 3.101 0 5.734-2.032 6.673-4.853Z"
+                                    class="fill-blue-400/20"></path>
+                                <path
+                                    d="m17.715 15.15.95.316a1 1 0 0 0-1.445-1.185l.495.869ZM9 6.035l.846.534a1 1 0 0 0-1.14-1.49L9 6.035Zm8.221 8.246a5.47 5.47 0 0 1-2.72.718v2a7.47 7.47 0 0 0 3.71-.98l-.99-1.738Zm-2.72.718A5.5 5.5 0 0 1 9 9.5H7a7.5 7.5 0 0 0 7.5 7.5v-2ZM9 9.5c0-1.079.31-2.082.845-2.93L8.153 5.5A7.47 7.47 0 0 0 7 9.5h2Zm-4 3.368C5 10.089 6.815 7.75 9.292 6.99L8.706 5.08C5.397 6.094 3 9.201 3 12.867h2Zm6.042 6.136C7.718 19.003 5 16.268 5 12.867H3c0 4.48 3.588 8.136 8.042 8.136v-2Zm5.725-4.17c-.81 2.433-3.074 4.17-5.725 4.17v2c3.552 0 6.553-2.327 7.622-5.537l-1.897-.632Z"
+                                    class="fill-blue-500"></path>
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M17 3a1 1 0 0 1 1 1 2 2 0 0 0 2 2 1 1 0 1 1 0 2 2 2 0 0 0-2 2 1 1 0 1 1-2 0 2 2 0 0 0-2-2 1 1 0 1 1 0-2 2 2 0 0 0 2-2 1 1 0 0 1 1-1Z"
+                                    class="fill-blue-500"></path>
+                            </svg>
+                            <svg id="light-mode-icon" x-bind:style="isDarkMode ? 'display: none;' : ''"
+                                viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-7 h-7">
+                                <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" class="fill-blue-400/20 stroke-blue-500">
+                                </path>
+                                <path
+                                    d="M12 4v1M17.66 6.344l-.828.828M20.005 12.004h-1M17.66 17.664l-.828-.828M12 20.01V19M6.34 17.664l.835-.836M3.995 12.004h1.01M6 6l.835.836"
+                                    class="stroke-blue-500"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <!-- Friends Page -->
+                        <a href="https://series.ly/amigos" wire:navigate
+                            class="flex-shrink-0 bg-white p-1 rounded-full text-gray-400 focus:outline-none hover:text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="flex items-center">
+                        <!-- Notifications -->
+                        <div wire:snapshot="{&quot;data&quot;:{&quot;perPage&quot;:20,&quot;hasMore&quot;:false,&quot;paginators&quot;:[{&quot;page&quot;:1},{&quot;s&quot;:&quot;arr&quot;}]},&quot;memo&quot;:{&quot;id&quot;:&quot;YdY1Rd9dEJN3QZa1i1a7&quot;,&quot;name&quot;:&quot;shared.notifications&quot;,&quot;path&quot;:&quot;peliculas&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;release&quot;:&quot;a-a-a&quot;,&quot;children&quot;:[],&quot;scripts&quot;:[],&quot;assets&quot;:[],&quot;errors&quot;:[],&quot;locale&quot;:&quot;es&quot;},&quot;checksum&quot;:&quot;6e5a2e6285998f6afb425f7aa145186e9c7519307d01be4a23aaae39c6ce694f&quot;}"
+                            wire:effects="{&quot;url&quot;:{&quot;paginators.page&quot;:{&quot;as&quot;:&quot;page&quot;,&quot;use&quot;:&quot;push&quot;,&quot;alwaysShow&quot;:false,&quot;except&quot;:null}},&quot;listeners&quot;:[&quot;newNotification&quot;]}"
+                            wire:id="YdY1Rd9dEJN3QZa1i1a7" class="ml-3 relative flex-shrink-0 notifications"
+                            x-data="{ openNotifications: false }">
+                            <button id="notifications-button" x-on:click="openNotifications = !openNotifications;"
+                                wire:click="markAllAsRead"
+                                class="flex-shrink-0 bg-white p-1 rounded-full text-gray-400 focus:outline-none hover:text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                <span class="sr-only">Ver notificaciones</span>
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]--> </button>
+                            <div style="display: none;" x-show="openNotifications"
+                                x-on:click.away="openNotifications = false"
+                                class="origin-top-center absolute right-0 w-72 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 dark:bg-gray-800 dark:border dark:border-gray-700"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95" role="menu"
+                                aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                                <div class="flex w-full col-span-full border-gray-200 max-h-[25rem] overflow-y-auto">
+                                    <div class="w-full flex flex-col items-center">
+                                        <!--[if BLOCK]><![endif]-->
+                                        <div class="p-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-500" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span
+                                                class="mt-2 block text-sm font-medium text-gray-800 dark:text-gray-400">
+                                                No hay notificaciones.
+                                            </span>
+                                        </div>
+                                        <!--[if ENDBLOCK]><![endif]-->
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    function fixNotificationLinks() {
+                                        document.querySelectorAll('.notification a').forEach(function (link) {
+                                            const href = link.getAttribute('href');
+                                            if (href && href.includes('series.ly')) {
+                                                const url = new URL(href);
+                                                link.setAttribute('href', url.pathname + url.search + url.hash);
+                                            }
+                                        });
+                                    }
+                                    fixNotificationLinks();
+
+                                    // También ejecutar cuando Livewire actualice el contenido
+                                    document.addEventListener('livewire:navigated', fixNotificationLinks);
+                                    if (typeof Livewire !== 'undefined') {
+                                        Livewire.hook('morph.updated', fixNotificationLinks);
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <!-- Profile dropdown -->
+                        <div id="profile-button" class="ml-4 relative hidden lg:block" x-data="{ openUserMenu: false }">
+                            <div class="flex items-center" x-on:click="openUserMenu = true">
+                                <div class="flex-shrink-0">
+                                    <button type="button"
+                                        class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                        <span class="sr-only">Menu</span>
+                                        <img class="h-8 w-8 rounded-full object-cover"
+                                            src="https://lh3.googleusercontent.com/a/ACg8ocKfM9MqWw4oSfpgCu4GWRBgfq8FiYwsWUjKlyqf5NULxBKLgw=s96-c"
+                                            alt="">
+                                    </button>
+                                </div>
+                                <div class="ml-3 overflow-hidden lg-to-xl:hidden">
+                                    <p
+                                        class="text-sm font-medium text-gray-700 group-hover:text-gray-900 cursor-pointer dark:text-gray-100 dark:group-hover:text-white truncate">
+                                        Antonio José Muriel Gálvez
+                                    </p>
+                                    <p
+                                        class="text-xs font-medium text-gray-500 group-hover:text-gray-700 cursor-pointer dark:text-gray-400 dark:group-hover:text-gray-100 truncate">
+                                        antonio5186
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="display: none;" x-show="openUserMenu" x-on:click.away="openUserMenu = false"
+                                class="md:origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 dark:bg-gray-800 dark:border dark:border-gray-700"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95" role="menu"
+                                aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                                <div class="block px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
+                                    Menú
+                                </div>
+                                <a href="https://series.ly/@antonio5186"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 "
+                                    role="menuitem" tabindex="-1" id="user-menu-item-1">Ver mi perfil</a>
+                                <a href="https://series.ly/configuracion"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 "
+                                    role="menuitem" tabindex="-1" id="user-menu-item-2">Configuración</a>
+                                <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                                <form method="POST" action="https://series.ly/logout">
+                                    <input type="hidden" name="_token" value="V423zb5xTearAy766ZmkS6iVDBrz4Y4mBaH6P8EU"
+                                        autocomplete="off"> <a href="https://series.ly/logout"
+                                        onclick="event.preventDefault(); this.closest('form').submit();"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                                        role="menuitem" tabindex="-1" id="user-menu-item-3">Cerrar sesión</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <button type="button" x-on:click="openMobileMenu = true"
+                            class=" ml-3 lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 dark:hover:bg-gray-700"
+                            aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Menú principal</span>
+                            <svg x-show="!openMobileMenu" class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg x-show="openMobileMenu" style="display:none;" class="h-7 w-7"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div x-cloak class="lg:hidden border-t border-gray-200 dark:border-gray-700" id="mobile-menu"
+                x-show="openMobileMenu" x-on:click.away="openMobileMenu = false">
+                <div class="pt-2 pb-3 space-y-1">
+                    <a href="https://series.ly" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Inicio
+                    </a>
+                    <a href="https://series.ly/peliculas" wire:navigate
+                        class="bg-blue-50 border-blue-500 text-blue-600 dark:text-white dark:bg-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Películas
+                    </a>
+                    <a href="https://series.ly/series" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Series
+                    </a>
+                    <a href="https://series.ly/animes" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Animes
+                    </a>
+                    <a href="https://series.ly/listas" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Listas
+                    </a>
+                    <a href="https://series.ly/calendario" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Calendario
+                    </a>
+                    <a href="https://series.ly/solicitudes" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Solicitudes
+                    </a>
+                    <a href="https://series.ly/soporte" wire:navigate
+                        class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Soporte
+                    </a>
+                </div>
+                <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center px-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full object-cover"
+                                src="https://lh3.googleusercontent.com/a/ACg8ocKfM9MqWw4oSfpgCu4GWRBgfq8FiYwsWUjKlyqf5NULxBKLgw=s96-c"
+                                alt="antonio5186">
+                        </div>
+                        <div class="ml-3" x-on:click.away="openUserMenu = false">
+                            <div class="text-base font-medium text-gray-800 dark:text-white">Antonio José Muriel Gálvez
+                            </div>
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">antonio5186</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 space-y-1">
+                        <a href="https://series.ly/@antonio5186" wire:navigate
+                            class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                            Ver mi perfil
+                        </a>
+                        <a href="https://series.ly/configuracion" wire:navigate
+                            class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                            Configuración
+                        </a>
+                        <form method="POST" action="https://series.ly/logout">
+                            <input type="hidden" name="_token" value="V423zb5xTearAy766ZmkS6iVDBrz4Y4mBaH6P8EU"
+                                autocomplete="off"> <a href="https://series.ly/logout"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:hover:text-white  block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                                Cerrar sesión
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- Page Content -->
+        <main>
+            <script>
+                window.postsListInitialData = {
+                    type: "movie",
+                    posts: [{ "id": 90416, "tmdb_id": 1133093, "title": "Lilly", "slug": "lilly", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/kkvJu6Dz7umgBHgpCiTyh3rPFhC.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/sQRWbq6nmrPrJCIIxbSB6bYvw5e.jpg", "description": "Basada en la historia de Lilly Ledbetter, una trabajadora supervisora de una f\u00e1brica de neum\u00e1ticos de Alabama cuyo \u00fanico objetivo es llevar a su familia a la clase media. Habiendo crecido en la pobreza, soporta un entorno laboral plagado de acoso generalizado para conseguir el mejor sueldo de su condado. Pero cuando se acerca su jubilaci\u00f3n, Lilly descubre que el sistema la ha estado enga\u00f1ando, pag\u00e1ndole cerca de la mitad de lo que ganaban los hombres con el mismo trabajo. Indignada, Lilly lucha contra esta injusticia ante el Tribunal Supremo, en los pasillos del Congreso y, finalmente, en la Casa Blanca, mientras fuerzas poderosas intentan acabar con ella.", "vote_average": 7.071, "trailer": "0", "hasTrailer": false, "item_date": "2025-05-09", "link": "\/peliculas\/lilly", "genres": [{ "id": 7, "name": "Drama" }, { "id": 10, "name": "Historia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90415, "tmdb_id": 1432547, "title": "Solo necesitas matar", "slug": "solo-necesitas-matar", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/t1H5WldX4rrHvyOanjXf0dRXFbj.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/4YWX4mRcIFxxtKGJaBlLPhuTMtx.jpg", "description": "Una soldado revive una y otra vez el d\u00eda antes de morir en batalla contra una invasi\u00f3n alien\u00edgena. Para romper el ciclo y cambiar su destino, debe descubrir la clave para sobrevivir.", "vote_average": 6.1, "trailer": "0", "hasTrailer": false, "item_date": "2026-01-09", "link": "\/peliculas\/solo-necesitas-matar", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 3, "name": "Animaci\u00f3n" }, { "id": 13, "name": "Misterio" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90413, "tmdb_id": 1272586, "title": "La batalla de Oslo", "slug": "la-batalla-de-oslo", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/x5bJdRN93mgtS6LmjMIN3gdO8n6.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/9DWvNSqPqeFC1tVjfeYK3SnNQIS.jpg", "description": "Segunda Guerra Mundial. El 9 de abril de 1940, el coronel Birger Eriksen, de 64 a\u00f1os, est\u00e1 al mando de la fortaleza de Oscarsborg, un puesto de control clave que todos los buques deben pasar cuando se dirigen a Oslo.", "vote_average": 6.5, "trailer": "0", "hasTrailer": false, "item_date": "2025-09-26", "link": "\/peliculas\/la-batalla-de-oslo", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 10, "name": "Historia" }, { "id": 18, "name": "B\u00e9lica" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90409, "tmdb_id": 1139904, "title": "La salvaci\u00f3n de Sixtine", "slug": "la-salvacion-de-sixtine", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/YCX9pvz3kn6SfLo3XD3GKsY6nE.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/jwdS1aZNQ6RC6ry0gh8PtpEFnqB.jpg", "description": "Despu\u00e9s de un corto noviazgo, Sophie se casa con Pierre, sin saber que su familia es muy religiosa y quiere convertirla. En medio de esta situaci\u00f3n, Sophie descubre que est\u00e1 embarazada.", "vote_average": 6.8, "trailer": "0", "hasTrailer": false, "item_date": "2024-10-12", "link": "\/peliculas\/la-salvacion-de-sixtine", "genres": [{ "id": 7, "name": "Drama" }, { "id": 16, "name": "Pel\u00edcula de TV" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90405, "tmdb_id": 1217584, "title": "Torrente Presidente", "slug": "torrente-presidente", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/a0Fn0PiGGiU74jIUelpce6z70i9.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/y1Vj3R6puWZebFH8OQirt6hMtwj.jpg", "description": "Jos\u00e9 Luis Torrente vuelve metido de lleno en la pol\u00edtica espa\u00f1ola, arrastrando su habitual mezcla de vulgaridad, oportunismo e ineptitud. La pel\u00edcula plantea una s\u00e1tira de la realidad social y pol\u00edtica del pa\u00eds mediante parodias, situaciones absurdas y numerosos cameos.", "vote_average": 6.452, "trailer": "tnH_xUjTObI", "hasTrailer": true, "item_date": "2026-03-13", "link": "\/peliculas\/torrente-presidente", "genres": [{ "id": 4, "name": "Comedia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90399, "tmdb_id": 1310830, "title": "La Vida Fuera", "slug": "la-vida-fuera", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/xj85RIHSG71bOaAvTYbGOuIbXIt.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/k9Oe0KXL1qYnEddxr1WR4VkB8eW.jpg", "description": "Roma, verano de 1980. Tras un acto impulsivo, la escritora Goliarda Sapienza acaba en prisi\u00f3n. El encuentro con un grupo de j\u00f3venes reclusas le cambiar\u00e1 la vida. Cuando recupera su libertad, Goliarda mantiene con ellas un v\u00ednculo profundo que nadie m\u00e1s puede comprender, un lazo que le llevar\u00e1 a redescubrir la alegr\u00eda de vivir y el impulso de volver a escribir.", "vote_average": 6.5, "trailer": "ilPyUh-4088", "hasTrailer": true, "item_date": "2025-05-22", "link": "\/peliculas\/la-vida-fuera", "genres": [{ "id": 7, "name": "Drama" }, { "id": 10, "name": "Historia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90396, "tmdb_id": 80733, "title": "The 13th Sign", "slug": "the-13th-sign", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/xK3pC1kJP5bZ1A0SUxECgRKrUbd.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/5m8wI5MJ93KWNnCDGdoKDGMXWIH.jpg", "description": "", "vote_average": 2.3, "trailer": "0", "hasTrailer": false, "item_date": "2000-08-13", "link": "\/peliculas\/the-13th-sign", "genres": [{ "id": 11, "name": "Terror" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90394, "tmdb_id": 1510323, "title": "Balearic", "slug": "balearic", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/hzzi4OqnVYTAvo2QwhrNZbxlG1Z.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/lyWfpYz3ISfwGvgFHf78xL9Ec0Q.jpg", "description": "En la v\u00edspera de San Juan, un d\u00eda propicio para la magia, un grupo de j\u00f3venes que se han colado en una piscina de una lujosa casa son atacados por tres feroces perros que los mantienen prisioneros. Mientras tanto, los vecinos se re\u00fanen en una fiesta en una villa cercana para celebrar el comienzo del verano.", "vote_average": 3, "trailer": "N7WyJhSDweY", "hasTrailer": true, "item_date": "2025-12-12", "link": "\/peliculas\/balearic", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90391, "tmdb_id": 1620996, "title": "La caja azul", "slug": "la-caja-azul-2026", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/dkIzjzfv7TbXqjbJKM51CZYORaR.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/9NyHabsIT6aVdLKw7ZYsBn7Vw6R.jpg", "description": "Pablo, un joven millonario solitario que vive en la Patagonia, sigue perseguido por un tr\u00e1gico accidente automovil\u00edstico que le cambi\u00f3 la vida. Su rutina aislada comienza a cambiar cuando conoce a Lara a trav\u00e9s de una aplicaci\u00f3n de citas centrada en una premisa peculiar: el intercambio de un objeto misterioso conocido como \u00abla caja azul\u00bb. A medida que su conexi\u00f3n se profundiza, Lara saca gradualmente a Pablo de su soledad autoimpuesta. Sin embargo, una advertencia an\u00f3nima pronto plantea interrogantes inquietantes sobre su identidad y sus verdaderas intenciones. Lo que comienza como una relaci\u00f3n \u00edntima se convierte r\u00e1pidamente en un tenso juego psicol\u00f3gico de manipulaci\u00f3n y sospecha", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "2026-04-16", "link": "\/peliculas\/la-caja-azul-2026", "genres": [{ "id": 14, "name": "Romance" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90384, "tmdb_id": 264414, "title": "No empieces nada en abril", "slug": "no-empieces-nada-en-abril", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/9al8FzT08oonYasL2YGUiKsiCDo.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/hYF8DT8XnlBB5CNdyygcuSX6C4P.jpg", "description": "Un panadero que ha hecho fortuna se lanza al comercio de pasta. Un amigo, harto de su superficialidad y de sus \u00ednfulas de nuevo rico, decide enga\u00f1arle y organiza la falsa visita de un pr\u00edncipe a su empresa.", "vote_average": 5.7, "trailer": "0", "hasTrailer": false, "item_date": "1935-10-23", "link": "\/peliculas\/no-empieces-nada-en-abril", "genres": [{ "id": 4, "name": "Comedia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90383, "tmdb_id": 38509, "title": "Polish Wedding", "slug": "polish-wedding", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/36De1BxBBzXyJ1eYVQlIoTUIwQm.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/jw3090ZOcyegQCeHWdFkDsPIaRh.jpg", "description": "", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "1998-01-16", "link": "\/peliculas\/polish-wedding", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90381, "tmdb_id": 1174024, "title": "Una cena... y lo que surja", "slug": "una-cena-y-lo-que-surja", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/pzLl8ek03BzT3Ezj7jN9RRSWCsr.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/8fxfzixsgVZNtZi5KUBW2OHU3Ar.jpg", "description": "Tras a\u00f1os de monoton\u00eda matrimonial, Sophie y Xavier necesitan aire fresco en su relaci\u00f3n. Una noche quedan para cenar con sus vecinos, los enamorados Ad\u00e8le y Alban, a quienes Xavier reprocha su falta de discreci\u00f3n y su vida desenfrenada. La cena da un giro cuando estos les hacen una proposici\u00f3n un tanto\u2026 indecente. \u00bfY si la soluci\u00f3n fuera dejarse llevar por los vecinos de arriba?", "vote_average": 5.772, "trailer": "dhMJWNfHqkQ", "hasTrailer": true, "item_date": "2024-04-03", "link": "\/peliculas\/una-cena-y-lo-que-surja", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90380, "tmdb_id": 441472, "title": "Ebony, Ivory and Jade", "slug": "ebony-ivory-and-jade", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/sSbJg7L64BDBymvZAzxbMNTpjz0.jpg", "cover": "https:\/\/series.ly\/images\/cover.webp", "description": "", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "1979-08-03", "link": "\/peliculas\/ebony-ivory-and-jade", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 7, "name": "Drama" }, { "id": 16, "name": "Pel\u00edcula de TV" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90379, "tmdb_id": 466313, "title": "Despues de la lluvia", "slug": "despues-de-la-lluvia-1999", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/qgV2hwqwTDAlVriIJJYfTKDJ7fE.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/c4ISjWpRPvxusIsXhf00F3PLIS0.jpg", "description": "Steph, lucha con su pasado y patrimonio en la nueva Sud\u00e1frica. Cuando su novia se hace amiga de un hombre sudafricano negro llamado Vusisizwe llegan los problemas", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "1999-09-21", "link": "\/peliculas\/despues-de-la-lluvia-1999", "genres": [{ "id": 7, "name": "Drama" }, { "id": 14, "name": "Romance" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90377, "tmdb_id": 187662, "title": "Una familia de Tokio", "slug": "una-familia-de-tokio", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/mXH2H3OmYFYk7x05Uv6OGi0uaq0.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/mciaieoKQ1nSugRFxdVetkSRqCP.jpg", "description": "Un viejo matrimonio formado por Shukichi Hirayama (Isao Hashizume) y Tomiko (Etsuko Ichihara) viven en una peque\u00f1a isla, y a petici\u00f3n de sus hijos van a Tokio a pasar unos d\u00edas, aunque no les gusta la gran ciudad. La pareja tiene tres hijos: Koichi (Masahiko Nishimura) es el hijo mayor que dirige un hospital; Shigeko (Tomoko Nakajima), la hija mayor, es due\u00f1a de un sal\u00f3n de belleza; y el hijo peque\u00f1o es Shuji (Satoshi Tsumabuki), que trabaja en el teatro. En esta visita conocer\u00e1n a la novia de Shuji, Noriko (Yu Aoi), pero lo que parec\u00eda que seria una reuni\u00f3n familiar m\u00e1s, se tuerce cuando Tomiko se desmaya en casa de su hijo mayor. Remake de \u0022Cuentos de Tokio\u0022 de Yasujiro Ozu.", "vote_average": 7.3, "trailer": "VjJb8jZqbFc", "hasTrailer": true, "item_date": "2013-01-18", "link": "\/peliculas\/una-familia-de-tokio", "genres": [{ "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90376, "tmdb_id": 36299, "title": "The Grave", "slug": "the-grave", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/zXX7uWgtrEujgDs6PAhDw7BRrzC.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/oA5k91Lu0IojIoRcbXtdAgNFAiP.jpg", "description": "Dos prisioneros escapan con la ayuda de su carcelero para buscar un tesoro que supuestamente est\u00e1 enterrado en la tumba de un millonario.", "vote_average": 4.9, "trailer": "0", "hasTrailer": false, "item_date": "1996-01-18", "link": "\/peliculas\/the-grave", "genres": [{ "id": 5, "name": "Crimen" }, { "id": 11, "name": "Terror" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90374, "tmdb_id": 362154, "title": "Rescatando a Mr. Wu", "slug": "rescatando-a-mr-wu", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/tVHaqO4aWdexA6f6NSisHmVDLW5.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/72d7ea1TARJvbnIo3hkzklTmQsC.jpg", "description": "En este thriller de suspense, el Sr. Wu, una estrella de cine de Hong Kong, es secuestrado por seis delincuentes impredecibles disfrazados de polic\u00edas. La historia se basa en el caso real de secuestro de una celebridad en 2004 transcurrido en China.", "vote_average": 6.4, "trailer": "0", "hasTrailer": false, "item_date": "2015-09-30", "link": "\/peliculas\/rescatando-a-mr-wu", "genres": [{ "id": 5, "name": "Crimen" }, { "id": 7, "name": "Drama" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90373, "tmdb_id": 30813, "title": "Objetivo: la Tierra", "slug": "objetivo-la-tierra", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/mi0e7tO62BFfTU4TxU7axYs5PLf.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/pMhCJS3gj0vOrm8cMIDF0496BSv.jpg", "description": "Tras perder a su mujer, Sam Adams, detective, debe salvar a la humanidad de una inminente invasi\u00f3n alien\u00edgena. Para ello cuenta con la ayuda de una ni\u00f1a abducida recientemente.", "vote_average": 4.2, "trailer": "0", "hasTrailer": false, "item_date": "1998-01-01", "link": "\/peliculas\/objetivo-la-tierra", "genres": [{ "id": 11, "name": "Terror" }, { "id": 15, "name": "Ciencia ficci\u00f3n" }, { "id": 16, "name": "Pel\u00edcula de TV" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90371, "tmdb_id": 294723, "title": "Visitante de invierno", "slug": "visitante-de-invierno", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/y8swIZH1wZIQ2F0bt2849RVKSNE.jpg", "cover": "https:\/\/series.ly\/images\/cover.webp", "description": "Tras sufrir un trastorno psicol\u00f3gico, a Ariel Lambert, un joven de veinte a\u00f1os, se le recomienda hacer reposo en un lugar tranquilo y apacible. En pleno invierno se muda con su madre y hermana a Villa Mar, un peque\u00f1o pueblo veraniego que en esa \u00e9poca del a\u00f1o se encuentra casi desierto. Poco a poco, Ariel descubrir\u00e1 que los ni\u00f1os que entran en una casa cercana, presuntamente vac\u00eda, no vuelven a salir jam\u00e1s.", "vote_average": 4.8, "trailer": "Mx-h29aAcdE", "hasTrailer": true, "item_date": "2008-04-03", "link": "\/peliculas\/visitante-de-invierno", "genres": [{ "id": 11, "name": "Terror" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90370, "tmdb_id": 195390, "title": "Mis maridos y yo", "slug": "mis-maridos-y-yo", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/7odrkRgQMSMp1DqNEjCLniSQJ6x.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/oKbKqRocbsDu3TII0gxLU3TN8tr.jpg", "description": "A pesar de que Anna quiere mejorar su relaci\u00f3n conyugal con Marco, acaba teniendo una aventura con Antonio, su nuevo maestro. Procura llevar con discreci\u00f3n su doble vida, pero cuando se queda embarazada, no sabe qui\u00e9n es el padre.", "vote_average": 5.8, "trailer": "0", "hasTrailer": false, "item_date": "1978-12-21", "link": "\/peliculas\/mis-maridos-y-yo", "genres": [{ "id": 4, "name": "Comedia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90369, "tmdb_id": 29475, "title": "The Five Heartbeats", "slug": "the-five-heartbeats", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/mmNKtRPFVfyUKCe8e89pGkeBlRK.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/7VxkSN5vAdYovqyrdGnxgwNyxQD.jpg", "description": "", "vote_average": 7.3, "trailer": "0", "hasTrailer": false, "item_date": "1991-03-29", "link": "\/peliculas\/the-five-heartbeats", "genres": [{ "id": 7, "name": "Drama" }, { "id": 12, "name": "M\u00fasica" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90366, "tmdb_id": 42834, "title": "Eleni", "slug": "eleni", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/3bXy4qj9FIBAYg6JlNI0AeqOC8g.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/y6tY3jYeO3weN3vYzkxwXodQRkj.jpg", "description": "Eleni es una mujer griega que lucha por mantener unida a su familia pese al clima de confusi\u00f3n que reina en su pa\u00eds desde el fin de la Segunda Guerra Mundial (1939-1945). Su tortura y asesinato a manos de guerrilleros rebeldes ha destrozado la vida de su hijo Nick, un periodista del New York Times que decide regresar a su pueblo para descubrir la verdad sobre la muerte de su madre. A partir de algunos recuerdos de su infancia, su obsesiva investigaci\u00f3n lo conduce directamente al hombre responsable del crimen. Basada en hechos reales.", "vote_average": 5.9, "trailer": "0", "hasTrailer": false, "item_date": "1985-11-01", "link": "\/peliculas\/eleni", "genres": [{ "id": 7, "name": "Drama" }, { "id": 10, "name": "Historia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90365, "tmdb_id": 375546, "title": "The Escapist", "slug": "the-escapist", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/qMbLIfrPCvwcJMJMCCvfLXaWctL.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/na2RoRAKXJMI3Hz6Niq2qfaX5CS.jpg", "description": "", "vote_average": 0, "trailer": "0", "hasTrailer": false, "item_date": "1983-04-02", "link": "\/peliculas\/the-escapist", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90364, "tmdb_id": 24116, "title": "The Skeptic", "slug": "the-skeptic", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/x7K5DIDhCwqDD9VIMVCMdDld9pK.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/4VCo3qgQZM3x5jnQIz3sIhLsI0W.jpg", "description": "Cuando al esc\u00e9ptico abogado Bryan Becket lo informan de la muerte de una t\u00eda lejana, s\u00f3lo piensa en heredar la mansi\u00f3n de su pariente. Para empezar, decide que su esposa Robin y su hijo se instalen en la casa hasta que se venda. Sin embargo, su compa\u00f1ero Sully le cuenta que su t\u00eda hab\u00eda hecho testamento, dejando la casa al Instituto de Tecnolog\u00eda dirigido por el doctor Warren Koven, un cient\u00edfico que investiga los trastornos del sue\u00f1o. Despu\u00e9s de visitar al Dr. Koven, Bryan empieza a sentirse acosado y angustiado por susurros y voces inexplicables, descubriendo as\u00ed que existe un mundo desconocido que es m\u00e1s aterrador que la realidad.", "vote_average": 5.4, "trailer": "0", "hasTrailer": false, "item_date": "2009-05-01", "link": "\/peliculas\/the-skeptic", "genres": [{ "id": 11, "name": "Terror" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90363, "tmdb_id": 201244, "title": "Los amores de Don Juan", "slug": "los-amores-de-don-juan", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/w7Oa99QNBe3jpmLCL0QsHFTbRN1.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/rYj1OIatvtijEFYUbVAE2idL1tC.jpg", "description": "Obligado a dejar Sevilla por motivos de faldas, don Juan Tenorio llega a Marruecos donde se hace amigo del sult\u00e1n Selim I, pero posteriormente pierde sus priviligeios al seducir a la favorita del sult\u00e1n.", "vote_average": 3.1, "trailer": "0", "hasTrailer": false, "item_date": "1971-03-10", "link": "\/peliculas\/los-amores-de-don-juan", "genres": [{ "id": 4, "name": "Comedia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90362, "tmdb_id": 172924, "title": "Le Mans, el circuito de la muerte", "slug": "le-mans-el-circuito-de-la-muerte", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/jMepL0xKzoCxnurGb8zkM0NBCP0.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/jac8fyhSbRgJvi5JLqOfpF8WyBs.jpg", "description": "El excampe\u00f3n John Lee Scott es el entrenador del joven piloto Dustin Rich. Est\u00e1n practicando con un nuevo modelo italiano que puede alcanzar una velocidad \u00fanica, elaborado con colaboraci\u00f3n de un mec\u00e1nico de 80 a\u00f1os de edad, experto en carreras. Joven e impetuoso, Dustin tiene una habilidad especial para escapar de accidentes peligrosos.", "vote_average": 4.3, "trailer": "0", "hasTrailer": false, "item_date": "1970-09-03", "link": "\/peliculas\/le-mans-el-circuito-de-la-muerte", "genres": [{ "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90361, "tmdb_id": 275257, "title": "El sue\u00f1o del Mara\u0027akame", "slug": "el-sueno-del-maraakame", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/gBz1zr2eaTHTAFaauJ0eScU7wk0.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/n7JT9flW0gntD1iGIORjaHIorKe.jpg", "description": "", "vote_average": 6.7, "trailer": "0", "hasTrailer": false, "item_date": "2016-10-14", "link": "\/peliculas\/el-sueno-del-maraakame", "genres": [{ "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90360, "tmdb_id": 77091, "title": "Cop Killers", "slug": "cop-killers", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/pVxRMb7ecro4yNqWjg7KwmMSq3A.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/eN9rCpJvqtE9RSVm3lD3AvlV6JV.jpg", "description": "", "vote_average": 5.4, "trailer": "0", "hasTrailer": false, "item_date": "1977-01-05", "link": "\/peliculas\/cop-killers", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90359, "tmdb_id": 101733, "title": "Zombie Ass Toilet Of The Dead", "slug": "zombie-ass-toilet-of-the-dead", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/jcVBTST6vzRbM6jBcaSulVycCJT.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/y8heN9YdP7C5s099S7olky4hkOG.jpg", "description": "Cargada de culpa por el suicidio de su hermana Ai, atormentada por los matones de la escuela secundaria, Megu acompa\u00f1a a un grupo de amigos mayores en un viaje de campamento al bosque: la chica inteligente Aya, su novio drogado Tak\u00e9, el modelo Maki y el nerd Naoi. Las cosas empiezan a ir mal cuando Maki encuentra un gusano-par\u00e1sito dentro de un pez que capturan y lo engulle con vida. Poco despu\u00e9s, y no tan inesperadamente en situaciones como esta, aparecen zombies y comienzan a complicar las cosas a\u00fan m\u00e1s.", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "2012-02-25", "link": "\/peliculas\/zombie-ass-toilet-of-the-dead", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 11, "name": "Terror" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90358, "tmdb_id": 79896, "title": "The Revenant", "slug": "the-revenant", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/bECzzYkRFlCZZAjQ9wboMGyWFcL.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/xxAZYZU9IfVazeyTooB6m5XJoew.jpg", "description": "Un militar muerto en combate se levanta de su tumba. Con la complicidad de su mejor amigo, ir\u00e1 descubriendo las caracter\u00edsticas de su nuevo estado de muerto viviente.", "vote_average": 6.1, "trailer": "0", "hasTrailer": false, "item_date": "2009-08-16", "link": "\/peliculas\/the-revenant", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 11, "name": "Terror" }, { "id": 18, "name": "B\u00e9lica" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90357, "tmdb_id": 47519, "title": "Big Tits Zombie", "slug": "big-tits-zombie", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/3QBiToMO1qicJ6TDq4uaD3vYsgo.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/nze990j4KZAeeF5xp6QR5I7Idz0.jpg", "description": "Un libro de los muertos medieval es descubierto en las catacumbas que hay bajo un club de strip-tease de un peque\u00f1o pueblo. Cuando una de las desesperadas strippers pone en pie un ej\u00e9rcito de no-muertos, el resto de ellas debe patear unos cuantos culos zombis para salvar el mundo.", "vote_average": 5.1, "trailer": "0", "hasTrailer": false, "item_date": "2010-05-15", "link": "\/peliculas\/big-tits-zombie", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 4, "name": "Comedia" }, { "id": 9, "name": "Fantas\u00eda" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90356, "tmdb_id": 93142, "title": "Atormentada", "slug": "atormentada", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/1h9zyJz58Wt1a1Z1BERVSofumEO.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/41rQ9Ebt2P89dYCuYyqkL7LdJcu.jpg", "description": "Un hombre con amnesia sufre el acoso de un grupo de hombres que le aseguran que posee algo muy valioso que les pertenece a ellos. Tras recuperar la memoria y la identidad perdidas, trata de averiguar, con la ayuda de su esposa, qu\u00e9 oscuros negocios ten\u00eda con ellos antes de perder la memoria...", "vote_average": 5.7, "trailer": "0", "hasTrailer": false, "item_date": "1974-08-23", "link": "\/peliculas\/atormentada", "genres": [{ "id": 5, "name": "Crimen" }, { "id": 11, "name": "Terror" }, { "id": 13, "name": "Misterio" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90355, "tmdb_id": 31700, "title": "Acero mortal", "slug": "acero-mortal", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/xPxO6KzyoMdqPjkjXnj4bOyrzSL.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/6kGa7secdjxLU6ytbbN5RDwAc90.jpg", "description": "El padre del polic\u00eda Johnny Modine es asesinado por un psic\u00f3pata con la cara desfigurada en la v\u00edspera de Navidad. Johnny es apartado del caso por sus superiores, pero seguir\u00e1 la investigaci\u00f3n por su cuenta para vengar a su padre. No sospecha que tambi\u00e9n \u00e9l es el blanco de un diab\u00f3lico plan de venganza.", "vote_average": 4.8, "trailer": "0", "hasTrailer": false, "item_date": "1987-12-11", "link": "\/peliculas\/acero-mortal", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 7, "name": "Drama" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90354, "tmdb_id": 1669597, "title": "1939-1975 La Espa\u00f1a de Franco en color", "slug": "1939-1975-la-espana-de-franco-en-color", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/2S16XgigZkyYTxPQb2YLoCjICyE.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/eDGrScmqBNKrwLOXHlRrYzDBLQA.jpg", "description": "A trav\u00e9s de im\u00e1genes de archivo coloreadas, se explica el decisivo per\u00edodo comprendido entre el final de la Guerra Civil y la muerte de Franco.", "vote_average": 5, "trailer": "0", "hasTrailer": false, "item_date": "2019-09-13", "link": "\/peliculas\/1939-1975-la-espana-de-franco-en-color", "genres": [{ "id": 6, "name": "Documental" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90351, "tmdb_id": 181076, "title": "Kill Ugly TV", "slug": "kill-ugly-tv", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/xUMZN0Mu63ntcYuTBOdOkuhWr7h.jpg", "cover": "https:\/\/series.ly\/images\/cover.webp", "description": "", "vote_average": 2.2, "trailer": "0", "hasTrailer": false, "item_date": "2007-06-09", "link": "\/peliculas\/kill-ugly-tv", "genres": [{ "id": 4, "name": "Comedia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90350, "tmdb_id": 31245, "title": "Hobgoblins", "slug": "hobgoblins", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/rwSVqMihUeRQR94UxWkGnRbn2ZJ.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/xVRFR46X0asgsSCW3y0lQcrGmBx.jpg", "description": "McCreedy, un anciano vigilante nocturno de un gran estudio de cine, advierte a Kevin, muchacho impulsivo, de que se mantenga alejado de cierto cuarto en el s\u00f3tano. La curiosidad de Kevin le hace no atender este consejo e investiga el porqu\u00e9. Penetra y se encuentra a los terribles Hobgoblins, criaturas traviesas que se mueven siguiendo impulsos de luz y que se apoderan de las fantas\u00edas de la gente. S\u00f3lo reviven de noche y, tras huir, han de ser capturados antes del amanecer o la ciudad correr\u00e1 peligro. Kevin corre a buscar ayuda de sus amigos.", "vote_average": 3.5, "trailer": "0", "hasTrailer": false, "item_date": "1988-07-14", "link": "\/peliculas\/hobgoblins", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 11, "name": "Terror" }, { "id": 15, "name": "Ciencia ficci\u00f3n" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90348, "tmdb_id": 1361740, "title": "Replicator", "slug": "replicator", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/aesiTVLEkQybmnoR76rEroM1XYL.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/93Zh4OJ1GR94XxrLSXOIpbdU0GF.jpg", "description": "Un joven defensor p\u00fablico investiga la repentina transformaci\u00f3n moral de los criminales de un peque\u00f1o pueblo, descubriendo siniestras fuerzas sobrenaturales y un desgarrador camino hacia la redenci\u00f3n.", "vote_average": 4.188, "trailer": "0", "hasTrailer": false, "item_date": "2024-10-20", "link": "\/peliculas\/replicator", "genres": [{ "id": 11, "name": "Terror" }, { "id": 15, "name": "Ciencia ficci\u00f3n" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90334, "tmdb_id": 1341803, "title": "Aza\u00f1a, cuatro d\u00edas de julio", "slug": "azana-cuatro-dias-de-julio", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/rcUOUgS5U9mrGYxf1bOp7mqPJpy.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/40h1VgKWpgVvicLvCpygWmllrnA.jpg", "description": "Aza\u00f1a cuenta la historia del \u00faltimo presidente de la II Rep\u00fablica Espa\u00f1ola despu\u00e9s del alzamiento militar que desemboc\u00f3 en la tr\u00e1gica Guerra Civil. El film recrea y humaniza la vida de la insigne figura pol\u00edtica, Aza\u00f1a, hasta sus \u00faltimos d\u00edas en Montauban pasando por la dureza del exilio. La pel\u00edcula narra las vivencias de esos d\u00edas y, a la vez, explora la relaci\u00f3n entre la historia y la ficci\u00f3n y reflexiona sobre c\u00f3mo los artistas intentan explicar una realidad hist\u00f3rica", "vote_average": 0, "trailer": "0", "hasTrailer": false, "item_date": "2008-04-12", "link": "\/peliculas\/azana-cuatro-dias-de-julio", "genres": [{ "id": 7, "name": "Drama" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90307, "tmdb_id": 1601797, "title": "\u00bfQuieres Ser Mi Novia?", "slug": "quieres-ser-mi-novia", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/oscW8xV8EhRYj7iAhyVlBohKqxo.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/1ZruuRXztqC3QQybbgbVxVrdNjv.jpg", "description": "La relaci\u00f3n de Javi y Lu enfrenta pruebas cuando surgen tentaciones: una joven con quien Javi tiene qu\u00edmica, y un hombre maduro que persigue a Lu. Entre humor y enredos, su amor es puesto a prueba.", "vote_average": 8.9, "trailer": "0", "hasTrailer": false, "item_date": "2026-02-12", "link": "\/peliculas\/quieres-ser-mi-novia", "genres": [{ "id": 4, "name": "Comedia" }, { "id": 14, "name": "Romance" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90306, "tmdb_id": 1157322, "title": "Franz Kafka", "slug": "franz-kafka", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/4bzQ0ka5ru65dEVS6MF3kKWKWvV.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/nXqRGRhFxa3v5rJsJUApYdKdiKu.jpg", "description": "Biopic del emblem\u00e1tico escritor checo del siglo XX Franz Kafka. Concebida como un mosaico caleidosc\u00f3pico, la pel\u00edcula sigue la huella que Kafka dej\u00f3 en el mundo desde su nacimiento en la Praga del siglo XIX hasta su muerte en la Viena posterior a la I Guerra Mundial.", "vote_average": 5.923, "trailer": "VTzsJRIxV1k", "hasTrailer": true, "item_date": "2025-09-25", "link": "\/peliculas\/franz-kafka", "genres": [{ "id": 7, "name": "Drama" }, { "id": 10, "name": "Historia" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90305, "tmdb_id": 1241693, "title": "Nosotros, lejos del ruido", "slug": "nosotros-lejos-del-ruido", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/oAy3gPhFqNX5gV9RwaDAem1KQ3x.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/nHrNhMQZMCMlCEO8V8xzH64IKts.jpg", "description": "En el vibrante caos de Bombay, dos millennials socialmente inadaptados se descubren y se enamoran. Enfrentados a sus miedos internos y a las agobiantes expectativas de la sociedad, se embarcan en una escapada emocional y geogr\u00e1fica a las monta\u00f1as, en busca de un espacio donde finalmente puedan ser ellos mismos.", "vote_average": 5.5, "trailer": "0", "hasTrailer": false, "item_date": "2026-02-20", "link": "\/peliculas\/nosotros-lejos-del-ruido", "genres": [{ "id": 7, "name": "Drama" }, { "id": 14, "name": "Romance" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90304, "tmdb_id": 68270, "title": "Scarred", "slug": "scarred", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/phtiATGi5DJiOIQcm1JUHl8X6IU.jpg", "cover": "https:\/\/series.ly\/images\/cover.webp", "description": "", "vote_average": 5.393, "trailer": "0", "hasTrailer": false, "item_date": "2005-12-06", "link": "\/peliculas\/scarred", "genres": [{ "id": 11, "name": "Terror" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90303, "tmdb_id": 1352874, "title": "The Crucifix: La Sangre Del Exorcista", "slug": "the-crucifix-blood-of-the-exorcist", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/iGDTo2uEUppEipTZjmEy6R72gwV.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/be5T7oHxmDG4ytEimwPdmDHZD9N.jpg", "description": "Un exorcismo sale terriblemente mal y desata un esp\u00edritu vengativo que ha estado encerrado durante siglos.", "vote_average": 6.9, "trailer": "0", "hasTrailer": false, "item_date": "2025-01-09", "link": "\/peliculas\/the-crucifix-blood-of-the-exorcist", "genres": [{ "id": 11, "name": "Terror" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90299, "tmdb_id": 254304, "title": "Jossy\u0027s (Joshi zu)", "slug": "jossys-joshi-zu", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/a5A5SffM4m2wQWHXXRm1b4OqMml.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/59yLoTu3rinBo1hzJmKDU2qrU6w.jpg", "description": "Para luchar contra un monstruo malicioso, cinco mujeres se re\u00fanen frente al comandante Charles contra su voluntad. Las cinco mujeres son seleccionadas porque cada una tiene un apellido que representa un color. Las cinco mujeres est\u00e1n llenas de dudas sobre lo que pueden hacer colectivamente, pero se enfrentan al monstruo usando su t\u00e9cnica letal \u0022Women Tornado\u0022. Las cinco mujeres solo pueden usar el \u0022Tornado de mujeres\u0022 cuando est\u00e1n juntas.  Traducci\u00f3n del ingl\u00e9s-Jossy\u0027s es una pel\u00edcula de comedia japonesa tokusatsu de 2014 dirigida por Y\u016bichi Fukuda. Fue lanzado el 7 de junio de 2014.", "vote_average": 6.4, "trailer": "0", "hasTrailer": false, "item_date": "2014-06-07", "link": "\/peliculas\/jossys-joshi-zu", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 4, "name": "Comedia" }, { "id": 15, "name": "Ciencia ficci\u00f3n" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90298, "tmdb_id": 1613798, "title": "Venganza", "slug": "venganza-2026", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/ggJGx8fwwy21gEIXYusIlHcUn8z.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/jJmlCFi5EjpH5vHmOczRiVDm0qS.jpg", "description": "", "vote_average": 6.263, "trailer": "0", "hasTrailer": false, "item_date": "2026-02-26", "link": "\/peliculas\/venganza-2026", "genres": [{ "id": 1, "name": "Acci\u00f3n" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90296, "tmdb_id": 1659087, "title": "180", "slug": "180", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/9ISjrhA38HpSSGtfiCk8lpziC3K.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/iQSXJs6RbTumcwxMjCedDoK99rx.jpg", "description": "Un inesperado incidente de tr\u00e1fico deja a su hijo en estado cr\u00edtico. El padre, enfurecido, se adentra en una oscura espiral de confusi\u00f3n emocional y venganza.", "vote_average": 5.147, "trailer": "0", "hasTrailer": false, "item_date": "2026-04-16", "link": "\/peliculas\/180", "genres": [{ "id": 5, "name": "Crimen" }, { "id": 7, "name": "Drama" }, { "id": 17, "name": "Suspense" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90294, "tmdb_id": 1623125, "title": "Una historia de gorilas contada por David Attenborough", "slug": "a-gorilla-story-told-by-david-attenborough", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/kyfsiPQsJxdgf8gOtYkUhwojN6l.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/hQFl9Ph7KXcRDc3BbN9mGkNivNh.jpg", "description": "El conocido naturalista David Attenborough cuenta la historia de un asombroso grupo de gorilas, desde su primer encuentro con ellos en los a\u00f1os setenta hasta hoy.", "vote_average": 8.6, "trailer": "0", "hasTrailer": false, "item_date": "2026-04-17", "link": "\/peliculas\/a-gorilla-story-told-by-david-attenborough", "genres": [{ "id": 6, "name": "Documental" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }, { "id": 90257, "tmdb_id": 120162, "title": "Dragon Rapide", "slug": "dragon-rapide", "type": "movie", "poster": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w300\/aiEqsOcBE5oDUmy5oKXUFvEt5yT.jpg", "cover": "https:\/\/images.weserv.nl\/?output=webp\u0026url=https:\/\/image.tmdb.org\/t\/p\/w780\/ubVkdiSsESIzJa0PFQn0gTA7Mw6.jpg", "description": "Segunda Rep\u00fablica. En julio de 1936, Francisco Franco, Capit\u00e1n General de las Canarias, tiene que trasladarse, en secreto, a Marruecos para ponerse al frente de las tropas sublevadas, con el fin derribar el Gobierno del Frente Popular. El Dragon Rapide, un avi\u00f3n brit\u00e1nico, ser\u00e1 clave en el desarrollo de la operaci\u00f3n.", "vote_average": 5.8, "trailer": "0", "hasTrailer": false, "item_date": "1986-07-10", "link": "\/peliculas\/dragon-rapide", "genres": [{ "id": 18, "name": "B\u00e9lica" }], "bookmark": { "favorite": false, "following": false, "viewed": false, "pending": false, "markedAs": null, "collection": false } }],
+                    pagination: { "current_page": 1, "last_page": 521, "per_page": 48, "total": 24974, "has_more": true },
+                    showUpdates: false,
+                    filters: { "languages": [{ "id": 1, "name": "Espa\u00f1ol - Espa\u00f1a", "key": "esp", "icon": "https:\/\/series.ly\/storage\/languages\/2L1Nmmxn9Jn4bQoIq6XuLPN9hZZzuVX1Df4H7iRE.png" }, { "id": 2, "name": "Espa\u00f1ol - Latino", "key": "lat", "icon": "https:\/\/series.ly\/storage\/languages\/U1ISpv2vkO5HQiW8K1S1spu1TC13UTbbdy2fX5Lu.png" }, { "id": 3, "name": "Espa\u00f1ol - Subtitulado", "key": "espsub", "icon": "https:\/\/series.ly\/storage\/languages\/a4e2E1vZTCvqqg6TMxcqaZG6O8JDvDHW.png" }, { "id": 4, "name": "Ingl\u00e9s", "key": "eng", "icon": "https:\/\/series.ly\/storage\/languages\/NldnbaUUTIrLiIeWNNGQiyN5Lyhgl7O2VZggqztO.png" }, { "id": 5, "name": "Ingl\u00e9s - Subtitulado", "key": "engsub", "icon": "https:\/\/series.ly\/storage\/languages\/u3NTaTdN5QVav81RfozhMIorIyW8VjNRfWmHU11e.png" }, { "id": 6, "name": "Catal\u00e1n", "key": "cat", "icon": "https:\/\/series.ly\/storage\/languages\/M1u8ROqNgH0cKLM2KEPIsT8FpXsJ14SH0xi5djAs.png" }, { "id": 7, "name": "Catal\u00e1n - Subtitulado", "key": "catsub", "icon": "https:\/\/series.ly\/storage\/languages\/2NU4kbM4RtnDUehihnu8DdwgeSTV7j1BQwNgJTA3.png" }, { "id": 8, "name": "Japones - Subtitulado", "key": "japsub", "icon": "https:\/\/series.ly\/storage\/languages\/BeDK8TVNaj1nayi6lihJVUq53PUe1vAI.png" }, { "id": 10, "name": "Coreano - Subtitulado", "key": "krsub", "icon": "https:\/\/series.ly\/storage\/languages\/Bunv80uGf0YPSuTouv4X3QatTko6ftwG.png" }], "qualities": [{ "id": 9, "name": "4K" }, { "id": 8, "name": "HD 1080p" }, { "id": 7, "name": "HD 720p" }, { "id": 6, "name": "SD HDTV" }, { "id": 5, "name": "SD 480p" }, { "id": 3, "name": "DVDscr" }, { "id": 10, "name": "Brscreener" }, { "id": 2, "name": "TS" }, { "id": 1, "name": "Cam" }], "genres": [{ "id": 1, "tmdb_id": 28, "name": "Acci\u00f3n" }, { "id": 3, "tmdb_id": 16, "name": "Animaci\u00f3n" }, { "id": 2, "tmdb_id": 12, "name": "Aventura" }, { "id": 18, "tmdb_id": 10752, "name": "B\u00e9lica" }, { "id": 15, "tmdb_id": 878, "name": "Ciencia ficci\u00f3n" }, { "id": 4, "tmdb_id": 35, "name": "Comedia" }, { "id": 5, "tmdb_id": 80, "name": "Crimen" }, { "id": 6, "tmdb_id": 99, "name": "Documental" }, { "id": 7, "tmdb_id": 18, "name": "Drama" }, { "id": 8, "tmdb_id": 10751, "name": "Familia" }, { "id": 9, "tmdb_id": 14, "name": "Fantas\u00eda" }, { "id": 10, "tmdb_id": 36, "name": "Historia" }, { "id": 13, "tmdb_id": 9648, "name": "Misterio" }, { "id": 12, "tmdb_id": 10402, "name": "M\u00fasica" }, { "id": 16, "tmdb_id": 10770, "name": "Pel\u00edcula de TV" }, { "id": 14, "tmdb_id": 10749, "name": "Romance" }, { "id": 17, "tmdb_id": 53, "name": "Suspense" }, { "id": 11, "tmdb_id": 27, "name": "Terror" }, { "id": 19, "tmdb_id": 37, "name": "Western" }], "networks": [] }
+                };
+            </script>
+            <style>
+                [x-cloak] {
+                    display: none !important;
+                }
+            </style>
+
+            <div class="max-w-screen-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8" x-data="postsListSection('movie')"
+                x-init="init()" x-cloak>
+
+
+                <template x-if="carousel.length > 0">
+                    <div class="relative my-1.5 xl:my-3 z-3 hidden lg:block"
+                        x-data="{ activeSlide: 0, autoSlideInterval: null }"
+                        x-init="autoSlideInterval = setInterval(() => { activeSlide = (activeSlide + 1) % carousel.length }, 6000)"
+                        @mouseenter="clearInterval(autoSlideInterval)"
+                        @mouseleave="autoSlideInterval = setInterval(() => { activeSlide = (activeSlide + 1) % carousel.length }, 6000)">
+                        <!-- Carousel wrapper -->
+                        <div class="overflow-hidden relative rounded-lg h-56 sm:h-64 xl:h-80 2xl:h-96">
+                            <template x-for="(post, idx) in carousel" :key="'carousel-' + post.id">
+                                <div class="bg-cover bg-center w-full h-full rounded-lg bg-overlay-black-70 transition-all duration-700 ease-in-out absolute inset-0"
+                                    :style="'background-image: url(' + post.cover + ')'" x-show="activeSlide === idx"
+                                    x-transition:enter="transition ease-out duration-700"
+                                    x-transition:enter-start="opacity-0 transform translate-x-full"
+                                    x-transition:enter-end="opacity-100 transform translate-x-0"
+                                    x-transition:leave="transition ease-in duration-700"
+                                    x-transition:leave-start="opacity-100 transform translate-x-0"
+                                    x-transition:leave-end="opacity-0 transform -translate-x-full">
+                                    <div class="grid grid-cols-1 py-6 lg:py-8 xl:py-12 px-16 lg:px-20 w-full">
+                                        <div class="flex flex-row justify-start items-center w-full space-x-5">
+                                            <img class="media-img h-36 sm:h-48 xl:h-64 rounded-lg hidden lg:block"
+                                                :src="post.poster" :alt="post.title"
+                                                onerror="this.src='https://series.ly/images/default-poster.png'" />
+                                            <div class="flex flex-col justify-between space-y-3">
+                                                <div class="genres flex flex-row gap-x-3">
+                                                    <template x-for="genre in post.genres?.slice(0, 3)" :key="genre.id">
+                                                        <a :href="'https://series.ly/peliculas?g=' + genre.id"
+                                                            wire:navigate
+                                                            class="rounded-full bg-transparent px-3 py-1.5 text-2xs md:text-xs uppercase w-max font-medium border border-gray-400 hover:bg-gray-400/20 text-gray-400 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-700"
+                                                            x-text="genre.name"></a>
+                                                    </template>
+                                                </div>
+                                                <a :href="post.link" wire:navigate
+                                                    class="text-xl xl:text-3xl font-bold text-gray-100 dark:text-white text-left uppercase"
+                                                    x-text="post.title"></a>
+
+                                                <div class="flex items-center">
+                                                    <template x-for="i in 5" :key="i">
+                                                        <svg class="w-5 h-5"
+                                                            :class="i <= Math.round(post.vote_average / 2) ? 'text-yellow-400' : 'text-gray-400'"
+                                                            fill="currentColor" viewBox="0 0 20 20">
+                                                            <path
+                                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                        </svg>
+                                                    </template>
+                                                </div>
+                                                <p class="text-base text-gray-400 lg:w-[90%] line-clamp-1 lg:line-clamp-2 xl:line-clamp-4"
+                                                    x-text="post.description"></p>
+                                                <div class="flex space-x-3 justify-start">
+                                                    <a :href="post.link" wire:navigate
+                                                        class="w-auto inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-xs uppercase font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                            stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Ver ahora
+                                                    </a>
+                                                    <template x-if="post.hasTrailer">
+                                                        <button @click="openTrailerModal(post.trailer)"
+                                                            class="w-auto hidden sm:inline-flex items-center px-4 py-2 border shadow-sm text-xs uppercase font-medium tracking-wide rounded-md text-gray-700 dark:text-white bg-white dark:bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-700">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="-ml-1 mr-2 h-5 w-5" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            Ver trailer
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Slider indicators -->
+                        <div class="flex absolute bottom-5 left-1/2 z-30 space-x-3 -translate-x-1/2">
+                            <template x-for="(post, idx) in carousel" :key="'indicator-' + post.id">
+                                <button type="button" class="w-3 h-3 rounded-full transition-colors duration-300"
+                                    :class="activeSlide === idx ? 'bg-white' : 'bg-gray-500/50 hover:bg-gray-500'"
+                                    @click="activeSlide = idx" :aria-label="'Slide ' + (idx + 1)"></button>
+                            </template>
+                        </div>
+
+                        <!-- Slider controls -->
+                        <button type="button"
+                            class="flex absolute top-0 left-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
+                            @click="activeSlide = activeSlide === 0 ? carousel.length - 1 : activeSlide - 1">
+                            <span
+                                class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-500/30 group-hover:bg-white/50 dark:group-hover:bg-gray-500/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-500/70 group-focus:outline-none">
+                                <svg class="w-5 h-5 text-white sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                <span class="sr-only">Anterior</span>
+                            </span>
+                        </button>
+                        <button type="button"
+                            class="flex absolute top-0 right-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
+                            @click="activeSlide = (activeSlide + 1) % carousel.length">
+                            <span
+                                class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 bg-white/30 dark:bg-gray-500/30 group-hover:bg-white/50 dark:group-hover:bg-gray-500/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-500/70 group-focus:outline-none">
+                                <svg class="w-5 h-5 text-white sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7"></path>
+                                </svg>
+                                <span class="sr-only">Siguiente</span>
+                            </span>
+                        </button>
+                    </div>
+                </template>
+
+                <div class="flex flex-col px-2 sm:px-0">
+
+                    <div class="w-full max-w-screen-2xl mx-auto">
+                        <div class="flex flex-row flex-wrap gap-2 py-3">
+                            <button type="button" @click="$dispatch('open-filters-modal')"
+                                class="w-auto inline-flex items-center px-4 py-2 border shadow-sm text-xs uppercase font-medium tracking-wide rounded-md text-gray-700 dark:text-white bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Añadir filtros
+                            </button>
+
+                            <template x-if="hasFilters">
+                                <button @click="resetFilters()"
+                                    class="w-auto inline-flex items-center px-4 py-2 border shadow-sm text-xs uppercase font-medium tracking-wide rounded-md text-gray-700 dark:text-white bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="-ml-1 mr-2 h-5 w-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg>
+                                    Limpiar filtros
+                                </button>
+                            </template>
+
+                            <button type="button" @click="toggleUpdates()"
+                                :class="showUpdates ? 'text-white bg-blue-600 border-blue-600 hover:bg-blue-700' : 'text-gray-700 dark:text-white bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-700'"
+                                class="w-auto inline-flex items-center px-4 py-2 border shadow-sm text-xs uppercase font-medium tracking-wide rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Últimas actualizaciones
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div x-show="loading"
+                        class="fixed inset-0 bg-white/50 dark:bg-gray-900/50 z-50 flex items-center justify-center">
+                        <div class="flex flex-col items-center space-y-2">
+                            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Cargando...</span>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="flex flex-col my-3 w-full max-w-screen-2xl mx-auto">
+                            <div
+                                class="media-list grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-x-4 auto-cols-auto">
+                                <template x-for="(post, index) in posts" :key="post.id">
+                                    <div class="media-item relative group mb-4">
+
+                                        <a :href="post.link" wire:navigate class="block relative">
+
+                                            <div
+                                                class="flex items-center space-x-0.5 text-yellow-400 absolute top-2 left-2 px-2 py-1 bg-black/70 rounded-md z-10">
+                                                <svg fill="currentColor" viewBox="0 0 24 24" class="w-3 h-3 mr-0.5">
+                                                    <path
+                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                                                    </path>
+                                                </svg>
+                                                <span class="text-white text-2xs"
+                                                    x-text="post.vote_average?.toFixed(1)"></span>
+                                            </div>
+
+
+                                            <div
+                                                class="media border border-gray-100 rounded-lg shadow-md transition ease-in-out duration-200 dark:border-none overflow-hidden">
+                                                <img class="media-img w-full aspect-[2/3] object-cover"
+                                                    :src="post.poster" :alt="post.title" loading="lazy"
+                                                    onerror="this.src='https://series.ly/images/default-poster.png'" />
+                                            </div>
+                                        </a>
+
+
+                                        <div
+                                            class="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+
+                                            <button @click.prevent="toggleBookmark(index, 'favorite')"
+                                                :class="post.bookmark?.favorite ? 'text-red-500' : 'text-white/70 hover:text-red-500'"
+                                                class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm transition-colors"
+                                                title="Favorito">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+
+
+                                            <template x-if="post.type !== 'movie'">
+                                                <button @click.prevent="toggleBookmark(index, 'following')"
+                                                    :class="post.bookmark?.following ? 'text-yellow-300' : 'text-white/70 hover:text-yellow-300'"
+                                                    class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm transition-colors"
+                                                    title="Siguiendo">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M5.85 3.5a.75.75 0 00-1.117-1 9.719 9.719 0 00-2.348 4.876.75.75 0 001.479.248A8.219 8.219 0 015.85 3.5zM19.267 2.5a.75.75 0 10-1.118 1 8.22 8.22 0 011.987 4.124.75.75 0 001.48-.248A9.72 9.72 0 0019.266 2.5z" />
+                                                        <path fill-rule="evenodd"
+                                                            d="M12 2.25A6.75 6.75 0 005.25 9v.75a8.217 8.217 0 01-2.119 5.52.75.75 0 00.298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 107.48 0 24.583 24.583 0 004.83-1.244.75.75 0 00.298-1.205 8.217 8.217 0 01-2.118-5.52V9A6.75 6.75 0 0012 2.25zM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 004.496 0l.002.1a2.25 2.25 0 11-4.5 0z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </template>
+
+
+                                            <button @click.prevent="toggleBookmark(index, 'viewed')"
+                                                :class="post.bookmark?.viewed ? 'text-green-500' : 'text-white/70 hover:text-green-500'"
+                                                class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm transition-colors"
+                                                title="Visto">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+
+
+                                            <button @click.prevent="toggleBookmark(index, 'pending')"
+                                                :class="post.bookmark?.pending ? 'text-yellow-500' : 'text-white/70 hover:text-yellow-500'"
+                                                class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm transition-colors"
+                                                title="Pendiente">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+
+
+                                            <button @click.prevent="openCollectionModal(post.id)"
+                                                :class="post.bookmark?.collection ? 'text-blue-500' : 'text-white/70 hover:text-blue-500'"
+                                                class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm transition-colors"
+                                                title="Añadir a lista">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path
+                                                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                                </svg>
+                                            </button>
+
+
+                                            <template x-if="post.hasTrailer">
+                                                <button @click.prevent="openTrailerModal(post.trailer)"
+                                                    class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white/70 hover:text-white transition-colors"
+                                                    title="Ver trailer">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </template>
+                                        </div>
+
+
+                                        <a :href="post.link" wire:navigate>
+                                            <p class="z-10 text-md font-medium mt-3 hover:text-blue-500 leading-4 truncate dark:text-gray-200 pb-2"
+                                                x-text="post.title"></p>
+                                        </a>
+                                    </div>
+                                </template>
+                            </div>
+
+
+                            <div x-show="!loading && posts.length === 0" class="flex h-48 w-full col-span-full my-5">
+                                <div class="m-auto flex flex-col items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-300 mb-3"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p class="text-gray-500 dark:text-gray-400">No se ha encontrado ningún resultado.
+                                    </p>
+                                    <p class="text-gray-500 dark:text-gray-400">Intenta con otra palabra clave o filtro.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div x-show="loadingMore" class="w-full max-w-screen-2xl mx-auto py-4">
+                    <div class="flex justify-center items-center space-x-2">
+                        <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Cargando más...</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="bg-white border-t border-gray-100 mt-auto  dark:bg-gray-800 dark:border-gray-700">
+            <div class="max-w-screen-2xl mx-auto py-6 px-4 md:flex md:items-center md:justify-between lg:px-8">
+                <div class="flex justify-center space-x-3 md:order-2">
+                    <a href="https://twitter.com/SerieslyES" target="_blank" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Twitter</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                        </svg>
+                    </a>
+                    <a href="https://discord.gg/pmDQYHxjnA" target="_blank" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Discord</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="m3.58 21.196h14.259l-.681-2.205 1.629 1.398 1.493 1.338 2.72 2.273v-21.525c-.068-1.338-1.22-2.475-2.648-2.475l-16.767.003c-1.427 0-2.585 1.139-2.585 2.477v16.24c0 1.411 1.156 2.476 2.58 2.476zm10.548-15.513-.033.012.012-.012zm-7.631 1.269c1.833-1.334 3.532-1.27 3.532-1.27l.137.135c-2.243.535-3.26 1.537-3.26 1.537s.272-.133.747-.336c3.021-1.188 6.32-1.102 9.374.402 0 0-1.019-.937-3.124-1.537l.186-.183c.291.001 1.831.055 3.479 1.26 0 0 1.844 3.15 1.844 7.02-.061-.074-1.144 1.666-3.931 1.726 0 0-.472-.534-.808-1 1.63-.468 2.24-1.404 2.24-1.404-.535.337-1.023.537-1.419.737-.609.268-1.219.4-1.828.535-2.884.468-4.503-.315-6.033-.936l-.523-.266s.609.936 2.174 1.404c-.411.469-.818 1.002-.818 1.002-2.786-.066-3.802-1.806-3.802-1.806 0-3.876 1.833-7.02 1.833-7.02z"
+                                fill="#9ca3af" data-original="#000000" style="" class="" />
+                            <path
+                                d="m14.308 12.771c.711 0 1.29-.6 1.29-1.34 0-.735-.576-1.335-1.29-1.335v.003c-.708 0-1.288.598-1.29 1.338 0 .734.579 1.334 1.29 1.334z"
+                                fill="#9ca3af" data-original="#000000" style="" class="" />
+                            <path
+                                d="m9.69 12.771c.711 0 1.29-.6 1.29-1.34 0-.735-.575-1.335-1.286-1.335l-.004.003c-.711 0-1.29.598-1.29 1.338 0 .734.579 1.334 1.29 1.334z"
+                                fill="#9ca3af" data-original="#000000" style="" class="" />
+                        </svg>
+                    </a>
+                    <a href="https://t.me/seriesly" target="_blank" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Telegram</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" fill="#9ca3af" r="12" data-original="#039be5" style="" class="" />
+                            <path
+                                d="m5.491 11.74 11.57-4.461c.537-.194 1.006.131.832.943l.001-.001-1.97 9.281c-.146.658-.537.818-1.084.508l-3-2.211-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953z"
+                                fill="#1f2937" data-original="#ffffff" style="" class="" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="mt-8 md:mt-0 md:order-1">
+                    <p class="text-center text-base text-gray-500 dark:text-gray-400">
+                        &copy; 2026 Series.ly - Tu Televisión Social.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div>
+        <div x-data="postsListFilters()" x-show="open" x-cloak @keydown.escape.window="closeModal()"
+            class="fixed inset-0 z-50 bg-gray-100/95 dark:bg-gray-900/95"
+            x-transition:enter="transition ease-in duration-200 transform" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-out duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
+
+            <div class="relative w-full h-full md:max-w-screen-2xl mx-auto px-2 sm:px-6 overflow-y-auto">
+
+                <div class="flex-1 flex items-center justify-center lg:ml-2 lg:justify-end mt-5">
+                    <div class="w-full">
+                        <div class="flex justify-center items-center">
+                            <div class="px-6 ml-auto">
+                                <svg @click="closeModal()" xmlns="http://www.w3.org/2000/svg"
+                                    class="h-6 w-6 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div x-show="!loaded" class="py-20 flex justify-center">
+                    <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </div>
+
+
+                <div x-show="loaded" class="w-full md:w-2/3 mx-auto pb-10">
+                    <form @submit.prevent="apply()">
+
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+                                </svg>
+                                Idiomas
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                                <template x-for="lang in languages" :key="lang.id">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="checkbox" :value="lang.id"
+                                            :checked="selectedLanguages.includes(lang.id)"
+                                            @change="toggleLanguage(lang.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <span
+                                            class="ml-2 inline-flex items-center text-sm font-medium text-gray-400 uppercase">
+                                            <img :src="lang.icon" :alt="lang.name"
+                                                class="w-6 h-6 rounded-full object-cover">
+                                            <span class="ml-2" x-text="lang.key"></span>
+                                        </span>
+                                    </label>
+                                </template>
+                            </div>
+                            <p x-show="languages.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
+                                No hay idiomas disponibles</p>
+                        </div>
+
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0118 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0118 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 016 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5" />
+                                </svg>
+                                Calidades
+                            </h3>
+                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                                <template x-for="quality in qualities" :key="quality.id">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="checkbox" :value="quality.id"
+                                            :checked="selectedQualities.includes(quality.id)"
+                                            @change="toggleQuality(quality.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <span
+                                            class="ml-2 text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                                            x-text="quality.name"></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
+                                </svg>
+                                Géneros
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                                <template x-for="genre in genres" :key="genre.id">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="checkbox" :value="genre.id"
+                                            :checked="selectedGenres.includes(genre.id)" @change="toggleGenre(genre.id)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <span
+                                            class="ml-2 text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                                            x-text="genre.name"></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+
+                        <template x-if="networks.length > 0">
+                            <div class="mb-6">
+                                <h3
+                                    class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z" />
+                                    </svg>
+                                    Plataformas
+                                </h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                                    <template x-for="network in networks" :key="network.id">
+                                        <label class="flex items-center cursor-pointer group">
+                                            <input type="checkbox" :value="network.id"
+                                                :checked="selectedNetworks.includes(network.id)"
+                                                @change="toggleNetwork(network.id)"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <span
+                                                class="ml-2 text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+                                                x-text="network.name"></span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                </svg>
+                                Puntuación mínima
+                            </h3>
+                            <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+                                <template x-for="rating in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="rating">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="checkbox" :value="rating"
+                                            :checked="selectedRatings.includes(rating)" @change="toggleRating(rating)"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <span
+                                            class="ml-2 inline-flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                                            <span x-text="rating"></span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                                fill="currentColor" class="w-4 h-4 ml-0.5 text-yellow-400">
+                                                <path fill-rule="evenodd"
+                                                    d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="ml-0.5 text-gray-400">+</span>
+                                        </span>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 text-left flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 text-gray-600 dark:text-gray-300 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                                </svg>
+                                Rango de años
+                            </h3>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                        Desde
+                                        <span
+                                            class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                            x-text="fromYear"></span>
+                                    </label>
+                                    <input type="range" x-model.number="fromYear" min="1900" max="2026"
+                                        @input="if (fromYear > toYear) { fromYear = toYear }"
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600">
+                                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span>1900</span>
+                                        <span>2026</span>
+                                    </div>
+                                </div>
+
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                                        Hasta
+                                        <span
+                                            class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                            x-text="toYear"></span>
+                                    </label>
+                                    <input type="range" x-model.number="toYear" min="1900" max="2026"
+                                        @input="if (toYear < fromYear) { toYear = fromYear }"
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600">
+                                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span>1900</span>
+                                        <span>2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div
+                            class="flex justify-end items-center py-3 mt-5 border-t border-gray-200 dark:border-gray-700">
+                            <button type="button" @click="closeModal()"
+                                class="uppercase bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                                Cerrar
+                            </button>
+                            <button type="submit"
+                                class="uppercase ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                Aplicar filtros
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div wire:snapshot="{&quot;data&quot;:{&quot;showForm&quot;:false,&quot;postId&quot;:null,&quot;collectionId&quot;:null,&quot;name&quot;:null,&quot;description&quot;:null,&quot;image&quot;:null,&quot;private&quot;:null,&quot;show&quot;:false},&quot;memo&quot;:{&quot;id&quot;:&quot;98I4QWCYgHOadTtR9ebp&quot;,&quot;name&quot;:&quot;shared.modals.create-collection&quot;,&quot;path&quot;:&quot;peliculas&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;release&quot;:&quot;a-a-a&quot;,&quot;children&quot;:[],&quot;scripts&quot;:[],&quot;assets&quot;:[],&quot;errors&quot;:[],&quot;locale&quot;:&quot;es&quot;},&quot;checksum&quot;:&quot;dbe2d7f6069cceff3a5fbdeeab3586a565f053b5350fd955c101d8482320fd1d&quot;}"
+            wire:effects="{&quot;listeners&quot;:[&quot;show&quot;,&quot;showWithParams&quot;]}"
+            wire:id="98I4QWCYgHOadTtR9ebp">
+            <div x-data="{ show: window.Livewire.find('98I4QWCYgHOadTtR9ebp').entangle('show').live }"
+                class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                x-show="show" style="display: none;" x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0">
+                <div class="min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:p-0">
+                    <div x-on:click="show = false; "
+                        class="fixed inset-0 bg-neutral-900 dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 transition-opacity"
+                        aria-hidden="true"></div>
+                    <span x-on:click="show = false; " class="hidden sm:inline-block sm:h-screen"
+                        aria-hidden="true">&#8203;</span>
+
+                    <div
+                        class=" inline-block align-top rounded-lg text-left overflow-x-hidden transform transition-all my-8 p-4 sm:p-6 w-5/6 lg:max-w-3xl bg-white shadow-xl dark:bg-gray-800">
+                        <div class="mb-4"
+                            x-data="{ showForm: window.Livewire.find('98I4QWCYgHOadTtR9ebp').entangle('showForm').live, imagePreview: ''}">
+                            <div class="flex justify-center items-center">
+                                <div class="">
+                                    <h3 class="text-sm md:text-lg leading-6 font-medium text-gray-900 dark:text-white"
+                                        id="create-collection-title">
+                                        Listas
+                                    </h3>
+                                </div>
+                                <div class="ml-auto self-start">
+                                    <svg wire:click="close" xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 cursor-pointer text-gray-400 dark:text-gray-400" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <div x-show="showForm">
+                                    <form class="space-y-4 divide-y divide-gray-200 dark:divide-gray-700"
+                                        wire:submit="submit" autocomplete="off">
+                                        <div class="flex flex-col">
+                                            <div class="grid grid-cols-1 gap-x-4">
+                                                <div class="mt-2">
+                                                    <a href="javascript:void(0)" x-on:click="showForm = false"
+                                                        class="text-blue-600 font-medium flex items-center space-x-2 dark:text-gray-400">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                                                        </svg>Volver
+                                                    </a>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="name"
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-400 sm:mt-px sm:pt-2 mb-1">
+                                                        Nombre
+                                                    </label>
+                                                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                                                        <input type="text" name="name" id="name" wire:model="name"
+                                                            class="shadow-sm focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md dark:bg-transparent dark:border-gray-700 dark:text-gray-400 ">
+                                                    </div>
+                                                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="description"
+                                                        class="block text-sm font-medium text-gray-700 dark:text-gray-400 sm:mt-px sm:pt-2 mb-1">
+                                                        Descripción (opcional)
+                                                    </label>
+                                                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                                                        <textarea wire:model="description" id="description"
+                                                            name="description" rows="3"
+                                                            class="shadow-sm block w-full focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md dark:bg-transparent dark:border-gray-700 dark:text-gray-400 "></textarea>
+                                                    </div>
+                                                    <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+                                                </div>
+                                                <div class="relative flex items-start">
+                                                    <div class="flex items-center h-5">
+                                                        <input id="private" wire:model="private"
+                                                            aria-describedby="private" name="private" type="checkbox"
+                                                            class="h-4 w-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-600">
+                                                    </div>
+                                                    <div class="ml-3 text-sm">
+                                                        <label for="private"
+                                                            class="font-medium text-gray-700 dark:text-gray-400">Privada</label>
+                                                        <p id="private" class="text-gray-500 dark:text-gray-400">Indica
+                                                            si quieres que la lista sea privada (sólo tu puedes verla).
+                                                        </p>
+                                                        <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pt-5">
+                                            <div class="flex justify-end">
+                                                <a href="javascript:void(0)" wire:click="close"
+                                                    class="uppercase bg-white hover:bg-gray-50 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                                                    Cancelar
+                                                </a>
+                                                <a href="javascript:void(0)" wire:click="submit"
+                                                    wire:loading.class="pointer-events-none opacity-70"
+                                                    class="uppercase ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                    Guardar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div x-show="!showForm">
+                                    <!--[if BLOCK]><![endif]-->
+                                    <div
+                                        class="mt-3 border border-yellow-100 bg-yellow-50 text-sm font-medium text-yellow-800 px-4 py-2 rounded-md">
+                                        <p>No tienes ninguna lista creada. ¡Empieza a crear una!</p>
+                                    </div>
+                                    <!--[if ENDBLOCK]><![endif]-->
+                                    <div class="mt-3 w-full">
+                                        <a href="javascript:void(0)" x-on:click="showForm = true"
+                                            class="text-blue-600 font-medium flex items-center space-x-2 text-center text-sm sm:text-base justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            </svg>Guardar en nueva lista
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div wire:snapshot="{&quot;data&quot;:{&quot;trailer&quot;:null,&quot;show&quot;:false},&quot;memo&quot;:{&quot;id&quot;:&quot;v7e4lIa5h13OOfHHv1aD&quot;,&quot;name&quot;:&quot;shared.modals.trailer&quot;,&quot;path&quot;:&quot;peliculas&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;release&quot;:&quot;a-a-a&quot;,&quot;children&quot;:[],&quot;scripts&quot;:[],&quot;assets&quot;:[],&quot;errors&quot;:[],&quot;locale&quot;:&quot;es&quot;},&quot;checksum&quot;:&quot;96ad2d99b4aa78786758a9c82783e25456b822f06512e076ec70785c4d39070f&quot;}"
+            wire:effects="{&quot;listeners&quot;:[&quot;show&quot;,&quot;showWithParams&quot;]}"
+            wire:id="v7e4lIa5h13OOfHHv1aD">
+            <div x-data="{ show: window.Livewire.find('v7e4lIa5h13OOfHHv1aD').entangle('show').live }"
+                class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                x-show="show" style="display: none;" x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0">
+                <div class="min-h-screen pt-4 px-2 sm:px-4 pb-20 text-center sm:p-0">
+                    <div x-on:click="show = false; document.querySelector(&#039;.iframe-container&#039;).remove();"
+                        class="fixed inset-0 bg-neutral-900 dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 transition-opacity"
+                        aria-hidden="true"></div>
+                    <span x-on:click="show = false; " class="hidden sm:inline-block sm:h-screen"
+                        aria-hidden="true">&#8203;</span>
+
+                    <div
+                        class="max-h-[90vh] overflow-y-auto inline-block align-top rounded-lg text-left overflow-x-hidden transform transition-all my-8 p-4 sm:p-6 w-5/6 lg:max-w-3xl ">
+                        <div>
+                            <div class="flex justify-center items-center">
+                                <div class="">
+                                    <h3 class=" text-lg leading-6 font-medium text-gray-900 dark:text-white"
+                                        id="trailer-modal-title"></h3>
+                                </div>
+                                <div class="ml-auto self-start">
+                                    <svg wire:click="close" xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 cursor-pointer text-gray-400 dark:text-gray-400" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mt-6 dark:border-gray-700 dark:divide-gray-700">
+                                <!--[if BLOCK]><![endif]--><!--[if ENDBLOCK]><![endif]-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script
+        data-navigate-once="true">window.livewireScriptConfig = { "csrf": "V423zb5xTearAy766ZmkS6iVDBrz4Y4mBaH6P8EU", "uri": "\/livewire\/update", "progressBar": "", "nonce": "" };</script>
+
+    <div>
+        <div id="overlay" style="display: none;"
+            class="z-50 fixed inset-0 bg-neutral-900 dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 transition-opacity"
+            aria-hidden="true"></div>
+        <div id="notification-advice" x-cloak class="fixed inset-x-0 bottom-0 z-50"
+            x-data="{ hidden: true, accepted: false }"
+            x-init="() => { setTimeout(() => { if (('Notification' in window) && Notification.permission == 'default') hidden = false; }, 3500) }"
+            x-show="!hidden" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-out duration-100"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div
+                class="flex items-center gap-x-6 bg-blue-600 border-t-2 border-blue-700 py-2.5 px-6 sm:px-3.5 sm:before:flex-1">
+                <p class="hidden md:block text-sm leading-6 text-white">
+                    <strong class="font-semibold">🔔 Notificaciones Push</strong><svg viewBox="0 0 2 2"
+                        class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
+                        <circle cx="1" cy="1" r="1" />
+                    </svg>Series.ly solicita permisos para enviar notificaciones a tu dispositivo.<svg viewBox="0 0 2 2"
+                        class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
+                        <circle cx="1" cy="1" r="1" />
+                    </svg><a id="request-permission" href="javascript:void(0);"
+                        x-on:click="hidden = true; Notification.requestPermission().then(p => { if (p === 'granted' && typeof window.subscribeToPush === 'function') window.subscribeToPush(); });"
+                        class="underline">Ok, estoy de acuerdo.</a>
+                </p>
+                <p class="block md:hidden text-xs leading-6 text-white">
+                    ¿Te gustaría recibir notificaciones?<svg viewBox="0 0 2 2"
+                        class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
+                        <circle cx="1" cy="1" r="1" />
+                    </svg><a href="javascript:void(0);" class="underline"
+                        x-on:click="Notification.requestPermission().then(p => { if (p === 'granted' && typeof window.subscribeToPush === 'function') window.subscribeToPush(); }); hidden = true;">Si,
+                        permitir.</a>
+                </p>
+                <div class="flex flex-1 justify-end">
+                    <button type="button" class="-m-3 p-3 focus-visible:outline-offset-[-4px]"
+                        x-on:click="setCookie('hdntf', true); hidden = true;">
+                        <span class="sr-only">Dismiss</span>
+                        <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div x-data="searchModal()" x-show="show" x-cloak @open-search-modal.window="open()"
+        @close-search-modal.window="close()" @keydown.escape.window="close()"
+        class="fixed w-full h-full top-0 left-0 origin-top-right bg-gray-100/95 border-t shadow-xl z-30 dark:bg-gray-900/95 dark:border-gray-700"
+        x-transition:enter="transition ease-in duration-200 transform" x-transition:enter-start="-translate-y-full"
+        x-transition:enter-end="translate-y-0" x-transition>
+        <div class="relative w-full h-full md:max-w-screen-2xl mx-auto px-2 sm:px-6 overflow-y-auto">
+            <div>
+
+                <div class="flex-1 flex items-center justify-center lg:ml-2 lg:justify-end mt-5">
+                    <div id="search-form" class="w-full">
+                        <label for="search-query" class="sr-only">Buscar</label>
+                        <div class="flex justify-center items-center">
+                            <input type="search" x-ref="searchInput" id="search-query" name="query"
+                                autocomplete="one-time-code" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                data-form-type="other" data-lpignore="true" data-1p-ignore="true"
+                                @input.debounce.500ms="search($event.target.value)"
+                                class="block w-full md:w-2/3 lg:w-1/3 mx-auto pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-gray-600 dark:focus:border-gray-600"
+                                placeholder="Buscar (mínimo 2 caracteres)...">
+
+
+                            <div class="px-6" x-show="loading" x-cloak>
+                                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </div>
+
+
+                            <div class="px-6" x-show="!loading">
+                                <svg @click="close()" xmlns="http://www.w3.org/2000/svg"
+                                    class="h-6 w-6 cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div :class="{ 'opacity-50 pointer-events-none': loading }">
+
+                    <template x-if="people.length > 0">
+                        <div class="my-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <h3 class="font-medium text-lg dark:text-gray-200">Reparto</h3>
+                            </div>
+                            <div class="flex flex-row gap-6 overflow-x-auto pt-1 pb-2">
+                                <template x-for="person in people" :key="person.id">
+                                    <div class="flex-shrink-0 w-32 text-center">
+                                        <a :href="person.link" wire:navigate class="block group">
+                                            <div class="relative inline-block">
+                                                <img :src="person.image" :alt="person.name"
+                                                    class="w-24 h-24 object-cover rounded-full shadow-md group-hover:ring-2 group-hover:ring-blue-500 transition-all mx-auto"
+                                                    onerror="this.src='https://series.ly/images/person.png'">
+                                                <div
+                                                    class="absolute bottom-0 right-2 bg-blue-600 text-white text-2xs px-1.5 py-0.5 rounded-full">
+                                                    <span x-text="person.posts_count"></span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <a :href="person.link" wire:navigate class="block mt-2 hover:text-blue-500">
+                                            <p class="text-sm font-medium dark:text-gray-200 leading-tight"
+                                                x-text="person.name"></p>
+                                        </a>
+                                        <p class="text-2xs text-gray-500 mt-0.5" x-text="person.known_for"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+
+                    <template x-if="posts.length > 0">
+                        <div>
+                            <div class="flex flex-col my-5">
+                                <div class="flex items-center gap-3">
+                                    <h3 class="font-medium text-lg dark:text-gray-200">Resultados</h3>
+                                    <svg x-show="loading" class="animate-spin h-5 w-5 text-blue-500"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div
+                                    class="media-list grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-x-4 auto-cols-auto">
+                                    <template x-for="(post, index) in posts" :key="post.id">
+                                        <div class="media-item relative group mb-4">
+                                            <a :href="post.link" wire:navigate class="block relative">
+
+                                                <div
+                                                    class="flex items-center space-x-0.5 text-yellow-400 absolute top-2 left-2 px-2 py-1 bg-black/70 rounded-md z-10">
+                                                    <svg fill="currentColor" viewBox="0 0 24 24" class="w-3 h-3 mr-0.5">
+                                                        <path
+                                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                                                        </path>
+                                                    </svg>
+                                                    <span class="text-white text-2xs"
+                                                        x-text="parseFloat(post.vote_average).toFixed(1)"></span>
+                                                </div>
+
+                                                <div class="absolute bottom-2 left-2 z-10">
+                                                    <span
+                                                        class="px-1.5 py-0.5 text-2xs font-medium rounded bg-black/70 text-white capitalize"
+                                                        x-text="post.type === 'movie' ? 'Película' : post.type === 'serie' ? 'Serie' : 'Anime'"></span>
+                                                </div>
+                                                <img :src="post.poster" :alt="post.title"
+                                                    class="media-img w-full aspect-[2/3] object-cover rounded-lg shadow-md"
+                                                    loading="lazy"
+                                                    onerror="this.src='https://series.ly/images/default-poster.png'">
+                                            </a>
+                                            <a :href="post.link" wire:navigate>
+                                                <p class="z-10 text-md font-medium mt-3 hover:text-blue-500 leading-4 truncate dark:text-gray-200 pb-2"
+                                                    x-text="post.title"></p>
+                                            </a>
+
+
+                                            <div
+                                                class="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button @click.prevent="toggleBookmark(index, 'favorite')"
+                                                    :class="post.bookmark?.favorite ? 'text-red-500' : 'text-white/70 hover:text-red-500'"
+                                                    class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                                <button @click.prevent="toggleBookmark(index, 'viewed')"
+                                                    :class="post.bookmark?.viewed ? 'text-green-500' : 'text-white/70 hover:text-green-500'"
+                                                    class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                                <button @click.prevent="toggleBookmark(index, 'pending')"
+                                                    :class="post.bookmark?.pending ? 'text-yellow-500' : 'text-white/70 hover:text-yellow-500'"
+                                                    class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+
+                                                <template x-if="post.hasTrailer">
+                                                    <button
+                                                        @click.prevent="Livewire.dispatchTo('shared.modals.trailer', 'showWithParams', { trailer: post.trailer })"
+                                                        class="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white/70 hover:text-white transition-colors"
+                                                        title="Ver trailer">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+
+                            <div class="flex flex-col" x-show="pagination.has_more">
+                                <div class="mt-5 mb-10 text-center">
+                                    <button @click="loadMore()" :disabled="loading"
+                                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
+                                        <span x-show="!loading">Cargar más</span>
+                                        <span x-show="loading">Cargando...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+
+                    <template
+                        x-if="posts.length === 0 && people.length === 0 && query.length >= 2 && !loading && hasSearched">
+                        <div class="flex h-56 w-auto col-span-full">
+                            <div class="m-auto flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-300 mb-3"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-gray-500">No se ha encontrado ningún resultado.</p>
+                                <p class="text-gray-500">Intenta con otra palabra clave.</p>
+                            </div>
+                        </div>
+                    </template>
+
+
+                    <template x-if="query.length < 2 && !loading">
+                        <div class="flex h-56 w-auto col-span-full">
+                            <div class="m-auto flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-300 mb-3"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-gray-500">Escribe al menos 2 caracteres para buscar.</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.userId = window.userId || '186014';
+    </script>
+    <meta name="vapid-public-key"
+        content="BHVU8rsGdGPiHymcwEDPdkay2P-fSWp5bc6ZzoVOt3fXSg0X4qqGV4oni1_svNBCjh4DH9iB7x3CceafXX3I1Ho">
+    <meta name="push-root-domain" content=".series.ly">
+    <script src="https://series.ly/build/assets/push-sw.d3d4b329.js" data-navigate-once></script>
+
+</body>
+
+</html>

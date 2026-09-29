@@ -1,0 +1,18 @@
+- arduino
+
+- esp32
+
+- potenciometros 10k para ajustar volumenes
+
+- fader (potenciometros en linea)
+
+- botones (switch)
+
+- puertas logicas
+
+- 10 values sn74hc series dip: ne555, lm324, lm393, ua 741, uln2803, lm358, lm386, ne5532, uln 2003, pc817.
+
+- transistores bc 327,337,517,..., 558
+
+- dips amp/timer/driver/optocoupler ic kit 
+

@@ -1,0 +1,14 @@
+﻿[Unit]
+Description=Nexus Network API
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/nexus/api
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 3003
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+SpeechRecognition
+PyAudio
+faster-whisper
+transformers
+torch
+torchaudio
+numpy
+soundfile
+pygame
+sentencepiece
+sacremoses
+customtkinter
+omegaconf
+TTS==0.22.0
+transformers==4.37.2

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Imperio de Carreteras — Peaje y Tráfico</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- GSAP for premium UI animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  </head>
+  <body>
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Overlay UI -->
+    <div id="ui-container">
+      
+      <!-- Top Bar: Level and Money -->
+      <div class="top-bar">
+        <div class="level-container ui-panel">
+          <div class="level-badge">
+            <span class="level-label">NIVEL</span>
+            <span id="level-display" class="level-number">1</span>
+          </div>
+          <div class="xp-info">
+            <span class="xp-label">Experiencia</span>
+            <div class="xp-bar-bg">
+              <div id="xp-bar-fill" class="xp-bar-fill"></div>
+              <div class="xp-bar-glow"></div>
+            </div>
+          </div>
+        </div>
+
+        <header class="ui-header ui-panel">
+          <h1>Imperio de Carreteras</h1>
+          <div class="money-display">
+            <span class="money-icon">💰</span>
+            $<span id="money">0</span>
+          </div>
+          <div class="income-per-sec">
+            +$<span id="eps">0.0</span>/s &bull; $<span id="income-rate">1</span>/coche
+          </div>
+        </header>
+
+        <div class="stats-panel ui-panel">
+          <div class="stat-item">
+            <span class="stat-label">🚗 Vehículos</span>
+            <span id="car-count" class="stat-value">1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">🛣️ Carreteras</span>
+            <span id="road-count" class="stat-value">1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="upgrades-panel ui-panel">
+        <h2 class="panel-title">
+          <span class="panel-icon">⬆</span>
+          Mejoras
+        </h2>
+        
+        <button id="buy-car-btn" class="upgrade-btn" data-tier="1">
+          <div class="upgrade-icon">🚗</div>
+          <div class="upgrade-info">
+            <span class="upgrade-name">Añadir Vehículo</span>
+            <span class="upgrade-desc">Despliega un nuevo coche en la carretera</span>
+          </div>
+          <div class="upgrade-cost">
+            <span class="cost-label">COSTE</span>
+            <span class="cost-value">$<span id="car-cost">10</span></span>
+          </div>
+        </button>
+
+        <button id="upgrade-toll-btn" class="upgrade-btn locked" disabled>
+          <div class="upgrade-icon">💰</div>
+          <div class="upgrade-info">
+            <div class="upgrade-name">Subir Peaje</div>
+            <div class="upgrade-desc" id="toll-desc">Nivel 2 requerido</div>
+          </div>
+          <div class="upgrade-cost">
+            <div class="cost-label">Costo</div>
+            <div class="cost-value" id="toll-cost">25</div>
+          </div>
+        </button>
+        <div id="dynamic-roads-container"></div>
+        <button id="expand-metropolis-btn" class="upgrade-btn locked" data-tier="5">
+          <div class="upgrade-icon">🌆</div>
+          <div class="upgrade-info">
+            <span class="upgrade-name">Expandir Metrópolis</span>
+            <span class="upgrade-desc" id="metro-desc">Se desbloquea en Nivel 5</span>
+          </div>
+          <div class="upgrade-cost">
+            <span class="cost-label">COSTE</span>
+            <span class="cost-value">$<span id="metro-cost">1000</span></span>
+          </div>
+        </button>
+
+      </div>
+
+      <!-- Minimap -->
+      <div class="minimap-container ui-panel" id="minimap-container">
+        <canvas id="minimap" width="160" height="160"></canvas>
+        <div class="minimap-label">MAPA</div>
+      </div>
+
+    </div>
+    
+    <!-- Speed effect overlay -->
+    <div id="speed-effect"></div>
+    
+    <!-- Level-up Notification -->
+    <div id="levelup-toast" class="levelup-toast">
+      <div class="levelup-inner">
+        <span class="levelup-icon">⭐</span>
+        <div>
+          <div class="levelup-title">¡Sube de Nivel!</div>
+          <div id="levelup-text" class="levelup-subtitle">Has alcanzado el Nivel 2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Menu -->
+    <button id="admin-toggle-btn" class="admin-toggle" title="Admin Menu">⚙️</button>
+    <div id="admin-panel" class="ui-panel admin-panel hidden">
+      <h3>⚠ Panel de Administrador</h3>
+      <button id="admin-money-btn" class="admin-btn">💰 +$50,000</button>
+      <button id="admin-xp-btn" class="admin-btn">⭐ +5,000 XP</button>
+      <button id="admin-reset-btn" class="admin-btn danger">🔄 Reiniciar Juego</button>
+    </div>
+
+    <!-- Controls hint -->
+    <div class="controls-hint">
+      <span>🖱 Arrastra para mover</span>
+      <span>⚙ Rueda para acercar</span>
+      <span>🖱 Mantén para acelerar</span>
+    </div>
+    
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

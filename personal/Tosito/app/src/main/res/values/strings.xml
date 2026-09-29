@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Tosito</string>
+    <string name="shortcut_add_note_short">Nota Rápida</string>
+    <string name="shortcut_add_note_long">Añadir Nueva Nota</string>
+</resources>

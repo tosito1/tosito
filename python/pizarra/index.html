@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProBoard - Ultimate Whiteboard</title>
+    <!-- Boxicons for modern icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MediaPipe AI Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- GSAP & Confetti -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-dark">
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+    <div id="cursor-follower"></div>
+    <div class="toolbar glass">
+        <!-- Main Tools -->
+        <div class="tool-group">
+            <button class="tool active" id="brush-btn" title="Pincel (B)">
+                <i class='bx bx-paint'></i>
+            </button>
+            <button class="tool" id="eraser-btn" title="Goma de borrar (E)">
+                <i class='bx bxs-eraser'></i>
+            </button>
+            <button class="tool" id="fill-btn" title="Bote de Pintura (F)">
+                <i class='bx bxs-color-fill'></i>
+            </button>
+            <button class="tool" id="text-btn" title="Texto (T)">
+                <i class='bx bx-text'></i>
+            </button>
+            
+            <div class="dropdown">
+                <button class="tool dropdown-btn" id="shape-btn" title="Formas (S)">
+                    <i class='bx bx-shape-square'></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" data-shape="line"><i class='bx bx-minus'></i> Línea</a>
+                    <a href="#" data-shape="rect"><i class='bx bx-square'></i> Rectángulo</a>
+                    <a href="#" data-shape="circle"><i class='bx bx-circle'></i> Círculo</a>
+                </div>
+            </div>
+
+            <button class="action" id="sticky-btn" title="Añadir Nota Adhesiva (N)">
+                <i class='bx bx-note'></i>
+            </button>
+            
+            <button class="action" id="symmetry-btn" title="Modo Espejo (M)">
+                <i class='bx bx-reflect-vertical'></i>
+            </button>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Brush Settings -->
+        <div class="tool-group">
+            <select id="brush-type" class="glass-select" title="Tipo de Pincel">
+                <option value="classic">Clásico</option>
+                <option value="marker">Rotulador</option>
+                <option value="neon">Neón</option>
+                <option value="spray">Spray</option>
+                <option value="laser">Láser (Fugaz)</option>
+                <option value="rainbow">Arcoíris Dinámico</option>
+                <option value="particles">Partículas Estelares</option>
+            </select>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Color, Opacity and Size -->
+        <div class="tool-group">
+            <input type="color" id="color-picker" value="#3b82f6" title="Color">
+            
+            <!-- Opacity -->
+            <div class="slider-container" title="Opacidad">
+                <i class='bx bx-droplet size-icon small'></i>
+                <input type="range" id="opacity-slider" min="0.05" max="1" step="0.05" value="1">
+            </div>
+
+            <!-- Size -->
+            <div class="slider-container" title="Grosor">
+                <i class='bx bx-circle size-icon small'></i>
+                <input type="range" id="size-slider" min="1" max="50" value="5">
+                <i class='bx bx-circle size-icon large'></i>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+        
+        <!-- Actions -->
+        <div class="tool-group">
+            <button class="action" id="bg-btn" title="Cambiar Fondo">
+                <i class='bx bx-image-alt'></i>
+            </button>
+            <input type="file" id="image-upload" accept="image/*" hidden>
+            <button class="action" id="upload-btn" title="Importar Imagen">
+                <i class='bx bx-upload'></i>
+            </button>
+            <button class="action" id="toggle-bg-image-btn" title="Mostrar/Ocultar Imagen" style="display: none;">
+                <i class='bx bx-show'></i>
+            </button>
+            <button class="action" id="webcam-btn" title="Cámara AI (Seguimiento de manos)">
+                <i class='bx bx-webcam'></i>
+            </button>
+            <button class="action" id="help-btn" title="Ayuda y Atajos (H)">
+                <i class='bx bx-help-circle'></i>
+            </button>
+            <button class="action" id="reset-view-btn" title="Centrar Vista">
+                <i class='bx bx-target-lock'></i>
+            </button>
+            <button class="action" id="layers-btn" title="Gestor de Capas">
+                <i class='bx bx-layer'></i>
+            </button>
+            <button class="action" id="undo-btn" title="Deshacer (Ctrl+Z)">
+                <i class='bx bx-undo'></i>
+            </button>
+            <button class="action" id="redo-btn" title="Rehacer (Ctrl+Y)">
+                <i class='bx bx-redo'></i>
+            </button>
+            <button class="action" id="clear-btn" title="Limpiar Pizarra">
+                <i class='bx bx-trash'></i>
+            </button>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="tool-group">
+            <button class="action download" id="record-btn" title="Grabar Timelapse (REC)">
+                <i class='bx bx-video-recording'></i> Grabar
+            </button>
+            <button class="action download" id="copy-btn" title="Copiar al Portapapeles">
+                <i class='bx bx-copy'></i> Copiar
+            </button>
+            <button class="action download" id="download-btn" title="Descargar como Imagen">
+                <i class='bx bx-download'></i> Guardar
+            </button>
+        </div>
+    </div>
+    
+    <div id="zoom-indicator" class="glass" style="display: none;">Zoom: 100%</div>
+    
+    <!-- Layers Panel -->
+    <div id="layers-panel" class="glass" style="display: none;">
+        <div class="layers-header">
+            <h3>Capas</h3>
+            <button id="add-layer-btn"><i class='bx bx-plus'></i></button>
+        </div>
+        <div id="layers-list">
+            <!-- Layers will be injected here via JS -->
+        </div>
+    </div>
+    
+    <div id="canvas-wrapper">
+        <div id="symmetry-line" style="display: none;"></div>
+        <img id="bg-image" src="" alt="" style="display: none;">
+        <canvas id="board"></canvas>
+        <canvas id="laser-board"></canvas>
+        <!-- Text Overlay -->
+        <input type="text" id="text-overlay" class="text-overlay" placeholder="Escribe y presiona Enter..." style="display: none;">
+    </div>
+    
+    <!-- Sticky Notes Container -->
+    <div id="sticky-container"></div>
+    
+    <!-- PIP Camera View for AI Tracking -->
+    <div class="pip-container glass" id="pip-container" style="display: none;">
+        <video id="input_video" class="input_video" style="display: none;"></video>
+        <canvas class="output_canvas" id="output_canvas" width="320" height="240"></canvas>
+        <div id="pip-status">Iniciando cámara...</div>
+    </div>
+    
+    <!-- Help Modal -->
+    <div id="help-modal" class="glass-modal" style="display: none; opacity: 0;">
+        <div class="modal-content">
+            <h2>Atajos Profesionales</h2>
+            <ul>
+                <li><span>Pincel</span> <kbd>B</kbd></li>
+                <li><span>Borrador</span> <kbd>E</kbd></li>
+                <li><span>Relleno (Fill)</span> <kbd>F</kbd></li>
+                <li><span>Texto</span> <kbd>T</kbd></li>
+                <li><span>Formas</span> <kbd>S</kbd></li>
+                <li><span>Nota Adhesiva</span> <kbd>N</kbd></li>
+                <li><span>Modo Espejo</span> <kbd>M</kbd></li>
+                <li><span>Deshacer</span> <kbd>Ctrl+Z</kbd></li>
+                <li><span>Rehacer</span> <kbd>Ctrl+Y</kbd></li>
+            </ul>
+            <button id="close-help-btn" class="action download" style="margin: 0 auto;">Cerrar</button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="animations.js"></script>
+</body>
+</html>

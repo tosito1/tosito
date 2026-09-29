@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Network Controller V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- CountUp.js for animated numbers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.8.0/countUp.umd.js"></script>
+    <!-- Tippy.js for premium tooltips -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-elements">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Inspector Modal -->
+    <div id="inspector-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:1rem; overflow-y:auto;">
+        <div class="card" style="background:#0a0f1a; border:1px solid #1e293b; max-width:600px; width:100%; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <button onclick="document.getElementById('inspector-modal').style.display='none'" style="position:absolute; top:1rem; right:1rem; background:transparent; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+            <div style="display:flex; align-items:center; gap:1rem; border-bottom:1px solid #1e293b; padding-bottom:1rem; margin-bottom:1rem;">
+                <div id="ins-icon" style="font-size:3rem; background:rgba(255,255,255,0.05); padding:1rem; border-radius:12px;">📱</div>
+                <div>
+                    <h2 id="ins-name" style="margin:0; color:var(--text); font-size:1.5rem;">Nombre</h2>
+                    <div id="ins-ip" style="color:var(--primary); font-family:monospace; font-size:1.1rem;">192.168.x.x</div>
+                </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px;">
+                    <div style="color:var(--muted); font-size:0.8rem; margin-bottom:0.2rem;">Dirección MAC</div>
+                    <div id="ins-mac" style="font-family:monospace; color:var(--text);">--</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px;">
+                    <div style="color:var(--muted); font-size:0.8rem; margin-bottom:0.2rem;">Fabricante</div>
+                    <div id="ins-vendor" style="color:var(--text);">--</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px;">
+                    <div style="color:var(--muted); font-size:0.8rem; margin-bottom:0.2rem;">Primera vez visto</div>
+                    <div id="ins-first" style="color:var(--text); font-size:0.9rem;">--</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.03); padding:1rem; border-radius:8px;">
+                    <div style="color:var(--muted); font-size:0.8rem; margin-bottom:0.2rem;">Último contacto</div>
+                    <div id="ins-last" style="color:var(--text); font-size:0.9rem;">--</div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom:0.5rem; color:var(--text);">🛡️ Servicios Expuestos (Deep Scan)</h3>
+            <div id="ins-ports" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem; padding:1rem; background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid #1e293b; max-height:150px; overflow-y:auto;">
+                <span style="color:var(--muted); font-size:0.9rem;">Analizando puertos...</span>
+            </div>
+            
+            <h3 style="margin-bottom:0.5rem; color:var(--text);">⚡ Estabilidad (Latencia)</h3>
+            <div style="height:200px; width:100%; position:relative;">
+                <canvas id="ins-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar nav -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text"><span class="grad">Nexus</span> V3</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" data-tab="dashboard">
+                <span class="nav-icon">📡</span><span>Dashboard</span>
+            </li>
+            <li class="nav-item" data-tab="security">
+                <span class="nav-icon">🛡️</span><span>Seguridad</span>
+                <span class="badge" id="security-badge" style="display:none">0</span>
+            </li>
+            <li class="nav-item" data-tab="router">
+                <span class="nav-icon">🔀</span><span>Router ZTE</span>
+                <span class="badge" id="router-badge" style="display:none">!</span>
+            </li>
+            <li class="nav-item" data-tab="logs">
+                <span class="nav-icon">📋</span><span>Actividad</span>
+            </li>
+            <li class="nav-item" data-tab="analytics">
+                <span class="nav-icon">📊</span><span>Analytics</span>
+            </li>
+            <li class="nav-item" data-tab="dns">
+                <span class="nav-icon">👁️</span><span>Tráfico Web</span>
+            </li>
+            <li class="nav-item" data-tab="tools">
+                <span class="nav-icon">🛠️</span><span>Herramientas</span>
+            </li>
+            <li class="nav-item" data-tab="profiles">
+                <span class="nav-icon">👥</span><span>Perfiles</span>
+            </li>
+            <li class="nav-item" data-tab="proxy">
+                <span class="nav-icon">🌍</span><span>Enrutador Proxy</span>
+            </li>
+            <li class="nav-item" data-tab="settings">
+                <span class="nav-icon">⚙️</span><span>Config</span>
+            </li>
+        </ul>
+        <button class="logout-btn" onclick="logout()">↩ Salir</button>
+    </nav>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <!-- Header with traffic stats -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h2 id="page-title">Dashboard</h2>
+                <div class="scan-indicator">
+                    <span class="pulse"></span> Escaneando red...
+                </div>
+            </div>
+            <div class="traffic-widget">
+                <div class="traffic-item">
+                    <button class="btn-sm" id="btn-speedtest" onclick="runSpeedTest()" style="margin-bottom: 4px; padding: 2px 8px; font-size: 0.7rem; background: rgba(59,130,246,0.2);">🚀 Test Velocidad</button>
+                    <span class="traffic-value" id="st-status" style="font-size:0.7rem; color:var(--muted); display:block; margin-bottom:4px;">—</span>
+                </div>
+                <div class="traffic-divider"></div>
+                <div class="traffic-item">
+                    <span class="traffic-label">↓ Bajada</span>
+                    <span class="traffic-value" id="rx-speed">— Mbps</span>
+                </div>
+                <div class="traffic-divider"></div>
+                <div class="traffic-item">
+                    <span class="traffic-label">↑ Subida</span>
+                    <span class="traffic-value" id="tx-speed">— Mbps</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ══ TAB: Router ZTE ══ -->
+        <div id="tab-router" class="tab-content">
+
+            <!-- Status bar -->
+            <div id="router-status-bar" style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; padding:1rem 1.5rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.6rem; flex:1;">
+                    <span id="router-conn-dot" style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block;"></span>
+                    <span id="router-conn-label" style="font-size:0.85rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">Sin configurar</span>
+                </div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <button class="btn-sm" onclick="routerTestConn()" style="flex:initial; padding:0.4rem 0.8rem;">🔄 Probar conexión</button>
+                    <button class="btn-sm" onclick="routerReboot()" style="flex:initial; padding:0.4rem 0.8rem; background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.3); color:#f87171;">⚡ Reiniciar Router</button>
+                </div>
+            </div>
+
+            <div class="settings-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px,1fr));">
+
+                <!-- ── Credenciales ── -->
+                <div class="settings-card">
+                    <h3>🔑 Credenciales del Router</h3>
+                    <p>Conéctate al panel web del router ZTE para habilitar el control avanzado.</p>
+                    <div class="form-group">
+                        <label>Usuario del router</label>
+                        <input type="text" id="rtr-user" class="form-control" value="user" placeholder="user">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña del router</label>
+                        <input type="password" id="rtr-pass" class="form-control" placeholder="Contraseña del panel web">
+                    </div>
+                    <button class="btn btn-primary" onclick="routerSaveAuth()">💾 Guardar y conectar</button>
+                </div>
+
+                <!-- ── Control Wi-Fi ── -->
+                <div class="settings-card">
+                    <h3>📶 Control Wi-Fi</h3>
+                    <p>Enciende o apaga el Wi-Fi por banda de frecuencia.</p>
+                    <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid var(--border);">
+                            <div>
+                                <div style="font-weight:600; font-size:0.9rem;">📡 2.4 GHz</div>
+                                <div style="font-size:0.75rem; color:var(--muted);">Largo alcance</div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="wifi-2g" onchange="routerWifiToggle('2.4', this.checked)"><span class="slider round"></span></label>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid var(--border);">
+                            <div>
+                                <div style="font-weight:600; font-size:0.9rem;">🚀 5 GHz</div>
+                                <div style="font-size:0.75rem; color:var(--muted);">Alta velocidad</div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="wifi-5g" onchange="routerWifiToggle('5', this.checked)"><span class="slider round"></span></label>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem; background:rgba(0,0,0,0.2); border-radius:10px; border:1px solid var(--border);">
+                            <div>
+                                <div style="font-weight:600; font-size:0.9rem;">⚡ 6 GHz</div>
+                                <div style="font-size:0.75rem; color:var(--muted);">Wi-Fi 7 (si disponible)</div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="wifi-6g" onchange="routerWifiToggle('6', this.checked)"><span class="slider round"></span></label>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" onclick="routerLoadWifiStatus()" style="margin-top:0.5rem;">🔄 Actualizar estado</button>
+                </div>
+
+                <!-- ── Port Forwarding ── -->
+                <div class="settings-card" style="grid-column: span 1;">
+                    <h3>🌐 Port Forwarding</h3>
+                    <p>Abre puertos en el router para exponer servicios internos.</p>
+                    <div style="display:grid; grid-template-columns:1fr 80px 80px auto; gap:0.5rem; align-items:end; margin-top:0.5rem;">
+                        <div class="form-group" style="margin:0;">
+                            <label>Nombre</label>
+                            <input type="text" id="pf-name" class="form-control" placeholder="Mi servicio">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Puerto ext.</label>
+                            <input type="number" id="pf-ext" class="form-control" placeholder="8080">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Puerto int.</label>
+                            <input type="number" id="pf-int" class="form-control" placeholder="3000">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>IP Interna</label>
+                            <input type="text" id="pf-ip" class="form-control" placeholder="192.168.1.x">
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                        <select id="pf-proto" style="background:rgba(0,0,0,0.3); border:1px solid var(--border2); color:var(--text); padding:0.5rem; border-radius:8px; font-family:inherit;">
+                            <option>TCP</option><option>UDP</option><option>BOTH</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="routerAddPortForward()">+ Añadir regla</button>
+                        <button class="btn-secondary" onclick="routerLoadPortForward()">🔄 Actualizar</button>
+                    </div>
+                    <div id="pf-list" style="margin-top:1rem; display:flex; flex-direction:column; gap:0.4rem; max-height:200px; overflow-y:auto;"></div>
+                </div>
+
+            </div>
+
+            <!-- ── QoS por dispositivo ── -->
+            <div class="section-header" style="margin-top:2rem;">
+                <h3>🏎️ Control de Velocidad por Dispositivo (QoS)</h3>
+                <p>Limita el ancho de banda de dispositivos específicos en tu red.</p>
+            </div>
+            <div class="card" style="margin-bottom:1.5rem;">
+                <div style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:0.75rem; align-items:end;">
+                    <div class="form-group" style="margin:0;">
+                        <label>Dirección MAC del dispositivo</label>
+                        <input type="text" id="qos-mac" class="form-control" placeholder="AA:BB:CC:DD:EE:FF">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>↓ Bajada (Mbps)</label>
+                        <input type="number" id="qos-down" class="form-control" placeholder="10" min="0">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>↑ Subida (Mbps)</label>
+                        <input type="number" id="qos-up" class="form-control" placeholder="5" min="0">
+                    </div>
+                    <button class="btn btn-primary" onclick="routerApplyQoS()">Aplicar</button>
+                </div>
+                <p style="font-size:0.78rem; color:var(--muted); margin-top:0.75rem;">💡 Pon 0 en ambos campos para eliminar el límite de un dispositivo.</p>
+            </div>
+
+            <!-- ── Clientes Wi-Fi reales ── -->
+            <div class="section-header">
+                <h3>📱 Clientes Wi-Fi (Datos Directos del Router)</h3>
+                <p>Lista obtenida directamente del router, con información de banda y señal.</p>
+            </div>
+            <div style="display:flex; gap:0.75rem; margin-bottom:1rem; align-items:center; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="routerLoadClients()">🔍 Obtener clientes del router</button>
+                <span id="router-clients-status" style="font-size:0.8rem; color:var(--muted);"></span>
+            </div>
+            <div id="router-clients-grid" class="devices-grid"></div>
+
+            <!-- ── MACs bloqueadas ── -->
+            <div class="section-header" style="margin-top:2rem;">
+                <h3>🚫 MACs Bloqueadas en el Router</h3>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="block-mac-input" class="form-control" placeholder="AA:BB:CC:DD:EE:FF" style="max-width:240px;">
+                <button class="btn btn-primary" onclick="routerBlockManual()" style="background:rgba(239,68,68,0.8);">🚫 Bloquear</button>
+                <button class="btn-secondary" onclick="routerLoadBlocked()">🔄 Ver lista</button>
+            </div>
+            <div id="blocked-macs-list" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+
+        </div>
+
+        <!-- ══ TAB: Dashboard ══ -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div>
+                        <div class="stat-label">En línea</div>
+                        <div class="stat-num" id="count-online">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔴</div>
+                    <div>
+                        <div class="stat-label">Desconectados</div>
+                        <div class="stat-num" id="count-offline">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📱</div>
+                    <div>
+                        <div class="stat-label">Total</div>
+                        <div class="stat-num" id="count-total">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div>
+                        <div class="stat-label">Desconocidos</div>
+                        <div class="stat-num" id="count-unknown">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="online">En línea</button>
+                <button class="filter-btn" data-filter="offline">Offline</button>
+                <button class="filter-btn" data-filter="router">🔀 Routers</button>
+                <button class="filter-btn" data-filter="server">🖥️ Servidores</button>
+                <button class="filter-btn" data-filter="pc">💻 PCs</button>
+                <button class="filter-btn" data-filter="mobile">📱 Móviles</button>
+                <button class="filter-btn" data-filter="tv">📺 TVs</button>
+                <button class="filter-btn" data-filter="iot">🌐 IoT</button>
+                <button class="filter-btn" data-filter="unknown">❓ Desconocidos</button>
+            </div>
+
+            <div class="devices-grid" id="devices-grid"></div>
+        </div>
+
+        <!-- ══ TAB: Seguridad ══ -->
+        <div id="tab-security" class="tab-content">
+            <div class="section-header">
+                <h3>Dispositivos no reconocidos</h3>
+                <p>Dispositivos detectados que aún no has catalogado como "de confianza".</p>
+            </div>
+            <div class="devices-grid" id="security-grid"></div>
+            
+            <div class="section-header" style="margin-top:2rem">
+                <h3>Integración con Router (Avanzado)</h3>
+                <p>Configura las credenciales de tu router para bloquear intrusos a nivel de red.</p>
+            </div>
+            <div class="card" style="max-width: 600px;">
+                <div class="form-group">
+                    <label>Modelo de Router (Detectado)</label>
+                    <input type="text" class="form-control" value="ZTE ZXHN F6705 / F6600 (Wi-Fi 7)" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Usuario del Router</label>
+                    <input type="text" id="router-user" class="form-control" value="user">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña del Router</label>
+                    <input type="password" id="router-pass" class="form-control" placeholder="Contraseña de acceso web">
+                </div>
+                <button class="btn btn-primary" onclick="saveRouterAuth()">Sincronizar y Habilitar Bloqueo</button>
+            </div>
+
+            <div class="section-header" style="margin-top:2rem">
+                <h3>Alertas recientes</h3>
+            </div>
+            <div class="alerts-list" id="alerts-list"></div>
+        </div>
+
+        <!-- ══ TAB: Actividad ══ -->
+        <div id="tab-logs" class="tab-content">
+            <div class="section-header">
+                <h3>Registro de Actividad</h3>
+                <p>Historial en tiempo real de conexiones y desconexiones.</p>
+            </div>
+            <div class="log-table" id="log-table"></div>
+        </div>
+
+        <!-- ══ TAB: Analytics ══ -->
+        <div id="tab-analytics" class="tab-content">
+            
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Dispositivos</div>
+                    <div class="kpi-value" id="kpi-total">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">En línea ahora</div>
+                    <div class="kpi-value" style="color:var(--green)" id="kpi-online">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Offline</div>
+                    <div class="kpi-value" style="color:var(--muted)" id="kpi-offline">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Sospechosos</div>
+                    <div class="kpi-value" style="color:var(--red)" id="kpi-untrusted">0</div>
+                </div>
+            </div>
+
+            <div class="analytics-charts">
+                <div class="analytics-card chart-span-2">
+                    <h4 class="analytics-title">Tráfico de Conexiones (24 Horas)</h4>
+                    <div style="flex:1; width:100%; position:relative;">
+                        <canvas id="chart-hourly"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h4 class="analytics-title">Fabricantes</h4>
+                    <div style="flex:1; width:100%; position:relative; min-height:200px;">
+                        <canvas id="chart-vendors"></canvas>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <h4 class="analytics-title">Tipos de Dispositivo</h4>
+                    <div style="flex:1; width:100%; position:relative; min-height:200px;">
+                        <canvas id="chart-categories"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: Tráfico Web (DNS) ══ -->
+        <div id="tab-dns" class="tab-content">
+            <div class="section-header">
+                <h3>Monitor de Tráfico Web (DNS)</h3>
+                <p>Observa en tiempo real las páginas web y servicios a los que acceden los dispositivos de tu red.</p>
+                <div style="background: rgba(245,158,11,0.1); color: #f59e0b; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid rgba(245,158,11,0.2); font-size: 0.9rem;">
+                    <strong>ℹ️ ¿Cómo funciona?</strong> Para interceptar el tráfico y bloquear anuncios, debes ir a la configuración de tu Router o Teléfono y cambiar la opción de "Servidor DNS" para apuntar a la IP de este ordenador.
+                </div>
+            </div>
+
+            <!-- AdBlock Shield Component -->
+            <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--accent); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap: 1rem;">
+                <div>
+                    <h3 style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">🛡️ Escudo Anti-Anuncios (AdBlock)</h3>
+                    <p style="color:var(--muted); font-size:0.9rem;">Bloquea publicidad y rastreadores a nivel de red para todos los dispositivos.</p>
+                    <div style="display:flex; gap: 1rem; margin-top:0.5rem; font-size:0.85rem;">
+                        <span id="adblock-domains-badge" style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">Dominios en lista: <b id="adblock-total-domains">0</b></span>
+                        <span id="adblock-blocked-badge" style="background:rgba(239,68,68,0.15); color:#fca5a5; padding:2px 6px; border-radius:4px;">Anuncios Bloqueados: <b id="adblock-blocked-count">0</b></span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
+                    <label class="switch">
+                        <input type="checkbox" id="adblock-toggle" onchange="toggleAdblock(this.checked)">
+                        <span class="slider round"></span>
+                    </label>
+                    <button class="btn-sm" style="background:rgba(255,255,255,0.1);" onclick="updateAdblockList()">🔄 Actualizar Lista</button>
+                </div>
+            </div>
+            
+            <div class="stats-row" style="grid-template-columns: 2fr 1fr;">
+                <!-- Feed en vivo -->
+                <div class="stat-card" style="flex-direction:column; align-items:flex-start; background: #050a0f; border: 1px solid #1e293b;">
+                    <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:1rem; border-bottom: 1px solid #1e293b; padding-bottom: 0.5rem;">
+                        <h4 style="color:var(--text); font-family: monospace;">> LIVE_TRAFFIC_FEED</h4>
+                        <span class="pulse" style="width:12px; height:12px;"></span>
+                    </div>
+                    <div id="dns-feed" style="width:100%; height: 350px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; display:flex; flex-direction:column; gap:0.2rem;">
+                        <div style="color: var(--muted); text-align:center; padding-top: 2rem;">Esperando peticiones DNS...</div>
+                    </div>
+                </div>
+
+                <!-- Top dominios y Zonas Locales -->
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <!-- Top Dominios -->
+                    <div class="stat-card" style="flex-direction:column; align-items:flex-start; width: 100%;">
+                        <h4 style="margin-bottom:1rem; color:var(--text)">Top Destinos (24h)</h4>
+                        <div id="dns-stats-list" style="width:100%; display:flex; flex-direction:column; gap:0.5rem;">
+                        </div>
+                    </div>
+                    
+                    <!-- Zonas DNS Locales -->
+                    <div class="stat-card" style="flex-direction:column; align-items:flex-start; width: 100%;">
+                        <h4 style="margin-bottom:0.5rem; color:var(--text)">Zonas DNS Locales</h4>
+                        <p style="font-size: 0.8rem; color:var(--muted); margin-bottom: 1rem;">Redirige un dominio a una IP local.</p>
+                        <div style="display:flex; gap:0.5rem; margin-bottom:1rem; width:100%;">
+                            <input type="text" id="cdns-domain" placeholder="nexus.local" style="flex:1; padding:0.4rem; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:white;">
+                            <input type="text" id="cdns-ip" placeholder="192.168.1.1" style="flex:1; padding:0.4rem; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:white;">
+                            <button class="btn-sm" style="background:var(--primary); color:white; border:none; padding:0 0.8rem; border-radius:4px;" onclick="window.addCustomDns()">+</button>
+                        </div>
+                        <div id="cdns-list" style="width:100%; display:flex; flex-direction:column; gap:0.5rem; max-height: 150px; overflow-y: auto;">
+                            <!-- Dominios renderizados aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: Enrutador Proxy (Nginx) ══ -->
+        <div id="tab-proxy" class="tab-content">
+            <div class="section-header">
+                <h3>Gestor de Dominios (Reverse Proxy)</h3>
+                <p>Enruta dominios personalizados (como app.nexus) a puertos internos del servidor.</p>
+            </div>
+            <div class="card" style="margin-bottom: 2rem;">
+                <h4>Añadir Enrutamiento</h4>
+                <div style="display:flex; gap:1rem; margin-top:1rem; align-items:flex-end;">
+                    <div class="form-group" style="flex:1; margin:0;">
+                        <label>Dominio (ej. app2.trocolo)</label>
+                        <input type="text" id="proxy-domain" class="form-control" placeholder="app2.trocolo">
+                    </div>
+                    <div class="form-group" style="flex:1; margin:0;">
+                        <label>Puerto de Destino (ej. 4000)</label>
+                        <input type="number" id="proxy-port" class="form-control" placeholder="4000">
+                    </div>
+                    <button class="btn btn-primary" onclick="addProxyRoute()">Crear Regla Nginx</button>
+                </div>
+            </div>
+            <div class="section-header">
+                <h3>Reglas Activas</h3>
+            </div>
+            <div class="log-table">
+                <div class="log-row" style="background: rgba(30,41,59,0.5); font-weight:bold;">
+                    <div>Dominio</div>
+                    <div>Puerto Destino</div>
+                    <div>Estado</div>
+                    <div>Acción</div>
+                </div>
+                <div id="proxy-rules-list">
+                    <!-- Reglas inyectadas por JS -->
+                    <div class="log-row">
+                        <div style="color:var(--green)">nexus.trocolo</div>
+                        <div>3000 (Nexus Core)</div>
+                        <div><span class="badge" style="background:var(--green);color:#000">Activo</span></div>
+                        <div>Bloqueado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ TAB: Perfiles ══ -->
+        <div id="tab-profiles" class="tab-content">
+            <div class="section-header">
+                <h3>Control de Presencia</h3>
+                <p>Asocia dispositivos a personas para saber quién está en casa.</p>
+            </div>
+            <div style="margin-bottom: 2rem; display:flex; gap:1rem;">
+                <input type="text" id="new-profile-name" placeholder="Nombre de la persona" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: white;">
+                <button class="btn-primary" onclick="createProfile()">+ Crear Perfil</button>
+            </div>
+            <div class="devices-grid" id="profiles-grid"></div>
+        </div>
+
+        <!-- ══ TAB: Configuración ══ -->
+        <div id="tab-settings" class="tab-content">
+            <div class="settings-grid">
+                
+                <div class="settings-card">
+                    <h3>🌍 Acceso Remoto (Túnel)</h3>
+                    <p>Expone este panel de control a Internet de forma segura usando un túnel temporal.</p>
+                    <div style="margin-top:1rem; padding:1rem; background:rgba(0,0,0,0.3); border-radius:8px; display:flex; flex-direction:column; gap:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Estado:</span>
+                            <span id="tunnel-status-badge" class="badge" style="background:var(--muted); color:#fff">Comprobando...</span>
+                        </div>
+                        <div id="tunnel-url-container" style="display:none; flex-direction:column; gap:0.5rem;">
+                            <label style="font-size:0.85rem; color:var(--muted);">Tu IP de Tailscale:</label>
+                            <div style="display:flex; gap:0.5rem;">
+                                <input type="text" id="tunnel-url-input" class="form-control" readonly style="font-family:monospace; color:var(--primary);">
+                                <button class="btn-secondary" onclick="navigator.clipboard.writeText(document.getElementById('tunnel-url-input').value); showToast('IP copiada', 'success')">📋 Copiar</button>
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--muted);">Usa esta IP en cualquier dispositivo conectado a tu cuenta de Tailscale para entrar a este panel.</p>
+                        </div>
+                        <div id="tunnel-install-instructions" style="display:none; flex-direction:column; gap:0.5rem;">
+                            <div style="background:rgba(239,68,68,0.15); color:#fca5a5; padding:0.8rem; border-radius:6px; font-size:0.85rem; border:1px solid rgba(239,68,68,0.3);">
+                                ⚠️ Tailscale no está instalado o no está activo en este servidor.
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--muted); margin-top:5px;">Para instalarlo, ejecuta este comando en la terminal de tu servidor Linux:</p>
+                            <code style="display:block; background:#000; padding:8px; border-radius:4px; font-size:0.8rem; user-select:all; color:var(--primary);">curl -fsSL https://tailscale.com/install.sh | sh && sudo tailscale up</code>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                            <button class="btn-secondary" onclick="loadTunnelStatus()" style="flex:1;">🔄 Actualizar Estado</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🎨 Apariencia</h3>
+                    <p>Cambia el tema visual del panel.</p>
+                    <div class="form-group">
+                        <select id="theme-select" style="background:rgba(0,0,0,0.3); border:1px solid var(--border2); color:white; padding:0.6rem; border-radius:8px; outline:none;" onchange="changeTheme(this.value)">
+                            <option value="cyberpunk">🌌 Cyberpunk Neon</option>
+                            <option value="default">🌐 Nexus Clásico</option>
+                            <option value="hacker">🟩 Hacker (Matrix)</option>
+                            <option value="dracula">🧛 Drácula (Oscuro violeta)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🔔 Notificaciones por Email</h3>
+                    <p>Recibe alertas cuando un dispositivo conocido se desconecta o uno desconocido aparece.</p>
+                    <div class="form-group"><label>Servidor SMTP</label><input id="cfg-smtp-host" type="text" placeholder="smtp.gmail.com"></div>
+                    <div class="form-group"><label>Puerto SMTP</label><input id="cfg-smtp-port" type="number" placeholder="587"></div>
+                    <div class="form-group"><label>Usuario / Email</label><input id="cfg-smtp-user" type="email" placeholder="tucuenta@gmail.com"></div>
+                    <div class="form-group"><label>Contraseña de App</label><input id="cfg-smtp-pass" type="password" placeholder="••••••••••••"></div>
+                    <div class="form-group"><label>Email de destino</label><input id="cfg-alert-email" type="email" placeholder="destino@email.com"></div>
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="saveSettings()">💾 Guardar</button>
+                        <button class="btn-secondary" onclick="testEmail()">✉️ Probar conexión</button>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🔐 Cambiar Contraseña</h3>
+                    <p>Cambia la contraseña de acceso al panel de control.</p>
+                    <div class="form-group"><label>Contraseña actual</label><input id="pwd-current" type="password" placeholder="••••••••"></div>
+                    <div class="form-group"><label>Nueva contraseña</label><input id="pwd-new" type="password" placeholder="••••••••"></div>
+                    <div class="form-group"><label>Confirmar nueva</label><input id="pwd-confirm" type="password" placeholder="••••••••"></div>
+                    <button class="btn-primary" onclick="changePassword()">🔑 Actualizar contraseña</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>✈️ Notificaciones por Telegram</h3>
+                    <p>Recibe alertas instantáneas en tu Telegram cuando ocurra algo en la red.</p>
+                    <div class="telegram-help">
+                        <details>
+                            <summary>📖 ¿Cómo obtener el Token y Chat ID?</summary>
+                            <ol>
+                                <li>Busca <b>@BotFather</b> en Telegram y escribe <code>/newbot</code></li>
+                                <li>Sigue los pasos y copia el <b>Token</b> que te dará</li>
+                                <li>Habla con tu nuevo bot (escríbele algo)</li>
+                                <li>Visita: <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code></li>
+                                <li>Copia el número de <code>"id"</code> dentro de <code>"chat"</code> — ese es tu <b>Chat ID</b></li>
+                            </ol>
+                        </details>
+                    </div>
+                    <div class="form-group"><label>Token del Bot</label><input id="cfg-tg-token" type="text" placeholder="1234567890:AAFxxxxxxxxxxxxxxxxx"></div>
+                    <div class="form-group"><label>Chat ID</label><input id="cfg-tg-chatid" type="text" placeholder="123456789"></div>
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="saveTelegram()">💾 Guardar</button>
+                        <button class="btn-secondary" onclick="testTelegramConn()">📨 Enviar prueba</button>
+                    </div>
+                </div>
+            </div>
+
+<!-- ═══ TAB: Herramientas ═══ -->
+        <div id="tab-tools" class="tab-content" style="padding:1.5rem;">
+            <!-- Sub-nav -->
+            <div class="sub-nav" style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">
+                <button class="sub-tab-btn active" data-sub="nmap" onclick="switchSubTab('nmap',this)">🔍 nmap</button>
+                <button class="sub-tab-btn" data-sub="arp" onclick="switchSubTab('arp',this)">📡 ARP Scan</button>
+                <button class="sub-tab-btn" data-sub="msf" onclick="switchSubTab('msf',this)">🛡️ Metasploit</button>
+                <button class="sub-tab-btn" data-sub="history" onclick="switchSubTab('history',this)">📊 Historial</button>
+            </div>
+
+            <!-- nmap sub-panel -->
+            <div id="sub-nmap" class="sub-panel">
+                <div class="section-header"><h2>🔍 Escáner nmap</h2></div>
+                <div class="tools-form" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1rem;align-items:flex-end;">
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:var(--muted);margin-bottom:4px;">Target (IP o subred)</label>
+                        <input id="nmap-target" class="form-control" value="192.168.1.0/24" placeholder="192.168.1.1 o 192.168.1.0/24" style="min-width:220px;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:var(--muted);margin-bottom:4px;">Modo</label>
+                        <select id="nmap-mode" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:0.5rem 0.75rem;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+                            <option value="quick">Quick (top 100 puertos)</option>
+                            <option value="deep">Deep (todos los puertos + OS)</option>
+                            <option value="vuln">Scripts de Vulnerabilidad</option>
+                            <option value="ping">Ping Scan (hosts activos)</option>
+                        </select>
+                    </div>
+                    <button class="action-btn" onclick="runNmap()" id="nmap-btn">▶ Ejecutar</button>
+                    <button class="action-btn" style="background:rgba(255,255,255,0.05);" onclick="exportNmapResult()">⬇ Exportar JSON</button>
+                </div>
+                <div id="nmap-status" style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;"></div>
+                <div id="nmap-result" style="font-family:monospace;font-size:0.78rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;max-height:420px;overflow-y:auto;white-space:pre-wrap;color:#a3e635;display:none;"></div>
+                <div id="nmap-table" style="margin-top:1rem;display:none;">
+                    <h3 style="font-size:0.9rem;margin-bottom:0.5rem;color:var(--muted);">Puertos abiertos</h3>
+                    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;" id="nmap-ports-table">
+                        <thead><tr style="color:var(--muted);text-align:left;border-bottom:1px solid var(--border2);">
+                            <th style="padding:6px 10px;">Puerto</th>
+                            <th style="padding:6px 10px;">Proto</th>
+                            <th style="padding:6px 10px;">Servicio</th>
+                            <th style="padding:6px 10px;">Versión</th>
+                            <th style="padding:6px 10px;">Riesgo</th>
+                        </tr></thead>
+                        <tbody id="nmap-ports-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- arp-scan sub-panel -->
+            <div id="sub-arp" class="sub-panel" style="display:none;">
+                <div class="section-header"><h2>📡 ARP Scan</h2></div>
+                <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Detecta todos los dispositivos en la red local mediante ARP. Más rápido y fiable que ping.</p>
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:1rem;">
+                    <input id="arp-subnet" class="form-control" value="192.168.1.0/24" placeholder="192.168.1.0/24" style="max-width:220px;">
+                    <button class="action-btn" onclick="runArpScan()" id="arp-btn">📡 Escanear red</button>
+                </div>
+                <div id="arp-status" style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;"></div>
+                <div id="arp-result" class="devices-grid" style="margin-top:1rem;"></div>
+            </div>
+
+            <!-- MSF sub-panel -->
+            <div id="sub-msf" class="sub-panel" style="display:none;">
+                <div class="section-header"><h2>🛡️ Metasploit — Auditoría de Vulnerabilidades</h2></div>
+                <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Módulos <code>auxiliary/scanner</code> — solo detección, sin explotación activa.</p>
+                <div class="tools-form" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1rem;align-items:flex-end;">
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:var(--muted);margin-bottom:4px;">Módulo</label>
+                        <select id="msf-module" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:0.5rem 0.75rem;border-radius:8px;font-family:inherit;font-size:0.9rem;min-width:280px;" onchange="updateMsfInfo()">
+                            <option value="">Cargando módulos...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:var(--muted);margin-bottom:4px;">RHOSTS (target)</label>
+                        <input id="msf-rhosts" class="form-control" value="192.168.1.0/24" placeholder="192.168.1.1 o subred" style="min-width:220px;">
+                    </div>
+                    <button class="action-btn" onclick="runMsf()" id="msf-btn">▶ Lanzar</button>
+                </div>
+                <div id="msf-info" style="font-size:0.82rem;color:var(--muted);margin-bottom:0.75rem;padding:8px 12px;background:rgba(255,255,255,0.04);border-radius:8px;display:none;"></div>
+                <div id="msf-status" style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;"></div>
+                <div id="msf-result" style="display:none;">
+                    <div id="msf-summary" style="padding:12px 16px;border-radius:10px;margin-bottom:1rem;font-weight:500;"></div>
+                    <div id="msf-raw" style="font-family:monospace;font-size:0.75rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;max-height:380px;overflow-y:auto;white-space:pre-wrap;color:#94a3b8;"></div>
+                </div>
+            </div>
+
+            <!-- History sub-panel -->
+            <div id="sub-history" class="sub-panel" style="display:none;">
+                <div class="section-header"><h2>📊 Historial de auditorías</h2></div>
+                <div id="tools-history-table" style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+                        <thead><tr style="color:var(--muted);text-align:left;border-bottom:1px solid var(--border2);">
+                            <th style="padding:8px 12px;">#</th>
+                            <th style="padding:8px 12px;">Herramienta</th>
+                            <th style="padding:8px 12px;">Target</th>
+                            <th style="padding:8px 12px;">Modo</th>
+                            <th style="padding:8px 12px;">Resumen</th>
+                            <th style="padding:8px 12px;">Fecha</th>
+                        </tr></thead>
+                        <tbody id="tools-history-body">
+                            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Sin resultados aún</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+    <!-- Modal: Gráfica de latencia -->
+    <div id="latency-modal" class="modal-backdrop" onclick="closeModal(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-title">Historial de Latencia</h3>
+                    <p id="modal-subtitle" style="color:#94a3b8; font-size:0.9rem;"></p>
+                </div>
+                <button class="modal-close" onclick="document.getElementById('latency-modal').classList.remove('open')">✕</button>
+            </div>
+            <canvas id="latency-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Modal: Auditoría -->
+    <div id="audit-modal" class="modal-backdrop" onclick="closeModal(event)">
+        <div class="modal-box" style="max-width: 700px;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="audit-title">Auditoría de Seguridad</h3>
+                    <p id="audit-subtitle" style="color:#94a3b8; font-size:0.9rem;"></p>
+                </div>
+                <button class="modal-close" onclick="document.getElementById('audit-modal').classList.remove('open')">✕</button>
+            </div>
+            <div id="audit-content">
+                <div style="text-align:center; padding: 2rem;">
+                    <div class="pulse" style="width:24px; height:24px; margin: 0 auto 1rem;"></div>
+                    Escaneando puertos... Esto puede tardar unos segundos.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+        
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js?v=3"></script>
+    <script src="animations.js?v=3"></script>
+    <style>
+        .nav-item, .nav-links, .sidebar { opacity: 1 !important; visibility: visible !important; display: flex !important; transform: none !important; }
+    </style>
+</body>
+</html>

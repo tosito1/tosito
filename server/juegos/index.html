@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Arcade | Gaming Hub</title>
+    <meta name="description" content="El centro definitivo para tus juegos y consolas.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Background Animations -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="app-container">
+        <!-- Sticky Header -->
+        <header class="glass-header">
+            <div class="logo">
+                <span class="gradient-text">NEXUS</span> ARCADE
+            </div>
+            <div class="user-auth" style="display: flex; gap: 10px; align-items: center;">
+                <button id="admin-btn" class="glass-btn hidden" style="display: flex; align-items: center; justify-content: center;">Panel Admin</button>
+                <span id="user-display" class="hidden"></span>
+                <button id="login-btn" class="glass-btn">Iniciar Sesión</button>
+            </div>
+            <div class="search-bar" id="search-container">
+                <input type="search" id="search-input" name="search_q" autocomplete="new-password" spellcheck="false" placeholder="Buscar aventuras, juegos...">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <nav class="main-tabs" id="main-tabs">
+                <button class="tab-btn active" data-view="games">🕹️ Juegos</button>
+                <button class="tab-btn" data-view="consoles">📺 Consolas</button>
+                <button class="tab-btn" id="mobile-controller-btn" style="background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4);">📱 Mando Móvil</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Hero / Featured Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Tu Colección, <br><span class="gradient-text">Elevada.</span></h1>
+                    <p class="hero-subtitle">Explora los mejores títulos a través de todas tus plataformas en una experiencia sin igual.</p>
+                </div>
+            </section>
+
+            <!-- Catalog Section -->
+            <section class="catalog">
+                <div class="section-header">
+                    <h2 class="section-title" id="catalog-title">Catálogo Completo</h2>
+                    <div class="view-toggles">
+                        <button class="view-btn active" id="grid-view" title="Vista Cuadrícula">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                
+                <div id="catalog-grid" class="catalog-grid">
+                    <!-- Game Cards Rendered by JavaScript -->
+                </div>
+                
+                <div id="consoles-grid" class="catalog-grid hidden">
+                    <!-- Console Cards Rendered by JavaScript -->
+                </div>
+                
+                <div id="no-results" class="no-results hidden">
+                    <p>No se encontraron juegos con esos criterios.</p>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="glass-footer">
+            <p>&copy; 2026 Nexus Arcade Hub. Desarrollado localmente.</p>
+        </footer>
+    </div>
+
+    <!-- Emulator Modal -->
+    <div id="emulator-modal" class="hidden">
+        <div class="emulator-actions">
+            <button id="save-state-btn" class="emulator-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Guardar Estado
+            </button>
+            <button id="load-state-btn" class="emulator-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Cargar Estado
+            </button>
+            <button id="show-controls-btn" class="emulator-action-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><circle cx="17" cy="12" r="1"></circle><circle cx="7" cy="12" r="1"></circle><line x1="7" y1="9" x2="7" y2="15"></line><line x1="4" y1="12" x2="10" y2="12"></line><line x1="14" y1="14" x2="14" y2="14"></line><line x1="17" y1="9" x2="17" y2="9"></line></svg>
+                Controles
+            </button>
+        </div>
+        <button id="close-emulator" aria-label="Cerrar Juego">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Salir del Juego
+        </button>
+        <div id="game-container"></div>
+        <div id="controls-overlay" class="glass-card hidden">
+            <h3 style="margin-bottom: 1rem; color:var(--accent-primary);">Controles del Emulador</h3>
+            <ul id="controls-list">
+                <!-- Dynamically populated -->
+            </ul>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="remap-controls-btn" class="glass-btn" style="flex: 1; background: rgba(139, 92, 246, 0.4);">Remapear Controles</button>
+                <button id="save-controls-btn" class="glass-btn hidden" style="flex: 1; background: rgba(34, 197, 94, 0.4);">Guardar</button>
+                <button id="close-controls-btn" class="glass-btn" style="flex: 1;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="hidden">
+        <div class="glass-card auth-card">
+            <h2 id="auth-title">Iniciar Sesión</h2>
+            <form id="auth-form" onsubmit="event.preventDefault();">
+                <input type="text" id="auth-username" name="username" autocomplete="username" placeholder="Usuario" class="auth-input">
+                <input type="password" id="auth-password" name="password" autocomplete="current-password" placeholder="Contraseña" class="auth-input">
+                <button type="button" id="auth-submit" class="glass-btn" style="width:100%;">Entrar</button>
+            </form>
+            <p id="auth-toggle">¿No tienes cuenta? <a href="#">Regístrate aquí</a></p>
+            <button id="auth-close" class="close-btn">X</button>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="hidden">
+        <div class="glass-card profile-card">
+            <h2>Tus Partidas en la Nube</h2>
+            <div id="saves-list" class="saves-grid">
+                <!-- Dynamically populated -->
+            </div>
+            <button id="profile-close" class="close-btn">X</button>
+        </div>
+    </div>
+
+    <!-- Hidden Emulators -->
+    <div style="display:none;" id="nds-hidden-container">
+        <desmond-player id="nds-player" style="border: none; max-height: 100vh; box-shadow: 0 0 50px rgba(139, 92, 246, 0.4); width: 100%; height: 100%;"></desmond-player>
+    </div>
+
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Emulators -->
+    <script src="emulators/n64/Nintendo64.js"></script>
+    <script src="emulators/nes/Nintendo.min.js"></script>
+    <script src="emulators/gba/GameBoyAdvance.min.js"></script>
+    <script src="emulators/nds/desmond.min.js"></script>
+
+    <!-- QR Code Modal -->
+    <div id="qr-modal" class="hidden" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+        <div class="auth-card glass-card" style="position: relative; padding: 2.5rem; width: 350px; text-align: center;">
+            <button id="close-qr-btn" class="close-btn">&times;</button>
+            <h2 style="color:var(--text-primary); font-family:var(--font-main); margin-bottom: 0.5rem;">Mando Móvil</h2>
+            <p style="color:var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Escanea este código con tu teléfono (misma WiFi).</p>
+            <div id="qrcode" style="background: white; padding: 15px; border-radius: 12px; display: inline-block; margin-bottom: 1.5rem;"></div>
+            <div style="font-size: 0.8rem; color:var(--text-secondary);" id="qr-status">Generando código...</div>
+        </div>
+    </div>
+
+    <!-- Desmond UI Dependencies -->
+    <div id="msg-layer" hidden style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; z-index: 10001; font-family: var(--font-main); font-size: 0.9rem; pointer-events: none; backdrop-filter: blur(5px);">
+        <span id="msg-text"></span>
+    </div>
+
+    <!-- Main Logic -->
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('admin-btn').addEventListener('click', () => {
+            window.location.href = 'admin.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Arcade - Mando Móvil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #050510;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #ec4899;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        /* Lock screen to Landscape if possible */
+        @media screen and (orientation: portrait) {
+            #rotate-warning {
+                display: flex;
+            }
+            #gamepad-ui {
+                display: none !important;
+            }
+        }
+        @media screen and (orientation: landscape) {
+            #rotate-warning {
+                display: none;
+            }
+            #gamepad-ui {
+                display: flex;
+            }
+        }
+
+        #rotate-warning {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .glass-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.05s, box-shadow 0.05s, background 0.05s;
+        }
+
+        .glass-btn.active {
+            transform: scale(0.9);
+            background: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.6), inset 0 2px 4px rgba(0,0,0,0.5);
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+
+        #gamepad-ui {
+            width: 100%;
+            height: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        /* L and R Triggers */
+        .triggers {
+            position: absolute;
+            top: 10px;
+            width: calc(100% - 80px);
+            left: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .trigger {
+            width: 120px;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+
+        /* D-Pad Container */
+        .dpad {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-top: 20px;
+        }
+
+        .dpad .glass-btn {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+        }
+
+        .dpad .up { top: 0; left: 60px; }
+        .dpad .down { bottom: 0; left: 60px; }
+        .dpad .left { top: 60px; left: 0; }
+        .dpad .right { top: 60px; right: 0; }
+        .dpad .center { 
+            top: 60px; left: 60px; 
+            background: rgba(255,255,255,0.02);
+            box-shadow: none;
+            border: none;
+            pointer-events: none;
+        }
+
+        /* Action Buttons Container */
+        .action-buttons {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-top: 20px;
+        }
+
+        .action-buttons .glass-btn {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+        }
+
+        .action-buttons .x { top: 0; left: 60px; }
+        .action-buttons .b { bottom: 0; left: 60px; }
+        .action-buttons .y { top: 60px; left: 0; }
+        .action-buttons .a { top: 60px; right: 0; }
+
+        /* Center controls (Start / Select) */
+        .center-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .sys-btn {
+            width: 80px;
+            height: 30px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        #status {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        #fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-warning">
+        <h2 style="color: var(--accent-primary);">⚠️ Gira tu teléfono</h2>
+        <p style="color: rgba(255,255,255,0.6);">Para jugar cómodamente, pon tu teléfono en formato horizontal.</p>
+    </div>
+
+    <div id="gamepad-ui">
+        <div id="status">Conectando...</div>
+
+        <div class="triggers">
+            <div class="glass-btn trigger" data-btn="4">L</div>
+            <div class="glass-btn trigger" data-btn="5">R</div>
+        </div>
+
+        <div class="dpad">
+            <div class="glass-btn up" data-btn="12">↑</div>
+            <div class="glass-btn left" data-btn="14">←</div>
+            <div class="glass-btn center"></div>
+            <div class="glass-btn right" data-btn="15">→</div>
+            <div class="glass-btn down" data-btn="13">↓</div>
+        </div>
+
+        <div class="center-controls">
+            <div class="glass-btn sys-btn" data-btn="8">Select</div>
+            <div class="glass-btn sys-btn" data-btn="9">Start</div>
+        </div>
+
+        <div class="action-buttons">
+            <div class="glass-btn x" data-btn="2">X</div>
+            <div class="glass-btn y" data-btn="3">Y</div>
+            <div class="glass-btn a" data-btn="0" style="background: rgba(236, 72, 153, 0.1);">A</div>
+            <div class="glass-btn b" data-btn="1" style="background: rgba(139, 92, 246, 0.1);">B</div>
+        </div>
+        
+        <button id="fullscreen-btn">⛶</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get('room');
+            const statusEl = document.getElementById('status');
+
+            if (!roomId) {
+                statusEl.innerText = "Error: Código de sala no válido.";
+                statusEl.style.color = "red";
+                return;
+            }
+
+            // Connect to Socket.IO backend
+            const socket = io();
+
+            socket.on('connect', () => {
+                socket.emit('join_room', roomId);
+                statusEl.innerText = "🟢 Conectado";
+                statusEl.style.color = "#22c55e";
+                
+                // Vibrate if supported
+                if(navigator.vibrate) navigator.vibrate(50);
+            });
+
+            socket.on('disconnect', () => {
+                statusEl.innerText = "🔴 Desconectado";
+                statusEl.style.color = "red";
+            });
+
+            // Handle touch events
+            const buttons = document.querySelectorAll('.glass-btn[data-btn]');
+            
+            function emitButtonEvent(btnId, pressed) {
+                socket.emit('gamepad_input', {
+                    roomId: roomId,
+                    button: parseInt(btnId),
+                    pressed: pressed
+                });
+                if (pressed && navigator.vibrate) {
+                    navigator.vibrate(20); // Small haptic feedback
+                }
+            }
+
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    btn.classList.add('active');
+                    emitButtonEvent(btn.getAttribute('data-btn'), true);
+                });
+
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('active');
+                    emitButtonEvent(btn.getAttribute('data-btn'), false);
+                });
+                
+                btn.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('active');
+                    emitButtonEvent(btn.getAttribute('data-btn'), false);
+                });
+            });
+
+            // Prevent default behavior for context menus and double taps
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // Fullscreen toggle
+            const fsBtn = document.getElementById('fullscreen-btn');
+            fsBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

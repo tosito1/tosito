@@ -1,0 +1,12 @@
+imap-tools==1.6.0
+python-dotenv==1.0.1
+rich==13.7.1
+google-genai==0.3.0
+streamlit==1.32.0
+chromadb==0.4.24
+gTTS==2.5.1
+plotly
+pillow
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

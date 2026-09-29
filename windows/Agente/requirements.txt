@@ -1,0 +1,11 @@
+ollama
+psutil
+pyautogui
+opencv-python
+requests
+flask
+pynput
+pycaw
+py-cpuinfo
+wmi
+pywin32

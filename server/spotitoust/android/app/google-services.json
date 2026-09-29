@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "662096449944",
+    "project_id": "spotitoust",
+    "storage_bucket": "spotitoust.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662096449944:android:262882aaa9f3efc1615bed",
+        "android_client_info": {
+          "package_name": "com.toust.spotis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "662096449944-n88a83gbmfjjlt9qv8m7i5c7oba32eco.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toust.spotis",
+            "certificate_hash": "e9ef0d74f1121b3200b84ff3c11c657dd5324fb6"
+          }
+        },
+        {
+          "client_id": "662096449944-bfvtiu8b68hi4pljcqtbcn54mae5vmcd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRLycYY4Mi2buMQxbOj4JQMn90KTQMwYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "662096449944-bfvtiu8b68hi4pljcqtbcn54mae5vmcd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

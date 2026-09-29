@@ -1,0 +1,129 @@
+.container {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h3 {
+  text-transform: capitalize;
+  color: var(--text-primary);
+}
+
+.timelineWrapper {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  position: relative;
+  padding-right: 1rem;
+}
+
+/* Custom scrollbar */
+.timelineWrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.timelineWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+.timelineWrapper::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+.hoursColumn {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.hourLabel {
+  height: 100px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: right;
+  padding-right: 10px;
+  transform: translateY(-8px);
+}
+
+.eventsGrid {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid var(--border-color);
+}
+
+.gridLine {
+  height: 100px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-left: 4px solid;
+  padding: 0.5rem;
+  z-index: 1;
+  pointer-events: none;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.blockLabel {
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.event {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  background: var(--bg-tertiary);
+  border-left: 4px solid;
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  z-index: 2;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.event:hover {
+  transform: scale(1.01);
+  z-index: 10;
+}
+
+.eventContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eventTime {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.eventTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    height: auto;
+  }
+}

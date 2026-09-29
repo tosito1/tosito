@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberLab v2 — Plataforma de Estudio de Vulnerabilidades</title>
+    <meta name="description" content="Plataforma de pentesting: nmap, SQLMap, Gobuster, Nikto, Hydra, theHarvester, Subfinder, Nuclei, CME, enum4linux, tshark, ZAP, Metasploit, John, Hashcat">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<div class="bg-effects" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<div class="app-layout">
+
+    <!-- ═══════════════ SIDEBAR ═══════════════ -->
+    <aside class="sidebar" role="navigation" aria-label="Herramientas CyberLab">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="logo-text">
+                    <span class="name">CyberLab</span>
+                    <span class="version">v2.0 · 15 herramientas</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <!-- DASHBOARD -->
+            <button id="nav-dashboard" class="nav-item" onclick="switchTool('dashboard')" title="Dashboard">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+
+            <div class="nav-section-label">🔍 Reconocimiento</div>
+
+            <button id="nav-nmap" class="nav-item active" onclick="switchTool('nmap')" title="Nmap">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                <span class="nav-label">Nmap</span>
+                <span class="nav-badge green">PORTS</span>
+                <span id="status-nmap" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-rustscan" class="nav-item" onclick="switchTool('rustscan')" title="RustScan">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                <span class="nav-label">RustScan</span>
+                <span class="nav-badge green">FAST</span>
+                <span id="status-rustscan" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-theharvester" class="nav-item" onclick="switchTool('theharvester')" title="theHarvester">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+                <span class="nav-label">theHarvester</span>
+                <span class="nav-badge cyan">OSINT</span>
+                <span id="status-theharvester" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-subfinder" class="nav-item" onclick="switchTool('subfinder')" title="Subfinder">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span>
+                <span class="nav-label">Subfinder</span>
+                <span class="nav-badge cyan">DNS</span>
+                <span id="status-subfinder" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-tshark" class="nav-item" onclick="switchTool('tshark')" title="tshark">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+                <span class="nav-label">tshark</span>
+                <span class="nav-badge cyan">PCAP</span>
+                <span id="status-tshark" class="tool-status online"></span>
+            </button>
+
+            <div class="nav-section-label">🌐 Web</div>
+
+            <button id="nav-zap" class="nav-item" onclick="switchTool('zap')" title="OWASP ZAP">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+                <span class="nav-label">OWASP ZAP</span>
+                <span class="nav-badge amber">SPIDER</span>
+                <span id="status-zap" class="tool-status offline"></span>
+            </button>
+
+            <button id="nav-nikto" class="nav-item" onclick="switchTool('nikto')" title="Nikto">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+                <span class="nav-label">Nikto</span>
+                <span class="nav-badge amber">WEB</span>
+                <span id="status-nikto" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-gobuster" class="nav-item" onclick="switchTool('gobuster')" title="Gobuster">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                <span class="nav-label">Gobuster</span>
+                <span class="nav-badge amber">FUZZ</span>
+                <span id="status-gobuster" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-feroxbuster" class="nav-item" onclick="switchTool('feroxbuster')" title="Feroxbuster">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5.25 5 2.625-3 2.625 3 2.625-3 2.625 3 5.25-5"/></svg></span>
+                <span class="nav-label">Feroxbuster</span>
+                <span class="nav-badge amber">RUST</span>
+                <span id="status-feroxbuster" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-sqlmap" class="nav-item" onclick="switchTool('sqlmap')" title="SQLMap">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
+                <span class="nav-label">SQLMap</span>
+                <span class="nav-badge red">SQLi</span>
+                <span id="status-sqlmap" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-nuclei" class="nav-item" onclick="switchTool('nuclei')" title="Nuclei">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></span>
+                <span class="nav-label">Nuclei</span>
+                <span class="nav-badge red">CVEs</span>
+                <span id="status-nuclei" class="tool-status online"></span>
+            </button>
+
+            <div class="nav-section-label">💥 AD & Explotación</div>
+
+            <button id="nav-metasploit" class="nav-item" onclick="switchTool('metasploit')" title="Metasploit">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+                <span class="nav-label">Metasploit</span>
+                <span class="nav-badge red">EXPLOIT</span>
+                <span id="status-metasploit" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-hydra" class="nav-item" onclick="switchTool('hydra')" title="Hydra">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <span class="nav-label">Hydra</span>
+                <span class="nav-badge red">BRUTEFORCE</span>
+                <span id="status-hydra" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-cme" class="nav-item" onclick="switchTool('cme')" title="CrackMapExec">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
+                <span class="nav-label">CrackMapExec</span>
+                <span class="nav-badge red">AD</span>
+                <span id="status-cme" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-netexec" class="nav-item" onclick="switchTool('netexec')" title="NetExec">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 13 9 22 9 11 22 11 15 2 15 13 2"/></svg></span>
+                <span class="nav-label">NetExec</span>
+                <span class="nav-badge red">NEW</span>
+                <span id="status-netexec" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-impacket" class="nav-item" onclick="switchTool('impacket')" title="Impacket Suite">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+                <span class="nav-label">Impacket</span>
+                <span class="nav-badge red">SUITE</span>
+                <span id="status-impacket" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-bloodhound" class="nav-item" onclick="switchTool('bloodhound')" title="BloodHound">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <span class="nav-label">BloodHound</span>
+                <span class="nav-badge red">AD</span>
+                <span id="status-bloodhound" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-peass" class="nav-item" onclick="switchTool('peass')" title="PEASS-ng">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+                <span class="nav-label">PEASS-ng</span>
+                <span class="nav-badge red">PRIV</span>
+                <span id="status-peass" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-enum4linux" class="nav-item" onclick="switchTool('enum4linux')" title="enum4linux">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>
+                <span class="nav-label">enum4linux</span>
+                <span class="nav-badge red">SMB</span>
+                <span id="status-enum4linux" class="tool-status online"></span>
+            </button>
+
+            <div class="nav-section-label">🔑 Cracking & Leaks</div>
+
+            <button id="nav-john" class="nav-item" onclick="switchTool('john')" title="John the Ripper">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <span class="nav-label">John the Ripper</span>
+                <span class="nav-badge purple">CRACK</span>
+                <span id="status-john" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-hashcat" class="nav-item" onclick="switchTool('hashcat')" title="Hashcat">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+                <span class="nav-label">Hashcat</span>
+                <span class="nav-badge purple">GPU</span>
+                <span id="status-hashcat" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-trufflehog" class="nav-item" onclick="switchTool('trufflehog')" title="TruffleHog">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0-5 5v3a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-3a5 5 0 0 0-5-5v-3a5 5 0 0 0-5-5z"/></svg></span>
+                <span class="nav-label">TruffleHog</span>
+                <span class="nav-badge purple">LEAKS</span>
+                <span id="status-trufflehog" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-gitleaks" class="nav-item" onclick="switchTool('gitleaks')" title="Gitleaks">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></span>
+                <span class="nav-label">Gitleaks</span>
+                <span class="nav-badge purple">SECRETS</span>
+                <span id="status-gitleaks" class="tool-status online"></span>
+            </button>
+
+            <button id="nav-gitrob" class="nav-item" onclick="switchTool('gitrob')" title="Gitrob">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+                <span class="nav-label">Gitrob</span>
+                <span class="nav-badge purple">GIT</span>
+                <span id="status-gitrob" class="tool-status online"></span>
+            </button>
+
+            <div class="nav-section-label">🧰 Toolkits</div>
+
+            <button id="nav-hashid" class="nav-item" onclick="switchTool('hashid')" title="Hash Identifier">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="2" x2="12" y2="22"/></svg></span>
+                <span class="nav-label">Hash Identifier</span>
+            </button>
+
+            <button id="nav-encoder" class="nav-item" onclick="switchTool('encoder')" title="Encoder/Decoder">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+                <span class="nav-label">Encoder/Decoder</span>
+            </button>
+
+            <button id="nav-revshell" class="nav-item" onclick="switchTool('revshell')" title="Reverse Shell Generator">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+                <span class="nav-label">Reverse Shell Gen</span>
+            </button>
+
+            <button id="nav-payload" class="nav-item" onclick="switchTool('payload')" title="Payload Generator">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></span>
+                <span class="nav-label">Payload Generator</span>
+            </button>
+
+            <button id="nav-wordlists" class="nav-item" onclick="switchTool('wordlists')" title="Wordlist Manager">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+                <span class="nav-label">Wordlist Manager</span>
+            </button>
+
+            <button id="nav-cve" class="nav-item" onclick="switchTool('cve')" title="CVE Search">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+                <span class="nav-label">CVE Search</span>
+                <span class="nav-badge cyan">NVD</span>
+            </button>
+
+            <div class="nav-section-label">📋 Sesión</div>
+
+            <button id="nav-history" class="nav-item" onclick="switchTool('history')" title="Historial">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg></span>
+                <span class="nav-label">Historial</span>
+                <span id="history-count-badge" class="nav-badge amber" style="display:none">0</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-item" onclick="downloadReport()" title="Generar informe HTML">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                <span>Generar Informe</span>
+            </div>
+            <a href="http://hub.local" class="sidebar-footer-item" title="Server Hub">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Server Hub</span>
+            </a>
+            <div class="sidebar-footer-item" onclick="clearAllTerminals()" title="Limpiar terminales">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                <span>Limpiar todo</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══════════════ MAIN ═══════════════ -->
+    <div class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <span id="topbar-tool-name" class="topbar-title">Dashboard</span>
+                <span id="topbar-tool-desc" class="topbar-subtitle">CyberLab Security Research Platform</span>
+            </div>
+            <div class="topbar-right">
+                <div id="backend-status" class="status-pill connected">
+                    <span class="status-dot"></span>
+                    <span id="backend-status-text">Backend v2.0</span>
+                </div>
+                <button class="btn-icon" onclick="checkBackendStatus()" title="Refrescar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="tool-panels">
+
+            <!-- ══ DASHBOARD ══ -->
+            <section id="panel-dashboard" class="tool-panel" aria-label="Dashboard">
+                <div class="dashboard-stats" id="dashboard-stats"></div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" style="grid-column: span 2;">
+                        <div class="section-label">Estado de herramientas</div>
+                        <div class="tools-status-grid" id="tools-status-grid"></div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="section-label">Actividad reciente</div>
+                        <div class="recent-activity" id="recent-activity"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ NMAP ══ -->
+            <section id="panel-nmap" class="tool-panel active" aria-label="Nmap">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,210,255,.1));border:1px solid rgba(0,255,157,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Nmap Scanner</h2><p>Exploración de red, detección de servicios y scripts NSE de vulnerabilidades</p></div>
+                </div>
+                <div><div class="section-label">Plantillas rápidas</div><div class="templates-row" id="nmap-templates"></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1;min-width:200px"><label for="nmap-target">Target (IP / CIDR / hostname)</label><input id="nmap-target" class="form-input" type="text" placeholder="192.168.1.0/24" spellcheck="false"></div>
+                    <div class="form-group" style="flex:2;min-width:220px"><label for="nmap-flags">Flags</label><input id="nmap-flags" class="form-input" type="text" placeholder="-sV -O -T4" value="-sV -T4" spellcheck="false"></div>
+                    <button class="btn btn-primary" id="nmap-run-btn" onclick="runNmap()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('nmap')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">nmap · output</span><div class="terminal-actions"><button class="btn-icon" onclick="copyTerminal('nmap')" title="Copiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button><button class="btn-icon" onclick="clearTerminal('nmap')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-nmap"><div class="terminal-empty" id="term-nmap-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>Introduce un target y ejecuta el scan</p></div></div></div>
+            </section>
+
+            <!-- ══ RUSTSCAN ══ -->
+            <section id="panel-rustscan" class="tool-panel" aria-label="RustScan">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,210,255,.1));border:1px solid rgba(0,255,157,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>RustScan</h2><p>El escáner de puertos más rápido del mundo. Descubre puertos e invoca Nmap automáticamente.</p></div>
+                </div>
+                <div><div class="section-label">Presets</div><div class="templates-row" id="rustscan-presets"></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2;min-width:200px"><label for="rustscan-target">Target (IP / CIDR / hostname)</label><input id="rustscan-target" class="form-input" type="text" placeholder="192.168.1.0/24" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="rustscan-ulimit">Ulimit</label><input id="rustscan-ulimit" class="form-input" type="number" value="5000"></div>
+                    <div class="form-group" style="flex:2"><label for="rustscan-nmap-args">Nmap Args (opcional)</label><input id="rustscan-nmap-args" class="form-input" type="text" placeholder="-A -sC -sV" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <button class="btn btn-primary" id="rustscan-run-btn" onclick="runRustscan()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('rustscan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">rustscan · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('rustscan')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-rustscan" style="color:#69f0ae"><div class="terminal-empty" id="term-rustscan-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><p>Introduce un target y ejecuta RustScan</p></div></div></div>
+            </section>
+
+            <!-- ══ SQLMAP ══ -->
+            <section id="panel-sqlmap" class="tool-panel" aria-label="SQLMap">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,183,77,.1));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>SQLMap</h2><p>Detección y explotación automática de vulnerabilidades SQL Injection</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2;min-width:280px"><label for="sqlmap-url">URL Target (con parámetros)</label><input id="sqlmap-url" class="form-input" type="text" placeholder="http://target.com/page?id=1" spellcheck="false"></div>
+                    <div class="form-group"><label for="sqlmap-level">Level</label><select id="sqlmap-level" class="form-select"><option value="1">1 (Rápido)</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 (Exhaustivo)</option></select></div>
+                    <div class="form-group"><label for="sqlmap-risk">Risk</label><select id="sqlmap-risk" class="form-select"><option value="1">1 (Bajo)</option><option value="2">2</option><option value="3">3 (Alto)</option></select></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="sqlmap-technique">Técnica</label><select id="sqlmap-technique" class="form-select"><option value="">Todas</option></select></div>
+                    <div class="form-group" style="flex:1"><label for="sqlmap-data">POST data (opcional)</label><input id="sqlmap-data" class="form-input" type="text" placeholder="user=admin&pass=test" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="sqlmap-cookie">Cookie (opcional)</label><input id="sqlmap-cookie" class="form-input" type="text" placeholder="PHPSESSID=..." spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <label class="checkbox-label"><input type="checkbox" id="sqlmap-dbs"> Listar DBs</label>
+                    <label class="checkbox-label"><input type="checkbox" id="sqlmap-tables"> Listar tablas</label>
+                    <label class="checkbox-label"><input type="checkbox" id="sqlmap-dump"> Dump datos</label>
+                    <label class="checkbox-label"><input type="checkbox" id="sqlmap-forms"> Formularios auto</label>
+                    <button class="btn btn-danger" id="sqlmap-run-btn" onclick="runSqlmap()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Explotar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('sqlmap')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">sqlmap · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('sqlmap')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-sqlmap" style="color:#ff8fa3"><div class="terminal-empty" id="term-sqlmap-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg><p>Introduce una URL con parámetros y ejecuta</p></div></div></div>
+            </section>
+
+            <!-- ══ GOBUSTER ══ -->
+            <section id="panel-gobuster" class="tool-panel" aria-label="Gobuster">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,183,77,.05));border:1px solid rgba(255,183,77,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Gobuster</h2><p>Fuzzing de directorios, DNS, VHosts y parámetros con diccionario</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="gobuster-mode">Modo</label><select id="gobuster-mode" class="form-select" onchange="updateGobusterUI()"><option value="dir">dir — Directorios</option><option value="dns">dns — Subdominios</option><option value="vhost">vhost — VHosts</option><option value="fuzz">fuzz — Genérico</option></select></div>
+                    <div class="form-group" style="flex:2"><label for="gobuster-url">Target URL / Dominio</label><input id="gobuster-url" class="form-input" type="text" placeholder="http://192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="gobuster-ext">Extensiones</label><input id="gobuster-ext" class="form-input" type="text" placeholder="php,html,txt" spellcheck="false"></div>
+                    <div class="form-group"><label for="gobuster-threads">Threads</label><input id="gobuster-threads" class="form-input" type="number" value="50" style="width:80px" min="1" max="500"></div>
+                </div>
+                <div>
+                    <div class="section-label">Wordlist</div>
+                    <div class="templates-row" id="gobuster-wordlists"></div>
+                    <input id="gobuster-wordlist-path" class="form-input" type="text" placeholder="/usr/share/wordlists/dirb/common.txt" spellcheck="false" style="margin-top:8px;width:100%">
+                </div>
+                <div class="controls-row">
+                    <button class="btn btn-amber" id="gobuster-run-btn" onclick="runGobuster()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Fuzzear</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('gobuster')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">gobuster · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('gobuster')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-gobuster" style="color:#ffd54f"><div class="terminal-empty" id="term-gobuster-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><p>Configura el modo, URL y wordlist para comenzar</p></div></div></div>
+            </section>
+
+            <!-- ══ FEROXBUSTER ══ -->
+            <section id="panel-feroxbuster" class="tool-panel" aria-label="Feroxbuster">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,183,77,.05));border:1px solid rgba(255,183,77,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l5.25 5 2.625-3 2.625 3 2.625-3 2.625 3 5.25-5"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Feroxbuster</h2><p>Descubrimiento de contenido recursivo y ultrarrápido (Rust)</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="feroxbuster-url">Target URL</label><input id="feroxbuster-url" class="form-input" type="text" placeholder="http://192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="feroxbuster-ext">Extensiones</label><input id="feroxbuster-ext" class="form-input" type="text" placeholder="php,txt" spellcheck="false"></div>
+                    <div class="form-group"><label for="feroxbuster-depth">Depth</label><input id="feroxbuster-depth" class="form-input" type="number" value="4" style="width:70px"></div>
+                    <label class="checkbox-label"><input type="checkbox" id="feroxbuster-extract"> Extraer enlaces</label>
+                </div>
+                <div>
+                    <div class="section-label">Wordlist</div>
+                    <div class="templates-row" id="feroxbuster-wordlists"></div>
+                    <input id="feroxbuster-wordlist-path" class="form-input" type="text" placeholder="/usr/share/wordlists/dirb/common.txt" spellcheck="false" style="margin-top:8px;width:100%">
+                </div>
+                <div class="controls-row">
+                    <button class="btn btn-amber" id="feroxbuster-run-btn" onclick="runFeroxbuster()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Fuzzear (Rust)</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('feroxbuster')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">feroxbuster · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('feroxbuster')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-feroxbuster" style="color:#ffd54f"><div class="terminal-empty" id="term-feroxbuster-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l5.25 5 2.625-3 2.625 3 2.625-3 2.625 3 5.25-5"/></svg><p>Configura la URL y wordlist para comenzar el fuzzing recursivo</p></div></div></div>
+            </section>
+
+            <!-- ══ NIKTO ══ -->
+            <section id="panel-nikto" class="tool-panel" aria-label="Nikto">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,42,95,.1));border:1px solid rgba(255,183,77,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Nikto</h2><p>Escáner de vulnerabilidades en servidores web: misconfigs, archivos peligrosos, versiones</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="nikto-target">Target (IP o hostname)</label><input id="nikto-target" class="form-input" type="text" placeholder="192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group"><label for="nikto-port">Puerto</label><input id="nikto-port" class="form-input" type="number" placeholder="80" style="width:90px"></div>
+                    <label class="checkbox-label"><input type="checkbox" id="nikto-ssl"> HTTPS/SSL</label>
+                </div>
+                <div><div class="section-label">Tuning (categorías de checks)</div><div class="templates-row" id="nikto-tuning"></div></div>
+                <div class="controls-row">
+                    <button class="btn btn-amber" id="nikto-run-btn" onclick="runNikto()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Escanear</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('nikto')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">nikto · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('nikto')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-nikto" style="color:#ffcc80"><div class="terminal-empty" id="term-nikto-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><p>Introduce el target para escanear el servidor web</p></div></div></div>
+            </section>
+
+            <!-- ══ HYDRA ══ -->
+            <section id="panel-hydra" class="tool-panel" aria-label="Hydra">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Hydra</h2><p>Brute force de credenciales contra SSH, FTP, HTTP, SMB, RDP y más servicios</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="hydra-target">Target</label><input id="hydra-target" class="form-input" type="text" placeholder="192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group"><label for="hydra-service">Servicio</label><select id="hydra-service" class="form-select"></select></div>
+                    <div class="form-group"><label for="hydra-port">Puerto</label><input id="hydra-port" class="form-input" type="number" placeholder="22" style="width:90px"></div>
+                    <div class="form-group"><label for="hydra-threads">Threads</label><input id="hydra-threads" class="form-input" type="number" value="16" style="width:80px" min="1" max="64"></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="hydra-user">Usuario (single)</label><input id="hydra-user" class="form-input" type="text" placeholder="admin" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="hydra-pass">Contraseña (single)</label><input id="hydra-pass" class="form-input" type="text" placeholder="password123" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label>Lista de usuarios</label><div class="file-upload"><input type="file" id="hydra-userlist"><label class="file-upload-label" id="hydra-userlist-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>User list</label></div></div>
+                    <div class="form-group" style="flex:1"><label>Lista de passwords</label><div class="file-upload"><input type="file" id="hydra-passlist"><label class="file-upload-label" id="hydra-passlist-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Pass list</label></div></div>
+                </div>
+                <div class="controls-row">
+                    <label class="checkbox-label"><input type="checkbox" id="hydra-stop"> Parar al encontrar (-f)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="hydra-verbose"> Verbose (-V)</label>
+                    <button class="btn btn-danger" id="hydra-run-btn" onclick="runHydra()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Atacar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('hydra')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">hydra · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('hydra')" title="Limpiar" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-hydra" style="color:#ef9a9a"><div class="terminal-empty" id="term-hydra-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p>Configura el target, servicio y credenciales</p></div></div></div>
+            </section>
+
+            <!-- ══ THEHARVESTER ══ -->
+            <section id="panel-theharvester" class="tool-panel" aria-label="theHarvester">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,210,255,.15),rgba(0,210,255,.05));border:1px solid rgba(0,210,255,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>theHarvester</h2><p>OSINT: recolección de emails, subdominios, IPs y hosts desde 35+ fuentes</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="harvester-domain">Dominio objetivo</label><input id="harvester-domain" class="form-input" type="text" placeholder="ejemplo.com" spellcheck="false"></div>
+                    <div class="form-group"><label for="harvester-limit">Límite resultados</label><input id="harvester-limit" class="form-input" type="number" value="500" style="width:110px" min="50" max="5000"></div>
+                    <label class="checkbox-label"><input type="checkbox" id="harvester-dns"> DNS brute</label>
+                    <label class="checkbox-label"><input type="checkbox" id="harvester-takeover"> Takeover check</label>
+                </div>
+                <div><div class="section-label">Fuentes OSINT</div><div class="templates-row" id="harvester-sources" style="max-height:80px;overflow-y:auto"></div></div>
+                <div class="controls-row">
+                    <button class="btn btn-primary" id="harvester-run-btn" onclick="runHarvester()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Recolectar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('theharvester')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">theHarvester · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('theharvester')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-theharvester" style="color:#80deea"><div class="terminal-empty" id="term-theharvester-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg><p>Introduce un dominio y selecciona las fuentes OSINT</p></div></div></div>
+            </section>
+
+            <!-- ══ SUBFINDER ══ -->
+            <section id="panel-subfinder" class="tool-panel" aria-label="Subfinder">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,210,255,.15),rgba(123,97,255,.1));border:1px solid rgba(0,210,255,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Subfinder</h2><p>Enumeración pasiva de subdominios usando múltiples fuentes de inteligencia</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="subfinder-domain">Dominio</label><input id="subfinder-domain" class="form-input" type="text" placeholder="ejemplo.com" spellcheck="false"></div>
+                    <div class="form-group"><label for="subfinder-threads">Threads</label><input id="subfinder-threads" class="form-input" type="number" value="10" style="width:90px" min="1" max="100"></div>
+                    <label class="checkbox-label"><input type="checkbox" id="subfinder-all"> Todas las fuentes</label>
+                    <label class="checkbox-label"><input type="checkbox" id="subfinder-recursive"> Recursivo</label>
+                    <button class="btn btn-primary" id="subfinder-run-btn" onclick="runSubfinder()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Enumerar</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('subfinder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">subfinder · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('subfinder')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-subfinder" style="color:#80deea"><div class="terminal-empty" id="term-subfinder-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><p>Introduce un dominio y enumera subdominios</p></div></div></div>
+            </section>
+
+            <!-- ══ NUCLEI ══ -->
+            <section id="panel-nuclei" class="tool-panel" aria-label="Nuclei">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,183,77,.1));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Nuclei</h2><p>Escáner de vulnerabilidades con 10.000+ templates CVE, misconfigurations, exposures</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="nuclei-target">Target URL</label><input id="nuclei-target" class="form-input" type="text" placeholder="http://192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group"><label for="nuclei-severity">Severidad mínima</label><select id="nuclei-severity" class="form-select"><option value="">Todas</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="info">Info</option></select></div>
+                    <div class="form-group"><label for="nuclei-rate">Rate limit</label><input id="nuclei-rate" class="form-input" type="number" value="150" style="width:90px"></div>
+                </div>
+                <div><div class="section-label">Template Tags (selecciona categorías)</div><div class="templates-row" id="nuclei-tags"></div></div>
+                <div class="controls-row">
+                    <button class="btn btn-danger" id="nuclei-run-btn" onclick="runNuclei()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Escanear</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('nuclei')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">nuclei · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('nuclei')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-nuclei" style="color:#ef9a9a"><div class="terminal-empty" id="term-nuclei-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/></svg><p>Introduce un target y selecciona los template tags</p></div></div></div>
+            </section>
+
+            <!-- ══ ZAP ══ -->
+            <section id="panel-zap" class="tool-panel" aria-label="OWASP ZAP">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,42,95,.1));border:1px solid rgba(255,183,77,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="panel-info"><h2>OWASP ZAP</h2><p>Spider web, Active Scan y análisis de alertas de seguridad</p></div><div class="panel-actions"><button class="btn btn-ghost" onclick="startZap()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Iniciar ZAP</button></div></div>
+                <div class="controls-row"><div class="form-group" style="flex:1"><label for="zap-target">URL Target</label><input id="zap-target" class="form-input" type="url" placeholder="http://192.168.1.100" spellcheck="false"></div><button class="btn btn-amber" onclick="runZapSpider()">Spider</button><button class="btn btn-danger" onclick="runZapActiveScan()">Active Scan</button><button class="btn btn-ghost" onclick="loadZapAlerts()">Ver Alertas</button></div>
+                <div id="zap-progress-wrap" class="progress-wrap" style="display:none"><div class="progress-bar-outer"><div class="progress-bar-inner" id="zap-progress-bar"></div></div><span class="progress-label" id="zap-progress-label">0%</span></div>
+                <div class="terminal-wrapper" style="min-height:180px;max-height:200px"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">zap · output</span></div><div class="terminal-body" id="term-zap"><div class="terminal-empty" id="term-zap-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><p>Inicia ZAP y lanza el spider o active scan</p></div></div></div>
+                <div><div class="section-label">Alertas (<span id="zap-alert-count">0</span>)</div><div class="alerts-container" id="zap-alerts"></div></div>
+            </section>
+
+            <!-- ══ METASPLOIT ══ -->
+            <section id="panel-metasploit" class="tool-panel" aria-label="Metasploit">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="panel-info"><h2>Metasploit Framework</h2><p>Búsqueda y ejecución de módulos de explotación vía msfconsole</p></div></div>
+                <div class="controls-row"><div class="form-group" style="flex:1"><label for="msf-search">Buscar módulo</label><input id="msf-search" class="form-input" type="text" placeholder="eternalblue, smb, apache..." spellcheck="false"></div><button class="btn btn-ghost" onclick="searchMsfModules()">Buscar</button></div>
+                <div><div class="section-label">Templates rápidos</div><div class="templates-row"><span class="template-chip" onclick="loadMsfTemplate('recon')">🔍 Recon básico</span><span class="template-chip" onclick="loadMsfTemplate('smb_ms17')">💥 MS17-010 EternalBlue</span><span class="template-chip" onclick="loadMsfTemplate('meterpreter_rev')">🐚 Meterpreter reverse</span><span class="template-chip" onclick="loadMsfTemplate('db_nmap')">📡 db_nmap</span></div></div>
+                <div><div class="section-label">Comandos msfconsole</div><div class="command-editor"><div class="command-editor-header"><span>msf6 ></span><span style="color:var(--green)">● ready</span></div><textarea id="msf-commands" class="command-textarea" placeholder="use exploit/windows/smb/ms17_010_eternalblue&#10;set RHOSTS 192.168.1.100&#10;run" spellcheck="false"></textarea></div></div>
+                <div class="controls-row"><button class="btn btn-danger" id="msf-run-btn" onclick="runMetasploit()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar msfconsole</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">msfconsole · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('metasploit')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-metasploit" style="color:#ff8fa3"><div class="terminal-empty" id="term-metasploit-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/></svg><p>Escribe comandos msfconsole y ejecuta</p></div></div></div>
+            </section>
+
+            <!-- ══ CME ══ -->
+            <section id="panel-cme" class="tool-panel" aria-label="CrackMapExec">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div><div class="panel-info"><h2>CrackMapExec</h2><p>Enumeración y explotación de Active Directory, SMB, WinRM, LDAP y más</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="cme-protocol">Protocolo</label><select id="cme-protocol" class="form-select"></select></div>
+                    <div class="form-group" style="flex:1"><label for="cme-target">Target (IP / rango)</label><input id="cme-target" class="form-input" type="text" placeholder="192.168.1.0/24" spellcheck="false"></div>
+                    <div class="form-group"><label for="cme-domain">Dominio AD</label><input id="cme-domain" class="form-input" type="text" placeholder="corp.local" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="cme-user">Usuario</label><input id="cme-user" class="form-input" type="text" placeholder="administrator" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="cme-pass">Contraseña</label><input id="cme-pass" class="form-input" type="text" placeholder="Password123" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="cme-hash">Hash NTLM (Pass-the-Hash)</label><input id="cme-hash" class="form-input" type="text" placeholder="aad3b435b51404eeaad3b435b51404ee:..." spellcheck="false"></div>
+                </div>
+                <div class="controls-row" style="flex-wrap:wrap;gap:8px">
+                    <label class="checkbox-label"><input type="checkbox" id="cme-shares"> --shares</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-users"> --users</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-groups"> --groups</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-sam"> --sam (dump SAM)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-lsa"> --lsa (dump LSA)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-ntds"> --ntds (DC dump)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="cme-rid"> --rid-brute</label>
+                    <div class="form-group" style="flex:1"><label for="cme-command">Ejecutar comando (-x)</label><input id="cme-command" class="form-input" type="text" placeholder="whoami" spellcheck="false"></div>
+                </div>
+                <div class="controls-row"><button class="btn btn-danger" id="cme-run-btn" onclick="runCME()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar CME</button><button class="btn btn-ghost" onclick="stopCurrentProcess('cme')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">crackmapexec · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('cme')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-cme" style="color:#ef9a9a"><div class="terminal-empty" id="term-cme-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg><p>Configura el protocolo, target y credenciales AD</p></div></div></div>
+            </section>
+
+            <!-- ══ NETEXEC ══ -->
+            <section id="panel-netexec" class="tool-panel" aria-label="NetExec">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 13 9 22 9 11 22 11 15 2 15 13 2"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>NetExec (nxc)</h2><p>Sucesor moderno de CrackMapExec. Más protocolos, más rápido, más módulos.</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="nxc-protocol">Protocolo</label><select id="nxc-protocol" class="form-select"></select></div>
+                    <div class="form-group" style="flex:1"><label for="nxc-target">Target (IP / rango / archivo)</label><input id="nxc-target" class="form-input" type="text" placeholder="192.168.1.0/24" spellcheck="false"></div>
+                    <div class="form-group"><label for="nxc-domain">Dominio (opcional)</label><input id="nxc-domain" class="form-input" type="text" placeholder="corp.local" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="nxc-user">Usuario / File</label><input id="nxc-user" class="form-input" type="text" placeholder="admin" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="nxc-pass">Password / Hash / File</label><input id="nxc-pass" class="form-input" type="text" placeholder="Pass123! o Hash" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="nxc-module">Módulo (-M)</label><select id="nxc-module" class="form-select"><option value="">Ninguno</option></select></div>
+                </div>
+                <div class="controls-row" style="flex-wrap:wrap;gap:8px">
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-shares"> --shares</label>
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-users"> --users</label>
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-groups"> --groups</label>
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-sam"> --sam</label>
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-ntds"> --ntds</label>
+                    <label class="checkbox-label"><input type="checkbox" id="nxc-laps"> --laps</label>
+                    <div class="form-group" style="flex:1"><label for="nxc-command">Comando (-x)</label><input id="nxc-command" class="form-input" type="text" placeholder="whoami" spellcheck="false"></div>
+                </div>
+                <div class="controls-row"><button class="btn btn-danger" id="nxc-run-btn" onclick="runNetExec()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar NetExec</button><button class="btn btn-ghost" onclick="stopCurrentProcess('netexec')">Stop</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">netexec · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('netexec')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-netexec" style="color:#ef9a9a"><div class="terminal-empty" id="term-netexec-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="13 2 13 9 22 9 11 22 11 15 2 15 13 2"/></svg><p>NetExec: la evolución de CME</p></div></div></div>
+            </section>
+
+            <!-- ══ IMPACKET ══ -->
+            <section id="panel-impacket" class="tool-panel" aria-label="Impacket Suite">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Impacket Suite</h2><p>Colección de scripts de Python para trabajar con protocolos de red (SMB, MSRPC, NTLM, Kerberos, etc.)</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="impacket-tool">Herramienta</label><select id="impacket-tool" class="form-select" onchange="updateImpacketUI()"></select></div>
+                    <div class="form-group" style="flex:2"><label for="impacket-target">Target (domain/user:pass@ip)</label><input id="impacket-target" class="form-input" type="text" placeholder="corp.local/admin:Pass123@192.168.1.10" spellcheck="false"></div>
+                </div>
+                <div class="controls-row" id="impacket-extra-row">
+                    <!-- Se llena dinámicamente con app.js -->
+                </div>
+                <div class="controls-row"><button class="btn btn-danger" id="impacket-run-btn" onclick="runImpacket()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Ejecutar Impacket</button><button class="btn btn-ghost" onclick="stopCurrentProcess('impacket')">Stop</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">impacket · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('impacket')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-impacket" style="color:#ef9a9a"><div class="terminal-empty" id="term-impacket-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><p>Selecciona una herramienta de la suite Impacket</p></div></div></div>
+            </section>
+
+            <!-- ══ BLOODHOUND ══ -->
+            <section id="panel-bloodhound" class="tool-panel" aria-label="BloodHound">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>BloodHound (Python Ingestor)</h2><p>Recopila datos de Active Directory para BloodHound GUI usando bloodhound-python</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="bh-domain">Domain (-d)</label><input id="bh-domain" class="form-input" type="text" placeholder="corp.local" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="bh-dc">Domain Controller (-dc)</label><input id="bh-dc" class="form-input" type="text" placeholder="dc01.corp.local" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="bh-user">User (-u)</label><input id="bh-user" class="form-input" type="text" placeholder="administrator" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="bh-pass">Password (-p)</label><input id="bh-pass" class="form-input" type="password" placeholder="Pass123!" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="bh-collection">Método de recolección (-c)</label><select id="bh-collection" class="form-select"></select></div>
+                    <label class="checkbox-label"><input type="checkbox" id="bh-zip" checked> Comprimir a ZIP</label>
+                    <label class="checkbox-label"><input type="checkbox" id="bh-dns-tcp"> Usar DNS sobre TCP</label>
+                </div>
+                <div class="controls-row"><button class="btn btn-danger" id="bh-run-btn" onclick="runBloodhound()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Recolectar Datos</button><button class="btn btn-ghost" onclick="stopCurrentProcess('bloodhound')">Stop</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">bloodhound · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('bloodhound')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-bloodhound" style="color:#ef9a9a"><div class="terminal-empty" id="term-bloodhound-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><p>Ingesta de datos de Active Directory</p></div></div></div>
+            </section>
+
+            <!-- ══ PEASS-NG ══ -->
+            <section id="panel-peass" class="tool-panel" aria-label="PEASS-ng">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>PEASS-ng (LinPEAS/WinPEAS)</h2><p>Servidor temporal para descargar PEASS y comandos generados para copiar y pegar.</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="peass-os">Sistema Operativo</label><select id="peass-os" class="form-select" onchange="updatePeassCommands()"><option value="linux">Linux (LinPEAS)</option><option value="windows">Windows (WinPEAS)</option><option value="mac">macOS (MacPEAS)</option></select></div>
+                    <div class="form-group"><label for="peass-lhost">Tu IP (LHOST)</label><input id="peass-lhost" class="form-input" type="text" placeholder="10.0.0.1" spellcheck="false" onchange="updatePeassCommands()"></div>
+                    <div class="form-group"><label for="peass-port">Puerto HTTP</label><input id="peass-port" class="form-input" type="number" value="8000" style="width:80px" onchange="updatePeassCommands()"></div>
+                    <button class="btn btn-primary" onclick="servePeass()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Iniciar Servidor HTTP</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('peass_serve')">Stop Servidor</button>
+                </div>
+                <div><div class="section-label">Comandos para ejecutar en el objetivo (Copiar y Pegar)</div><div class="templates-row" id="peass-commands"></div></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">http.server · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('peass')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-peass" style="color:#ef9a9a"><div class="terminal-empty" id="term-peass-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Inicia el servidor para alojar LinPEAS/WinPEAS</p></div></div></div>
+            </section>
+
+            <!-- ══ ENUM4LINUX ══ -->
+            <section id="panel-enum4linux" class="tool-panel" aria-label="enum4linux">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(255,42,95,.05));border:1px solid rgba(255,42,95,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div><div class="panel-info"><h2>enum4linux</h2><p>Enumeración Samba/SMB: usuarios, grupos, shares, políticas de contraseña, OS</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="e4l-target">Target IP</label><input id="e4l-target" class="form-input" type="text" placeholder="192.168.1.100" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="e4l-user">Usuario (opcional)</label><input id="e4l-user" class="form-input" type="text" placeholder="guest" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="e4l-pass">Contraseña (opcional)</label><input id="e4l-pass" class="form-input" type="text" placeholder="" spellcheck="false"></div>
+                </div>
+                <div class="controls-row" style="flex-wrap:wrap;gap:8px">
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-all" checked> Todo (-a)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-users"> Usuarios (-U)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-groups"> Grupos (-G)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-shares"> Shares (-S)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-policy"> Políticas (-P)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-rid"> RID cycling (-r)</label>
+                    <label class="checkbox-label"><input type="checkbox" id="e4l-os"> OS info (-o)</label>
+                    <button class="btn btn-danger" id="e4l-run-btn" onclick="runEnum4linux()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Enumerar</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">enum4linux · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('enum4linux')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-enum4linux" style="color:#ef9a9a"><div class="terminal-empty" id="term-enum4linux-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg><p>Introduce la IP del target Samba/SMB</p></div></div></div>
+            </section>
+
+            <!-- ══ TSHARK ══ -->
+            <section id="panel-tshark" class="tool-panel" aria-label="tshark">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,210,255,.15),rgba(0,210,255,.05));border:1px solid rgba(0,210,255,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="panel-info"><h2>tshark</h2><p>Captura y análisis de tráfico de red en tiempo real (Wireshark CLI)</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="tshark-iface">Interfaz</label><select id="tshark-iface" class="form-select"></select></div>
+                    <div class="form-group" style="flex:1"><label for="tshark-filter">Filtro BPF</label><input id="tshark-filter" class="form-input" type="text" placeholder="tcp port 80" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="tshark-display">Filtro display Wireshark</label><input id="tshark-display" class="form-input" type="text" placeholder="http.request" spellcheck="false"></div>
+                    <div class="form-group"><label for="tshark-count">Paquetes</label><input id="tshark-count" class="form-input" type="number" placeholder="∞" style="width:90px"></div>
+                </div>
+                <div><div class="section-label">Filtros rápidos</div><div class="templates-row" id="tshark-filters"></div></div>
+                <div class="controls-row"><button class="btn btn-primary" id="tshark-run-btn" onclick="runTshark()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Capturar</button><button class="btn btn-ghost" onclick="stopCurrentProcess('tshark')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>Stop</button></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">tshark · live capture</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('tshark')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-tshark" style="color:#80deea"><div class="terminal-empty" id="term-tshark-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Selecciona la interfaz y aplica filtros de captura</p></div></div></div>
+            </section>
+
+            <!-- ══ JOHN ══ -->
+            <section id="panel-john" class="tool-panel" aria-label="John the Ripper">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(123,97,255,.05));border:1px solid rgba(123,97,255,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#7b61ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="panel-info"><h2>John the Ripper</h2><p>Cracking de contraseñas con diccionario o modo incremental</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group"><label>Archivo de hashes</label><div class="file-upload"><input type="file" id="john-hashfile"><label class="file-upload-label" id="john-hashfile-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Hash file</span></label></div></div>
+                    <div class="form-group"><label>Wordlist</label><div class="file-upload"><input type="file" id="john-wordlist"><label class="file-upload-label" id="john-wordlist-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Wordlist</span></label></div></div>
+                    <div class="form-group"><label for="john-format">Formato hash</label><select id="john-format" class="form-select"><option value="">Auto</option><option value="md5">md5</option><option value="sha1">sha1</option><option value="sha256">sha256</option><option value="sha512">sha512</option><option value="NT">NTLM</option><option value="LM">LM</option><option value="bcrypt">bcrypt</option><option value="sha512crypt">sha512crypt</option><option value="md5crypt">md5crypt</option></select></div>
+                    <button class="btn btn-purple" id="john-run-btn" onclick="runJohn()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Crackear</button>
+                    <button class="btn btn-ghost" onclick="showJohnResults()">Ver crackeados</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">john · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('john')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-john" style="color:#b39ddb"><div class="terminal-empty" id="term-john-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p>Sube un hash file y lanza el cracking</p></div></div></div>
+            </section>
+
+            <!-- ══ HASHCAT ══ -->
+            <section id="panel-hashcat" class="tool-panel" aria-label="Hashcat">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(0,210,255,.1));border:1px solid rgba(123,97,255,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#7b61ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><div class="panel-info"><h2>Hashcat</h2><p>GPU-accelerated password recovery con 5 modos de ataque</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group"><label>Hash file</label><div class="file-upload"><input type="file" id="hc-hashfile"><label class="file-upload-label" id="hc-hashfile-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Hash file</span></label></div></div>
+                    <div class="form-group"><label>Wordlist</label><div class="file-upload"><input type="file" id="hc-wordlist"><label class="file-upload-label" id="hc-wordlist-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Wordlist</span></label></div></div>
+                    <div class="form-group"><label for="hc-attack">Modo ataque</label><select id="hc-attack" class="form-select" onchange="updateHashcatAttackUI()"><option value="0">0 · Diccionario</option><option value="1">1 · Combinator</option><option value="3">3 · Brute-Force/Mask</option><option value="6">6 · Hybrid dict+mask</option><option value="7">7 · Hybrid mask+dict</option></select></div>
+                    <div class="form-group" id="hc-mask-group" style="display:none"><label for="hc-mask">Máscara</label><input id="hc-mask" class="form-input" type="text" placeholder="?a?a?a?a?a?a?a?a" style="width:160px" spellcheck="false"></div>
+                    <button class="btn btn-purple" id="hc-run-btn" onclick="runHashcat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Crackear</button>
+                </div>
+                <div><div class="section-label">Hash Mode</div><div class="hash-modes-grid" id="hc-modes-grid"></div></div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">hashcat · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('hashcat')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-hashcat" style="color:#ce93d8"><div class="terminal-empty" id="term-hashcat-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><p>Sube un hash file y selecciona el hash mode</p></div></div></div>
+            </section>
+
+            <!-- ══ TRUFFLEHOG ══ -->
+            <section id="panel-trufflehog" class="tool-panel" aria-label="TruffleHog">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(123,97,255,.05));border:1px solid rgba(123,97,255,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#7b61ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0-5 5v3a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-3a5 5 0 0 0-5-5v-3a5 5 0 0 0-5-5z"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>TruffleHog</h2><p>Encuentra secretos y credenciales en repositorios git (locales o remotos), S3 y más.</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="trufflehog-source">Fuente</label><select id="trufflehog-source" class="form-select"></select></div>
+                    <div class="form-group" style="flex:2"><label for="trufflehog-target">Target (URL, repo local, etc.)</label><input id="trufflehog-target" class="form-input" type="text" placeholder="https://github.com/user/repo" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <label class="checkbox-label"><input type="checkbox" id="trufflehog-only-verified" checked> Solo secretos verificados</label>
+                    <label class="checkbox-label"><input type="checkbox" id="trufflehog-json"> Salida JSON</label>
+                    <button class="btn btn-purple" id="trufflehog-run-btn" onclick="runTrufflehog()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Escanear Secretos</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('trufflehog')">Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">trufflehog · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('trufflehog')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-trufflehog" style="color:#b39ddb"><div class="terminal-empty" id="term-trufflehog-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0-5 5v3a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-3a5 5 0 0 0-5-5v-3a5 5 0 0 0-5-5z"/></svg><p>Olfateando secretos...</p></div></div></div>
+            </section>
+
+            <!-- ══ GITLEAKS ══ -->
+            <section id="panel-gitleaks" class="tool-panel" aria-label="Gitleaks">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(123,97,255,.05));border:1px solid rgba(123,97,255,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#7b61ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Gitleaks</h2><p>Detecta y previene secretos en código. Rápido y altamente configurable.</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="gitleaks-source">Modo</label><select id="gitleaks-source" class="form-select"></select></div>
+                    <div class="form-group" style="flex:2"><label for="gitleaks-target">Target (directorio local / archivo)</label><input id="gitleaks-target" class="form-input" type="text" placeholder="/path/to/repo" spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <label class="checkbox-label"><input type="checkbox" id="gitleaks-verbose" checked> Verbose (ver leaks)</label>
+                    <button class="btn btn-purple" id="gitleaks-run-btn" onclick="runGitleaks()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Escanear Gitleaks</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('gitleaks')">Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">gitleaks · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('gitleaks')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-gitleaks" style="color:#b39ddb"><div class="terminal-empty" id="term-gitleaks-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><p>Busca tokens, claves y passwords en repositorios</p></div></div></div>
+            </section>
+
+            <!-- ══ GITROB ══ -->
+            <section id="panel-gitrob" class="tool-panel" aria-label="Gitrob">
+                <div class="panel-header">
+                    <div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(123,97,255,.05));border:1px solid rgba(123,97,255,.2)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#7b61ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="panel-info"><h2>Gitrob</h2><p>Reconocimiento de repositorios de Github (requiere Github Access Token en entorno)</p></div>
+                </div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:2"><label for="gitrob-target">Usuario u Organización de Github</label><input id="gitrob-target" class="form-input" type="text" placeholder="google" spellcheck="false"></div>
+                    <div class="form-group" style="flex:1"><label for="gitrob-github-token">Github Token (opcional si en ENV)</label><input id="gitrob-github-token" class="form-input" type="password" placeholder="ghp_..." spellcheck="false"></div>
+                </div>
+                <div class="controls-row">
+                    <label class="checkbox-label"><input type="checkbox" id="gitrob-no-server" checked> No arrancar UI web (-noserver)</label>
+                    <button class="btn btn-purple" id="gitrob-run-btn" onclick="runGitrob()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Analizar con Gitrob</button>
+                    <button class="btn btn-ghost" onclick="stopCurrentProcess('gitrob')">Stop</button>
+                </div>
+                <div class="terminal-wrapper"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">gitrob · output</span><div class="terminal-actions"><button class="btn-icon" onclick="clearTerminal('gitrob')" style="width:28px;height:28px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div></div><div class="terminal-body" id="term-gitrob" style="color:#b39ddb"><div class="terminal-empty" id="term-gitrob-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><p>Introduce el usuario/org de Github para analizar</p></div></div></div>
+            </section>
+
+            <!-- ══ HASH IDENTIFIER ══ -->
+            <section id="panel-hashid" class="tool-panel" aria-label="Hash Identifier">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(123,97,255,.1));border:1px solid rgba(0,255,157,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="2" x2="12" y2="22"/></svg></div><div class="panel-info"><h2>Hash Identifier</h2><p>Identifica automáticamente el tipo de hash y su modo Hashcat/John correspondiente</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="hashid-input">Hash a identificar</label><input id="hashid-input" class="form-input" type="text" placeholder="5f4dcc3b5aa765d61d8327deb882cf99" spellcheck="false"></div>
+                    <button class="btn btn-primary" onclick="identifyHash()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Identificar</button>
+                </div>
+                <div id="hashid-results" class="hashid-results"></div>
+            </section>
+
+            <!-- ══ ENCODER/DECODER ══ -->
+            <section id="panel-encoder" class="tool-panel" aria-label="Encoder Decoder">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,210,255,.1));border:1px solid rgba(0,255,157,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="panel-info"><h2>Encoder / Decoder</h2><p>Base64, Hex, URL encoding, HTML entities, JWT decode, ROT13, XOR</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group"><label for="encoder-mode">Operación</label><select id="encoder-mode" class="form-select"><optgroup label="Encode"><option value="base64e">Base64 Encode</option><option value="hexe">Hex Encode</option><option value="urle">URL Encode</option><option value="htmle">HTML Entities Encode</option><option value="rot13">ROT13</option><option value="bin">String → Binario</option></optgroup><optgroup label="Decode"><option value="base64d">Base64 Decode</option><option value="hexd">Hex Decode</option><option value="urld">URL Decode</option><option value="htmld">HTML Entities Decode</option><option value="jwt">JWT Decode (sin verificar)</option><option value="bind">Binario → String</option></optgroup><optgroup label="Hash"><option value="md5h">MD5 Hash</option><option value="sha1h">SHA-1 Hash</option><option value="sha256h">SHA-256 Hash</option></optgroup></select></div>
+                </div>
+                <div class="form-group" style="flex:1"><label for="encoder-input">Input</label><textarea id="encoder-input" class="command-textarea" placeholder="Introduce el texto a procesar..." style="min-height:100px;border:1px solid var(--border);border-radius:var(--radius-md)"></textarea></div>
+                <div class="controls-row">
+                    <button class="btn btn-primary" onclick="runEncoder()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Procesar</button>
+                    <button class="btn btn-ghost" onclick="swapEncoderIO()">⇅ Swap input/output</button>
+                    <button class="btn btn-ghost" onclick="clearEncoder()">Limpiar</button>
+                </div>
+                <div class="form-group" style="flex:1"><label>Output</label><textarea id="encoder-output" class="command-textarea" readonly style="min-height:100px;border:1px solid var(--border);border-radius:var(--radius-md);color:var(--green)"></textarea></div>
+            </section>
+
+            <!-- ══ REVERSE SHELL GENERATOR ══ -->
+            <section id="panel-revshell" class="tool-panel" aria-label="Reverse Shell Generator">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,42,95,.15),rgba(123,97,255,.1));border:1px solid rgba(255,42,95,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ff2a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div><div class="panel-info"><h2>Reverse Shell Generator</h2><p>Genera one-liners de reverse shell en 15+ lenguajes listos para copiar</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="revshell-ip">LHOST (tu IP)</label><input id="revshell-ip" class="form-input" type="text" placeholder="192.168.1.1" spellcheck="false"></div>
+                    <div class="form-group"><label for="revshell-port">LPORT</label><input id="revshell-port" class="form-input" type="number" value="4444" style="width:100px"></div>
+                    <button class="btn btn-primary" onclick="generateRevShells()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Generar</button>
+                </div>
+                <div id="revshell-results" class="revshell-results"></div>
+            </section>
+
+            <!-- ══ PAYLOAD GENERATOR ══ -->
+            <section id="panel-payload" class="tool-panel" aria-label="Payload Generator">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,42,95,.1));border:1px solid rgba(255,183,77,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div><div class="panel-info"><h2>Payload Generator</h2><p>XSS, SQLi, Command Injection, SSTI, Path Traversal, XXE payloads</p></div></div>
+                <div class="controls-row"><div class="form-group"><label for="payload-type">Tipo de vulnerabilidad</label><select id="payload-type" class="form-select" onchange="renderPayloads()"><option value="xss">XSS — Cross-Site Scripting</option><option value="sqli">SQL Injection</option><option value="cmdi">Command Injection</option><option value="ssti">SSTI — Server-Side Template Injection</option><option value="lfi">LFI — Local File Inclusion</option><option value="xxe">XXE — XML External Entity</option><option value="ssrf">SSRF — Server-Side Request Forgery</option><option value="open_redirect">Open Redirect</option></select></div><div class="form-group" style="flex:1"><label for="payload-filter">Filtrar payloads</label><input id="payload-filter" class="form-input" type="text" placeholder="buscar..." oninput="filterPayloads()"></div></div>
+                <div id="payload-list" class="payload-list"></div>
+            </section>
+
+            <!-- ══ WORDLIST MANAGER ══ -->
+            <section id="panel-wordlists" class="tool-panel" aria-label="Wordlist Manager">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,255,157,.05));border:1px solid rgba(0,255,157,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="panel-info"><h2>Wordlist Manager</h2><p>Navega y previsualiza las wordlists del sistema — copia la ruta directamente a la herramienta</p></div></div>
+                <div><div class="section-label">Wordlists conocidas</div><div id="wellknown-wordlists" class="wordlist-grid"></div></div>
+                <div class="divider"></div>
+                <div id="wordlist-preview-box" class="wordlist-preview-box" style="display:none">
+                    <div class="section-label"><span id="wl-preview-name">—</span> · <span id="wl-preview-size">—</span></div>
+                    <div class="terminal-wrapper" style="min-height:200px"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">preview</span></div><div class="terminal-body" id="wl-preview-content" style="color:#a5d6a7;white-space:pre"></div></div>
+                </div>
+            </section>
+
+            <!-- ══ CVE SEARCH ══ -->
+            <section id="panel-cve" class="tool-panel" aria-label="CVE Search">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(0,210,255,.15),rgba(0,210,255,.05));border:1px solid rgba(0,210,255,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="panel-info"><h2>CVE Search (NVD)</h2><p>Consulta la base de datos NIST NVD — CVSS scores, descripción, referencias</p></div></div>
+                <div class="controls-row"><div class="form-group" style="flex:1"><label for="cve-query">CVE ID o keyword</label><input id="cve-query" class="form-input" type="text" placeholder="CVE-2021-44228 o log4j" spellcheck="false"></div><button class="btn btn-primary" onclick="searchCVE()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Buscar</button></div>
+                <div class="terminal-wrapper" style="flex:1;min-height:400px"><div class="terminal-topbar"><div class="terminal-dots"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div></div><span class="terminal-title">NVD · resultados</span></div><div class="terminal-body" id="term-cve" style="color:#80deea;white-space:pre-wrap"><div class="terminal-empty" id="term-cve-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>Busca CVEs por ID o keyword</p></div></div></div>
+            </section>
+
+            <!-- ══ HISTORY ══ -->
+            <section id="panel-history" class="tool-panel" aria-label="Historial">
+                <div class="panel-header"><div class="panel-tool-icon" style="background:linear-gradient(135deg,rgba(255,183,77,.15),rgba(255,183,77,.05));border:1px solid rgba(255,183,77,.2)"><svg viewBox="0 0 24 24" fill="none" stroke="#ffb74d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg></div><div class="panel-info"><h2>Historial de Operaciones</h2><p>Registro persistente de todos los scans y ataques ejecutados</p></div></div>
+                <div class="controls-row">
+                    <div class="form-group" style="flex:1"><label for="history-filter-tool">Filtrar por herramienta</label><select id="history-filter-tool" class="form-select" onchange="loadHistory()"><option value="">Todas</option></select></div>
+                    <button class="btn btn-ghost" onclick="loadHistory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Refrescar</button>
+                    <button class="btn btn-ghost" onclick="clearHistory()" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Limpiar historial</button>
+                </div>
+                <div id="history-list" class="history-list"></div>
+            </section>
+
+        </div><!-- /tool-panels -->
+    </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<script src="app.js"></script>
+</body>
+</html>

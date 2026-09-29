@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Arcade | Panel de Administrador</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #fff, var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(114, 137, 218, 0.3);
+        }
+        
+        select option {
+            background: var(--bg-dark);
+            color: white;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(114, 137, 218, 0.4);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        #status-message {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .success { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .error { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+        
+        /* Blobs background from main site */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 1;
+            opacity: 0.5;
+        }
+        .blob-1 {
+            width: 500px; height: 500px;
+            background: var(--accent-primary);
+            top: -100px; left: -100px;
+        }
+        .blob-2 {
+            width: 600px; height: 600px;
+            background: var(--accent-secondary);
+            bottom: -200px; right: -100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="admin-container">
+        <h1>Añadir Juego</h1>
+        <form id="upload-form">
+            <div class="form-group">
+                <label>Título del Juego</label>
+                <input type="text" name="title" required placeholder="Ej: Crash Team Racing">
+            </div>
+            
+            <div class="form-group">
+                <label>Consola (Emulador)</label>
+                <select name="emulator" required>
+                    <option value="n64">Nintendo 64</option>
+                    <option value="nes">NES (Nintendo Entertainment System)</option>
+                    <option value="ps1">PlayStation 1</option>
+                    <option value="ps2">PlayStation 2</option>
+                    <option value="gba">Game Boy Advance</option>
+                    <option value="nds">Nintendo DS</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre de Consola (Mostrar al usuario)</label>
+                <input type="text" name="platformName" required placeholder="Ej: PlayStation">
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Año</label>
+                    <input type="number" name="year" required placeholder="Ej: 1999">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Género</label>
+                    <input type="text" name="genre" required placeholder="Ej: Carreras">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Archivo ROM (Juego)</label>
+                <input type="file" name="romFile" required>
+                <small style="color:var(--text-secondary); display:block; margin-top:5px;">Archivos soportados: .z64, .nes, .bin, .iso, .gba, .nds</small>
+            </div>
+
+            <div class="form-group">
+                <label>Imagen de Carátula</label>
+                <input type="file" name="coverImage" accept="image/*" required>
+                <small style="color:var(--text-secondary); display:block; margin-top:5px;">Archivos soportados: .jpg, .png</small>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-btn">Subir al Servidor</button>
+        </form>
+
+        <div id="status-message"></div>
+        
+        <a href="index.html" class="back-link">← Volver al Arcade</a>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('nexus_user');
+        if (currentUser !== 'tosito' && currentUser !== 'admin') {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = document.getElementById('submit-btn');
+            const statusMsg = document.getElementById('status-message');
+            
+            const formData = new FormData(form);
+            formData.append('username', currentUser);
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Subiendo...';
+            statusMsg.style.display = 'none';
+            statusMsg.className = '';
+
+            try {
+                // Enviamos los datos al backend de Node.js (Express en puerto 3001)
+                const response = await fetch('http://localhost:3001/api/admin/games', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    statusMsg.innerText = result.message || 'Juego subido correctamente!';
+                    statusMsg.classList.add('success');
+                    form.reset();
+                } else {
+                    statusMsg.innerText = result.error || 'Error al subir el juego';
+                    statusMsg.classList.add('error');
+                }
+            } catch (err) {
+                console.error(err);
+                statusMsg.innerText = 'Error de conexión con el servidor. ¿Está Node.js corriendo?';
+                statusMsg.classList.add('error');
+            } finally {
+                statusMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Subir al Servidor';
+            }
+        });
+    </script>
+</body>
+</html>

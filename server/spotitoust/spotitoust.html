@@ -1,0 +1,852 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+Search, Home, Compass, Library,
+Play, Pause, SkipBack, SkipForward, Volume2,
+Heart, X, AlertCircle, Maximize2,
+ChevronDown, ListMusic, ListPlus, MoreHorizontal, Plus, Music, Menu
+} from 'lucide-react';
+
+const CustomStyles = () => (
+<style dangerouslySetInnerHTML={{__html: ` /* Solo aplicar cursor personalizado en dispositivos con ratón (Desktop) */
+    @media (pointer: fine) { * { cursor: none !important; } .custom-cursor-element { display: block; } } /* Ocultar
+    cursor personalizado en móviles/pantallas táctiles */ @media (pointer: coarse) { .custom-cursor-element { display:
+    none !important; } } @keyframes eq { 0% { height: 4px; } 50% { height: 16px; } 100% { height: 4px; } } .eq-bar {
+    width: 3px; background-color: #1db954; border-radius: 2px; animation: eq 1s ease-in-out infinite; }
+    .eq-bar:nth-child(1) { animation-delay: 0.0s; } .eq-bar:nth-child(2) { animation-delay: 0.2s; } .eq-bar:nth-child(3)
+    { animation-delay: 0.4s; } .eq-bar:nth-child(4) { animation-delay: 0.1s; } /* Efectos Glassmorphism adaptados */
+    .glass-panel { background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05); } .glass-panel-heavy { background: rgba(5, 5, 5, 0.75);
+    backdrop-filter: blur(40px) saturate(150%); -webkit-backdrop-filter: blur(40px) saturate(150%); border-top: 1px
+    solid rgba(255, 255, 255, 0.1); } .glass-dropdown { background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.9); } .text-glow { text-shadow: 0 0
+    30px rgba(255,255,255,0.4); } .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; } .custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15); border-radius: 10px; } input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 10px
+    rgba(255,255,255,0.5); } .lyric-line { transition: all 0.5s ease-out; filter: blur(2px); opacity: 0.3; transform:
+    scale(0.95) translateY(10px); } .lyric-line.active { filter: blur(0px); opacity: 1; transform: scale(1.05)
+    translateY(0); color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.5); } @keyframes spin-slow { from { transform:
+    rotate(0deg); } to { transform: rotate(360deg); } } .vinyl-spin { animation: spin-slow 12s linear infinite; }
+    .vinyl-spin.paused { animation-play-state: paused; } /* Custom Cursor Styles */ #cursor-dot { width: 8px; height:
+    8px; background-color: white; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index:
+    9999; mix-blend-mode: difference; transform: translate(-50%, -50%); } #cursor-aura { width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none;
+    z-index: 9998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+    body:active #cursor-aura { width: 30px; height: 30px; background-color: rgba(255,255,255,0.1); } /* Prevenir
+    selección de texto en botones para sensación de app */ .no-select { -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none; } .bg-noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); } `}} />
+);
+
+const NavItemDesktop = ({ icon: Icon, label, active, onClick }) => (
+<button onClick={onClick} className={`w-full flex items-center gap-4 px-6 py-4 transition-all duration-300 group
+    relative overflow-hidden rounded-2xl mx-2 no-select ${active ? 'text-white bg-white/10'
+    : 'text-gray-400 hover:text-white hover:bg-white/5' }`} style={{ width: 'calc(100% - 16px)' }}>
+    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1/2 rounded-r-full bg-gradient-to-b from-[#1db954]
+        to-emerald-400 transition-all origin-left ${active ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0' }`}>
+    </div>
+    <Icon className={`w-5 h-5 relative z-10 transition-all ${active ? 'text-[#1db954] scale-110'
+        : 'group-hover:scale-110' }`} />
+    <span className="font-bold text-sm tracking-wide relative z-10">{label}</span>
+</button>
+);
+
+const NavItemMobile = ({ icon: Icon, label, active, onClick }) => (
+<button onClick={onClick} className="flex flex-col items-center justify-center gap-1 flex-1 p-2 no-select">
+    <Icon className={`w-6 h-6 transition-all duration-300 ${active ? 'text-[#1db954] scale-110 mb-1' : 'text-gray-400'
+        }`} />
+    <span className={`text-[10px] font-bold transition-all duration-300 ${active ? 'text-white opacity-100'
+        : 'text-gray-500 opacity-0 h-0 overflow-hidden' }`}>{label}</span>
+</button>
+);
+
+const MiniVisualizer = () => (
+<div className="flex items-end gap-[2px] h-3">
+    <div className="eq-bar"></div>
+    <div className="eq-bar"></div>
+    <div className="eq-bar"></div>
+</div>
+);
+
+export default function App() {
+const [gsapLoaded, setGsapLoaded] = useState(false);
+const [currentView, setCurrentView] = useState('descubrir');
+const [notification, setNotification] = useState(null);
+const [showQueue, setShowQueue] = useState(false);
+
+const [isPlaying, setIsPlaying] = useState(false);
+const [currentTrack, setCurrentTrack] = useState(null);
+const [progress, setProgress] = useState(0);
+const [volume, setVolume] = useState(50);
+const audioRef = useRef(null);
+const [isFullScreenPlayer, setIsFullScreenPlayer] = useState(false);
+const [showLyrics, setShowLyrics] = useState(false);
+
+const [queue, setQueue] = useState([]);
+const [queueIndex, setQueueIndex] = useState(0);
+const [playlists, setPlaylists] = useState([{ id: 1, name: 'Mix Verano', tracks: [] }]);
+const [favorites, setFavorites] = useState([]);
+
+const [searchQuery, setSearchQuery] = useState('');
+const [searchResults, setSearchResults] = useState([]);
+const [isSearching, setIsSearching] = useState(false);
+const [discoverTracks, setDiscoverTracks] = useState([]);
+
+const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, track: null });
+
+const viewRef = useRef(null);
+const heroRef = useRef(null);
+const cursorDotRef = useRef(null);
+const cursorAuraRef = useRef(null);
+
+useEffect(() => {
+// Inject PWA and Mobile meta tags dynamically
+const viewport = document.createElement('meta');
+viewport.name = "viewport";
+viewport.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover";
+document.head.appendChild(viewport);
+
+const themeColor = document.createElement('meta');
+themeColor.name = "theme-color";
+themeColor.content = "#050505";
+document.head.appendChild(themeColor);
+
+const appleCapable = document.createElement('meta');
+appleCapable.name = "apple-mobile-web-app-capable";
+appleCapable.content = "yes";
+document.head.appendChild(appleCapable);
+
+const appleStatus = document.createElement('meta');
+appleStatus.name = "apple-mobile-web-app-status-bar-style";
+appleStatus.content = "black-translucent";
+document.head.appendChild(appleStatus);
+
+audioRef.current = new Audio();
+audioRef.current.volume = 0.5;
+
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+script.onload = () => setGsapLoaded(true);
+document.body.appendChild(script);
+
+fetchAppleMusic('top hits global');
+
+return () => {
+document.body.removeChild(script);
+if(audioRef.current) audioRef.current.pause();
+};
+}, []);
+
+useEffect(() => {
+// Solo inicia cursores si el dispositivo no es táctil (aprox)
+if (!gsapLoaded || !window.gsap || window.matchMedia("(pointer: coarse)").matches) return;
+
+let xToDot = window.gsap.quickTo(cursorDotRef.current, "x", {duration: 0.1, ease: "power3"});
+let yToDot = window.gsap.quickTo(cursorDotRef.current, "y", {duration: 0.1, ease: "power3"});
+let xToAura = window.gsap.quickTo(cursorAuraRef.current, "x", {duration: 0.5, ease: "elastic.out(1, 0.5)"});
+let yToAura = window.gsap.quickTo(cursorAuraRef.current, "y", {duration: 0.5, ease: "elastic.out(1, 0.5)"});
+
+const moveCursor = (e) => { xToDot(e.clientX); yToDot(e.clientY); xToAura(e.clientX); yToAura(e.clientY); };
+window.addEventListener("mousemove", moveCursor);
+return () => window.removeEventListener("mousemove", moveCursor);
+}, [gsapLoaded]);
+
+useEffect(() => {
+if (!gsapLoaded || !window.gsap || !viewRef.current) return;
+const children = viewRef.current.children;
+window.gsap.fromTo(children,
+{ y: 40, opacity: 0, rotationX: -5 },
+{ y: 0, opacity: 1, rotationX: 0, duration: 0.6, stagger: 0.05, ease: "power3.out", clearProps: "all" }
+);
+}, [currentView, gsapLoaded, searchResults, discoverTracks]);
+
+const handleHeroMouseMove = (e) => {
+if (!heroRef.current || !gsapLoaded || window.matchMedia("(pointer: coarse)").matches) return;
+const { left, top, width, height } = heroRef.current.getBoundingClientRect();
+const x = (e.clientX - left) / width - 0.5;
+const y = (e.clientY - top) / height - 0.5;
+window.gsap.to(heroRef.current, { rotationY: x * 15, rotationX: -y * 15, transformPerspective: 1000, ease: "power2.out",
+duration: 0.5 });
+};
+const handleHeroMouseLeave = () => {
+if (!heroRef.current || !gsapLoaded || window.matchMedia("(pointer: coarse)").matches) return;
+window.gsap.to(heroRef.current, { rotationY: 0, rotationX: 0, ease: "elastic.out(1, 0.3)", duration: 1 });
+};
+
+const showNotification = (msg) => {
+setNotification(msg);
+setTimeout(() => setNotification(null), 3000);
+};
+
+const fetchAppleMusic = async (query) => {
+if (!query) return;
+try {
+setIsSearching(true);
+const res = await
+fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=40`);
+const data = await res.json();
+const formatted = data.results.map(track => ({
+id: track.trackId,
+title: track.trackName,
+artist: track.artistName,
+cover: track.artworkUrl100.replace('100x100', '600x600'),
+preview: track.previewUrl,
+album: track.collectionName
+})).filter(t => t.preview);
+
+setSearchResults(formatted);
+if (query.includes('top hits')) setDiscoverTracks(formatted);
+setIsSearching(false);
+} catch (e) {
+console.error("Error API:", e);
+setIsSearching(false);
+}
+};
+
+useEffect(() => {
+const delay = setTimeout(() => {
+if (searchQuery.length > 2) fetchAppleMusic(searchQuery);
+else setSearchResults([]);
+}, 600);
+return () => clearTimeout(delay);
+}, [searchQuery]);
+
+const playTrack = (track, newQueue = null, index = 0) => {
+if (!track || !track.preview) return showNotification("Audio no disponible");
+if (newQueue) { setQueue(newQueue); setQueueIndex(index); }
+setCurrentTrack(track);
+audioRef.current.src = track.preview;
+audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.error(e));
+};
+
+const togglePlay = (e) => {
+if(e) e.stopPropagation();
+if (!currentTrack) return;
+if (isPlaying) audioRef.current.pause();
+else audioRef.current.play();
+setIsPlaying(!isPlaying);
+};
+
+const playNext = useCallback((e) => {
+if(e) e.stopPropagation();
+if (queue.length > 0 && queueIndex < queue.length - 1) { playTrack(queue[queueIndex + 1], queue, queueIndex + 1); } else
+    { setIsPlaying(false); } }, [queue, queueIndex]); const playPrev=(e)=> {
+    if(e) e.stopPropagation();
+    if (audioRef.current.currentTime > 3) audioRef.current.currentTime = 0;
+    else if (queue.length > 0 && queueIndex > 0) playTrack(queue[queueIndex - 1], queue, queueIndex - 1);
+    };
+
+    useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const updateProgress = () => { if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100); };
+    const handleEnded = () => { setIsPlaying(false); setProgress(0); playNext(); };
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+    return () => { audio.removeEventListener('timeupdate', updateProgress); audio.removeEventListener('ended',
+    handleEnded); };
+    }, [playNext]);
+
+    useEffect(() => { if (audioRef.current) audioRef.current.volume = volume / 100; }, [volume]);
+
+    const handleContextMenu = (e, track) => {
+    e.preventDefault(); e.stopPropagation();
+    // En móvil mostramos el menú abajo, en desktop en la posición del cursor
+    const isMobile = window.innerWidth < 768; setContextMenu({ visible: true, x: isMobile ? 0 : e.clientX, y: isMobile ?
+        window.innerHeight - 300 : e.clientY, track, isMobile }); }; useEffect(()=> {
+        const closeMenu = () => setContextMenu({ ...contextMenu, visible: false });
+        window.addEventListener('click', closeMenu);
+        return () => window.removeEventListener('click', closeMenu);
+        }, [contextMenu]);
+
+        const toggleFavorite = (track, e) => {
+        if(e) e.stopPropagation();
+        if (favorites.find(t => t.id === track.id)) {
+        setFavorites(favorites.filter(t => t.id !== track.id));
+        showNotification("Eliminado de Favoritos");
+        } else {
+        setFavorites([track, ...favorites]);
+        showNotification("Guardado en Favoritos");
+        }
+        };
+
+        const addToQueue = (track) => {
+        if (!queue.find(t => t.id === track.id)) {
+        setQueue([...queue, track]);
+        showNotification("Añadido a la cola");
+        }
+        };
+
+        const DesktopSidebar = () => (
+        <div className="hidden md:flex w-64 glass-panel flex-col z-40 shrink-0 relative border-r border-white/5">
+            <div className="p-8 flex items-center gap-3 group cursor-pointer no-select">
+                <div
+                    className="w-10 h-10 bg-gradient-to-br from-[#1db954] to-emerald-800 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(29,185,84,0.3)]">
+                    <Music className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-2xl font-black tracking-tighter text-white">NEXUS</h1>
+            </div>
+            <nav className="flex-1 space-y-2 pb-32 overflow-y-auto custom-scroll">
+                <div className="px-8 mb-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Navegar</div>
+                <NavItemDesktop icon={Home} label="Descubrir" active={currentView==='descubrir' } onClick={()=>
+                    setCurrentView('descubrir')} />
+                    <NavItemDesktop icon={Compass} label="Explorar" active={currentView==='explorar' } onClick={()=>
+                        setCurrentView('explorar')} />
+                        <div
+                            className="px-8 mt-12 mb-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
+                            Tu Colección</div>
+                        <NavItemDesktop icon={Heart} label="Favoritos" active={currentView==='favoritos' } onClick={()=>
+                            setCurrentView('favoritos')} />
+                            <NavItemDesktop icon={ListMusic} label="Playlists" active={currentView==='playlists' }
+                                onClick={()=> setCurrentView('playlists')} />
+            </nav>
+        </div>
+        );
+
+        const MobileBottomNav = () => (
+        <div
+            className="md:hidden fixed bottom-0 left-0 w-full h-[80px] bg-[#050505]/90 backdrop-blur-xl border-t border-white/10 z-[100] flex items-center justify-around pb-safe">
+            <NavItemMobile icon={Home} label="Inicio" active={currentView==='descubrir' } onClick={()=>
+                setCurrentView('descubrir')} />
+                <NavItemMobile icon={Search} label="Buscar" active={currentView==='explorar' } onClick={()=>
+                    setCurrentView('explorar')} />
+                    <NavItemMobile icon={Heart} label="Favoritos" active={currentView==='favoritos' } onClick={()=>
+                        setCurrentView('favoritos')} />
+                        <NavItemMobile icon={ListMusic} label="Listas" active={currentView==='playlists' } onClick={()=>
+                            setCurrentView('playlists')} />
+        </div>
+        );
+
+        const TrackList = ({ tracks, contextQueue, startIndex = 0 }) => (
+        <div className="space-y-1 md:space-y-2">
+            {tracks.map((track, idx) => {
+            const isCurrent = currentTrack?.id === track.id;
+            return (
+            <div key={`${track.id}-${idx}`} onClick={()=> playTrack(track, contextQueue, idx)}
+                onContextMenu={(e) => handleContextMenu(e, track)}
+                className={`flex items-center gap-3 md:gap-4 p-2 md:p-3 rounded-2xl transition-all duration-300 group
+                cursor-pointer border border-transparent active:bg-white/10
+                ${isCurrent ? 'bg-white/10 shadow-sm' : 'md:hover:bg-white/5'}`}
+                >
+                <div className="w-5 hidden md:block text-center text-xs font-medium text-gray-500 group-hover:hidden">
+                    {isCurrent ?
+                    <MiniVisualizer /> : (startIndex + idx + 1)}
+                </div>
+                <div className="w-5 hidden md:group-hover:flex items-center justify-center text-white">
+                    {isCurrent && isPlaying ?
+                    <Pause className="w-4 h-4" /> :
+                    <Play className="w-4 h-4" />}
+                </div>
+
+                <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shrink-0 shadow-md
+                    ${isCurrent ? 'scale-105' : '' }`}>
+                    <img src={track.cover} alt={track.title} className="w-full h-full object-cover" loading="lazy" />
+                    {isCurrent && <div
+                        className="absolute inset-0 bg-black/40 flex md:hidden items-center justify-center">
+                        <MiniVisualizer />
+                    </div>}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                    <p className={`font-bold text-sm md:text-base truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'
+                        }`}>{track.title}</p>
+                    <p className="text-xs md:text-sm text-gray-400 truncate">{track.artist}</p>
+                </div>
+
+                <button onClick={(e)=> handleContextMenu(e, track)} className="p-3 text-gray-400 hover:text-white
+                    md:opacity-0 group-hover:opacity-100 transition-opacity">
+                    <MoreHorizontal className="w-5 h-5" />
+                </button>
+            </div>
+            );
+            })}
+        </div>
+        );
+
+        return (
+        <div
+            className="flex h-[100dvh] bg-[#050505] text-white font-sans overflow-hidden relative selection:bg-[#1db954] selection:text-black">
+            <CustomStyles />
+            <div id="cursor-dot" className="custom-cursor-element" ref={cursorDotRef}></div>
+            <div id="cursor-aura" className="custom-cursor-element" ref={cursorAuraRef}></div>
+
+            {/* Background Ambient */}
+            <div className="absolute inset-0 z-0 pointer-events-none transition-all duration-[2s]">
+                {currentTrack ? (
+                <>
+                    <div className="absolute inset-0 bg-cover bg-center opacity-30 transform scale-125 blur-[80px]"
+                        style={{ backgroundImage: `url(${currentTrack.cover})` }} />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-[#050505]/80 to-[#050505]">
+                    </div>
+                </>
+                ) : (
+                <div
+                    className="absolute top-0 left-0 w-full h-1/2 bg-[#1db954]/5 rounded-full blur-[100px] mix-blend-screen">
+                </div>
+                )}
+                <div
+                    className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay">
+                </div>
+            </div>
+
+            {notification && (
+            <div
+                className="fixed top-safe pt-4 left-1/2 transform -translate-x-1/2 z-[200] bg-white/10 backdrop-blur-xl border border-white/20 text-white px-5 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-2 animate-in slide-in-from-top-4">
+                <div className="w-2 h-2 rounded-full bg-[#1db954] shadow-[0_0_10px_#1db954]"></div>
+                {notification}
+            </div>
+            )}
+
+            {/* Responsive Context Menu */}
+            {contextMenu.visible && contextMenu.track && (
+            <>
+                <div className="fixed inset-0 z-[290] bg-black/40 md:bg-transparent" onClick={()=>
+                    setContextMenu({...contextMenu, visible: false})}></div>
+                <div className={`fixed z-[300] glass-dropdown ${contextMenu.isMobile
+                    ? 'bottom-0 left-0 w-full rounded-t-3xl pb-10 pt-4' : 'rounded-2xl min-w-[220px]' } animate-in
+                    ${contextMenu.isMobile ? 'slide-in-from-bottom' : 'fade-in zoom-in-95' } duration-200`}
+                    style={contextMenu.isMobile ? {} : { top: Math.min(contextMenu.y, window.innerHeight - 200), left:
+                    Math.min(contextMenu.x, window.innerWidth - 220) }}>
+                    {contextMenu.isMobile && <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>}
+                    <div className="flex items-center gap-4 px-6 md:p-3 border-b border-white/10 mb-2 pb-4 md:pb-2">
+                        <img src={contextMenu.track.cover} className="w-12 h-12 md:w-10 md:h-10 rounded-md"
+                            alt="cover" />
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm md:text-base font-bold truncate">{contextMenu.track.title}</p>
+                            <p className="text-xs text-gray-400 truncate">{contextMenu.track.artist}</p>
+                        </div>
+                    </div>
+                    <div className="px-2">
+                        <button onClick={()=> { playTrack(contextMenu.track, [contextMenu.track]);
+                            setContextMenu({...contextMenu, visible: false}); }} className="w-full text-left px-4 py-4
+                            md:py-3 text-sm md:hover:bg-white/10 rounded-xl flex items-center gap-4 transition-all">
+                            <Play className="w-5 h-5 md:w-4 md:h-4 text-[#1db954]" /> Reproducir ahora
+                        </button>
+                        <button onClick={()=> { addToQueue(contextMenu.track); setContextMenu({...contextMenu, visible:
+                            false}); }} className="w-full text-left px-4 py-4 md:py-3 text-sm md:hover:bg-white/10
+                            rounded-xl flex items-center gap-4 transition-all">
+                            <ListPlus className="w-5 h-5 md:w-4 md:h-4 text-blue-400" /> Añadir a la cola
+                        </button>
+                        <button onClick={()=> { toggleFavorite(contextMenu.track); setContextMenu({...contextMenu,
+                            visible: false}); }} className="w-full text-left px-4 py-4 md:py-3 text-sm
+                            md:hover:bg-white/10 rounded-xl flex items-center gap-4 transition-all">
+                            <Heart className={`w-5 h-5 md:w-4 md:h-4 ${favorites.find(t=>
+                                t.id===contextMenu.track.id)?'fill-pink-500 text-pink-500':'text-pink-500'}`} />
+                                {favorites.find(t=>t.id===contextMenu.track.id) ? 'Quitar de Favoritos' : 'Guardar en
+                                Favoritos'}
+                        </button>
+                    </div>
+                </div>
+            </>
+            )}
+
+            <DesktopSidebar />
+
+            <div className="flex-1 flex flex-col relative z-10 overflow-hidden w-full">
+
+                <main
+                    className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll px-4 md:px-10 pt-12 md:pt-20 pb-[160px] md:pb-40"
+                    id="main-scroll">
+                    <div ref={viewRef} className="max-w-[1400px] mx-auto min-h-full">
+
+                        {/* VIEW: DESCUBRIR */}
+                        {currentView === 'descubrir' && discoverTracks.length > 0 && (
+                        <div className="space-y-10 md:space-y-16">
+                            <section ref={heroRef} onMouseMove={handleHeroMouseMove} onMouseLeave={handleHeroMouseLeave}
+                                className="relative w-full h-[320px] md:h-[480px] rounded-3xl md:rounded-[3rem] overflow-hidden group cursor-pointer shadow-2xl border border-white/10"
+                                onClick={()=> playTrack(discoverTracks[0], discoverTracks, 0)}
+                                style={{ transformStyle: 'preserve-3d' }}
+                                >
+                                <div className="absolute inset-[-10%] bg-cover bg-center transform md:group-hover:scale-105 transition-transform duration-[2s]"
+                                    style={{ backgroundImage: `url(${discoverTracks[0].cover})`,
+                                    transform: 'translateZ(-50px)' }} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"
+                                    style={{ transform: 'translateZ(0)' }}></div>
+
+                                <div className="absolute top-6 right-6 md:top-10 md:right-10 bg-black/40 backdrop-blur-xl px-4 py-2 rounded-full border border-white/20 flex items-center gap-2"
+                                    style={{ transform: 'translateZ(30px)' }}>
+                                    <span
+                                        className="w-2 h-2 rounded-full bg-[#1db954] shadow-[0_0_10px_#1db954] animate-pulse"></span>
+                                    <span
+                                        className="text-[10px] md:text-xs font-black tracking-widest uppercase">Tendencia</span>
+                                </div>
+
+                                <div className="absolute bottom-6 left-6 right-6 md:bottom-14 md:left-14 md:right-14 flex items-end justify-between"
+                                    style={{ transform: 'translateZ(60px)' }}>
+                                    <div className="max-w-[70%] md:max-w-3xl">
+                                        <h2
+                                            className="text-4xl md:text-7xl lg:text-8xl font-black mb-1 md:mb-4 text-glow tracking-tighter leading-none line-clamp-2">
+                                            {discoverTracks[0].title}</h2>
+                                        <p className="text-lg md:text-3xl text-gray-300 font-medium">
+                                            {discoverTracks[0].artist}</p>
+                                    </div>
+                                    <button
+                                        className="w-14 h-14 md:w-24 md:h-24 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white md:hover:scale-110 md:hover:bg-[#1db954] transition-all">
+                                        {isPlaying && currentTrack?.id === discoverTracks[0].id ?
+                                        <Pause className="w-6 h-6 md:w-10 md:h-10" /> :
+                                        <Play className="w-6 h-6 md:w-10 md:h-10 ml-1 md:ml-2" />}
+                                    </button>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h2 className="text-2xl md:text-4xl font-black mb-6 md:mb-8 tracking-tighter">Hits
+                                    Mundiales</h2>
+                                <div
+                                    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                                    {discoverTracks.slice(1, 11).map((track, i) => (
+                                    <div key={`${track.id}-hit-${i}`} onClick={()=> playTrack(track, discoverTracks, i +
+                                        1)}
+                                        onContextMenu={(e) => handleContextMenu(e, track)}
+                                        className="glass-panel p-3 md:p-5 rounded-2xl md:rounded-[2rem] active:scale-95
+                                        md:hover:bg-white/10 transition-all duration-300 group cursor-pointer border
+                                        border-transparent"
+                                        >
+                                        <div
+                                            className="relative aspect-square rounded-xl md:rounded-2xl overflow-hidden mb-3 md:mb-5 shadow-lg">
+                                            <img src={track.cover} alt={track.title}
+                                                className="w-full h-full object-cover transform md:group-hover:scale-110 transition-transform duration-700"
+                                                loading="lazy" />
+                                            <div
+                                                className="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 hidden md:flex items-center justify-center transition-opacity">
+                                                <div
+                                                    className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/30">
+                                                    {isPlaying && currentTrack?.id === track.id ?
+                                                    <Pause className="w-6 h-6" /> :
+                                                    <Play className="w-6 h-6 ml-1" />}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h3 className="font-bold text-white truncate text-sm md:text-lg">{track.title}
+                                        </h3>
+                                        <p className="text-xs md:text-sm text-gray-400 truncate mt-1">{track.artist}</p>
+                                    </div>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
+                        )}
+
+                        {/* VIEW: EXPLORAR */}
+                        {currentView === 'explorar' && (
+                        <div className="min-h-full">
+                            <div className="relative max-w-4xl mx-auto mb-10 md:mb-20">
+                                <Search
+                                    className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 md:w-8 md:h-8" />
+                                <input type="text" placeholder="Artistas, canciones..." value={searchQuery}
+                                    onChange={(e)=> setSearchQuery(e.target.value)}
+                                className="w-full glass-panel-heavy border border-white/10 focus:border-[#1db954]/50
+                                text-white rounded-full py-4 pl-16 pr-6 md:py-8 md:pl-24 md:pr-8 text-xl md:text-3xl
+                                font-bold outline-none shadow-xl"
+                                />
+                            </div>
+
+                            {searchQuery === '' ? (
+                            <div>
+                                <h2 className="text-2xl md:text-4xl font-black mb-6 md:mb-10 tracking-tighter">Navegar
+                                    por todo</h2>
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                                    {['Pop', 'Hip Hop', 'Rock', 'Electrónica', 'Jazz', 'Indie', 'Reggaeton',
+                                    'Metal'].map((genre, i) => (
+                                    <div key={genre} onClick={()=> setSearchQuery(genre)}
+                                        className="aspect-square rounded-2xl md:rounded-[2rem] p-4 md:p-6 cursor-pointer
+                                        overflow-hidden relative shadow-lg border border-white/10 active:scale-95
+                                        transition-transform"
+                                        style={{ background: `linear-gradient(135deg, hsl(${i * 45}, 80%, 40%), hsl(${i
+                                        * 45 + 30}, 80%, 20%))` }}
+                                        >
+                                        <h3
+                                            className="text-xl md:text-3xl font-black text-white z-10 relative drop-shadow-md">
+                                            {genre}</h3>
+                                        <ListMusic
+                                            className="absolute -right-4 -bottom-4 w-24 h-24 md:w-36 md:h-36 text-white/30 transform rotate-[20deg]" />
+                                    </div>
+                                    ))}
+                                </div>
+                            </div>
+                            ) : (
+                            <div className="mt-4">
+                                {isSearching ? (
+                                <div className="flex justify-center py-20">
+                                    <div
+                                        className="w-12 h-12 border-4 border-[#1db954] border-t-transparent rounded-full animate-spin">
+                                    </div>
+                                </div>
+                                ) : searchResults.length > 0 ? (
+                                <div className="flex flex-col lg:flex-row gap-8 md:gap-16">
+                                    <div className="w-full lg:w-2/5">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-4 md:mb-8 text-white/90">Mejor
+                                            resultado</h2>
+                                        <div onClick={()=> playTrack(searchResults[0], searchResults, 0)}
+                                            className="glass-panel p-6 md:p-10 rounded-3xl relative overflow-hidden
+                                            active:scale-95 transition-transform border border-white/10">
+                                            <img src={searchResults[0].cover} alt="cover"
+                                                className="w-24 h-24 md:w-40 md:h-40 rounded-full mb-6 md:mb-10 shadow-2xl object-cover" />
+                                            <h3 className="text-3xl md:text-5xl font-black mb-2 line-clamp-2">
+                                                {searchResults[0].title}</h3>
+                                            <p className="text-lg md:text-2xl text-gray-400 mb-6">
+                                                {searchResults[0].artist}</p>
+                                            <div
+                                                className="absolute bottom-6 right-6 w-12 h-12 md:w-16 md:h-16 bg-[#1db954] rounded-full flex items-center justify-center text-black">
+                                                {isPlaying && currentTrack?.id === searchResults[0].id ?
+                                                <Pause className="w-6 h-6 md:w-8 md:h-8" /> :
+                                                <Play className="w-6 h-6 md:w-8 md:h-8 ml-1" />}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h2 className="text-2xl md:text-3xl font-black mb-4 md:mb-8 text-white/90">
+                                            Canciones</h2>
+                                        <TrackList tracks={searchResults.slice(1, 10)} contextQueue={searchResults}
+                                            startIndex={1} />
+                                    </div>
+                                </div>
+                                ) : (
+                                <div className="text-center py-20 text-gray-500">
+                                    <p>No se encontraron resultados</p>
+                                </div>
+                                )}
+                            </div>
+                            )}
+                        </div>
+                        )}
+
+                        {/* VIEW: FAVORITOS */}
+                        {currentView === 'favoritos' && (
+                        <div>
+                            <div
+                                className="flex flex-col md:flex-row md:items-end gap-6 md:gap-10 mb-10 md:mb-16 mt-4 md:mt-8">
+                                <div
+                                    className="w-32 h-32 md:w-56 md:h-56 rounded-2xl md:rounded-[3rem] bg-gradient-to-br from-indigo-500 to-pink-600 flex items-center justify-center shadow-2xl shrink-0">
+                                    <Heart className="w-16 h-16 md:w-24 md:h-24 text-white fill-white shadow-2xl" />
+                                </div>
+                                <div>
+                                    <h1 className="text-5xl md:text-8xl font-black text-white mb-2 tracking-tighter">
+                                        Favoritos</h1>
+                                    <p className="text-lg md:text-2xl text-gray-300">{favorites.length} canciones</p>
+                                </div>
+                            </div>
+                            {favorites.length > 0 ? (
+                            <div className="glass-panel rounded-3xl p-4 md:p-8">
+                                <TrackList tracks={favorites} contextQueue={favorites} />
+                            </div>
+                            ) : (
+                            <div className="text-center py-20 text-gray-400">
+                                <p>Aún no hay favoritos.</p>
+                            </div>
+                            )}
+                        </div>
+                        )}
+                    </div>
+                </main>
+            </div>
+
+            <div className={`hidden md:flex fixed right-0 top-0 bottom-24 w-96 glass-panel-heavy z-40 transform
+                transition-transform duration-500 border-l border-white/10 flex-col ${showQueue ? 'translate-x-0'
+                : 'translate-x-full' }`}>
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                    <h3 className="font-black text-xl">Cola de Reproducción</h3>
+                    <button onClick={()=> setShowQueue(false)} className="text-gray-400 hover:text-white">
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="flex-1 overflow-y-auto custom-scroll p-4">
+                    <TrackList tracks={queue.slice(queueIndex + 1, queueIndex + 20)} contextQueue={queue}
+                        startIndex={queueIndex} />
+                </div>
+            </div>
+
+            <MobileBottomNav />
+
+            {currentTrack && !isFullScreenPlayer && (
+            <div
+                className="fixed bottom-[80px] md:bottom-8 left-0 md:left-1/2 transform md:-translate-x-1/2 w-full md:w-[95%] max-w-7xl glass-panel-heavy p-2 md:p-4 md:rounded-[2rem] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] md:shadow-[0_30px_60px_rgba(0,0,0,0.6)] flex items-center justify-between gap-2 md:gap-8 z-50 animate-in slide-in-from-bottom-12">
+
+                {/* Progress Bar top edge (Mobile only) */}
+                <div className="absolute top-0 left-0 w-full h-[2px] md:hidden bg-white/10">
+                    <div className="h-full bg-[#1db954]" style={{ width: `${progress}%` }}></div>
+                </div>
+
+                <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0 pl-2 cursor-pointer" onClick={()=>
+                    setIsFullScreenPlayer(true)}>
+                    <div
+                        className="relative w-10 h-10 md:w-14 md:h-14 shrink-0 rounded-md md:rounded-full overflow-hidden shadow-md">
+                        <div className={`hidden md:block absolute inset-0 bg-black rounded-full border border-gray-800
+                            vinyl-spin ${isPlaying ? '' : 'paused' }`}>
+                            <div className="absolute inset-2 border border-gray-700 rounded-full"></div>
+                        </div>
+                        <img src={currentTrack.cover} alt="Cover" className={`w-full h-full object-cover md:rounded-full
+                            md:vinyl-spin ${isPlaying ? '' : 'paused' }`} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <h3 className="font-bold text-white text-sm md:text-base truncate">{currentTrack.title}</h3>
+                        <p className="text-gray-400 text-xs md:text-sm truncate">{currentTrack.artist}</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3 md:gap-6 pr-2 md:pr-0">
+                    <button onClick={(e)=> toggleFavorite(currentTrack, e)} className="text-gray-400 p-2 md:p-0">
+                        <Heart className={`w-5 h-5 md:w-6 md:h-6 ${favorites.find(t=> t.id === currentTrack.id) ?
+                            'fill-[#1db954] text-[#1db954]' : ''}`} />
+                    </button>
+                    <button onClick={togglePlay}
+                        className="w-10 h-10 md:w-14 md:h-14 bg-white/10 md:bg-white rounded-full flex items-center justify-center text-white md:text-black">
+                        {isPlaying ?
+                        <Pause className="w-5 h-5 md:w-6 md:h-6 md:fill-black" /> :
+                        <Play className="w-5 h-5 md:w-6 md:h-6 md:fill-black ml-1" />}
+                    </button>
+                    <button onClick={playNext} className="hidden md:block text-gray-400 hover:text-white">
+                        <SkipForward className="w-6 h-6 fill-current" />
+                    </button>
+                </div>
+
+                {/* Desktop Only Volume/Controls */}
+                <div className="hidden md:flex items-center gap-4 w-1/4 justify-end pr-6">
+                    <span className="text-xs text-gray-400 font-mono w-8 text-right">{audioRef.current?.currentTime ?
+                        Math.floor(audioRef.current.currentTime) + 's' : '0s'}</span>
+                    <div className="w-full max-w-[150px] h-1.5 bg-white/20 rounded-full cursor-pointer relative"
+                        onClick={(e)=> { const b=e.currentTarget.getBoundingClientRect(); if(audioRef.current)
+                        audioRef.current.currentTime = ((e.clientX-b.left)/b.width)*audioRef.current.duration; }}>
+                        <div className="absolute top-0 left-0 h-full bg-[#1db954] rounded-full" style={{width:
+                            `${progress}%`}}></div>
+                    </div>
+                    <button onClick={()=> setShowQueue(!showQueue)} className="ml-2 text-gray-400 hover:text-white">
+                        <Menu className="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+            )}
+
+            {isFullScreenPlayer && currentTrack && (
+            <div
+                className="fixed inset-0 z-[200] bg-black flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom duration-500">
+                <div className="absolute inset-0 bg-cover bg-center opacity-60 scale-110 blur-[80px]" style={{
+                    backgroundImage: `url(${currentTrack.cover})`, saturate: '150%' }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+                <div className="relative z-10 flex items-center justify-between p-6 md:p-10 pt-safe">
+                    <button onClick={()=> setIsFullScreenPlayer(false)} className="p-3 bg-white/10 rounded-full
+                        backdrop-blur-xl border border-white/10">
+                        <ChevronDown className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                    </button>
+                    <div className="flex bg-black/40 backdrop-blur-xl rounded-full p-1 border border-white/10">
+                        <button onClick={()=> setShowLyrics(false)} className={`px-4 md:px-8 py-2 rounded-full text-xs
+                            md:text-sm font-black uppercase tracking-widest ${!showLyrics ? 'bg-white/20 text-white' :
+                            'text-gray-400'}`}>Audio</button>
+                        <button onClick={()=> setShowLyrics(true)} className={`px-4 md:px-8 py-2 rounded-full text-xs
+                            md:text-sm font-black uppercase tracking-widest ${showLyrics ? 'bg-white/20 text-white' :
+                            'text-gray-400'}`}>Letras</button>
+                    </div>
+                    <button className="p-3 bg-white/10 rounded-full backdrop-blur-xl border border-white/10"
+                        onClick={(e)=> handleContextMenu(e, currentTrack)}>
+                        <MoreHorizontal className="w-6 h-6 text-white" />
+                    </button>
+                </div>
+
+                <div
+                    className="relative z-10 flex-1 flex flex-col md:flex-row items-center justify-center p-6 md:p-10 w-full max-w-7xl mx-auto gap-8 md:gap-24">
+
+                    {!showLyrics ? (
+                    <>
+                        {/* Artwork Area */}
+                        <div className="w-full max-w-[320px] md:max-w-md aspect-square relative mt-4 md:mt-0">
+                            <div
+                                className="absolute inset-0 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.8)] border-2 md:border-4 border-gray-900 bg-black overflow-hidden flex items-center justify-center relative">
+                                <div className={`absolute inset-0 vinyl-spin ${isPlaying ? '' : 'paused' }`}>
+                                    <div className="absolute inset-2 border border-gray-800 rounded-full"></div>
+                                    <div className="absolute inset-6 border border-gray-800 rounded-full"></div>
+                                    <div className="absolute inset-10 border border-gray-800 rounded-full"></div>
+                                    <div
+                                        className="absolute inset-[25%] rounded-full overflow-hidden border-[6px] border-black">
+                                        <img src={currentTrack.cover} alt="Label"
+                                            className="w-full h-full object-cover" />
+                                    </div>
+                                    <div
+                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 md:w-4 h-3 md:h-4 bg-gray-900 rounded-full border border-gray-700 shadow-inner">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Controls Area */}
+                        <div
+                            className="w-full md:flex-1 flex flex-col md:items-start text-center md:text-left mt-8 md:mt-0">
+                            <div className="flex items-center justify-between w-full mb-2">
+                                <div className="min-w-0 flex-1 text-left md:text-left">
+                                    <h2 className="text-3xl md:text-6xl font-black text-white truncate text-glow">
+                                        {currentTrack.title}</h2>
+                                    <p className="text-xl md:text-3xl text-gray-300 font-medium truncate mt-1">
+                                        {currentTrack.artist}</p>
+                                </div>
+                                <button onClick={(e)=> toggleFavorite(currentTrack, e)} className="p-3 ml-4">
+                                    <Heart className={`w-8 h-8 ${favorites.find(t=>t.id===currentTrack.id) ?
+                                        'fill-[#1db954] text-[#1db954]' : 'text-gray-400'}`} />
+                                </button>
+                            </div>
+
+                            <div className="w-full mt-8 md:mt-12">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-xs text-gray-400 font-mono w-8">{audioRef.current?.currentTime
+                                        ? Math.floor(audioRef.current.currentTime) + 's' : '0s'}</span>
+                                    <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden relative"
+                                        onClick={(e)=> { const b=e.currentTarget.getBoundingClientRect();
+                                        if(audioRef.current) audioRef.current.currentTime =
+                                        ((e.clientX-b.left)/b.width)*audioRef.current.duration; }}>
+                                        <div className="absolute top-0 left-0 h-full bg-white rounded-full transition-all ease-linear"
+                                            style={{ width: `${progress}%` }}></div>
+                                    </div>
+                                    <span className="text-xs text-gray-400 font-mono w-8 text-right">30s</span>
+                                </div>
+
+                                <div className="flex items-center justify-center gap-8 md:gap-12 mt-10">
+                                    <button onClick={playPrev} className="text-gray-300">
+                                        <SkipBack className="w-10 h-10 md:w-12 md:h-12 fill-current" />
+                                    </button>
+                                    <button onClick={togglePlay}
+                                        className="w-20 h-20 md:w-28 md:h-28 bg-white rounded-full flex items-center justify-center text-black shadow-[0_0_40px_rgba(255,255,255,0.3)] active:scale-95 transition-transform">
+                                        {isPlaying ?
+                                        <Pause className="w-10 h-10 md:w-12 md:h-12 fill-black" /> :
+                                        <Play className="w-10 h-10 md:w-12 md:h-12 fill-black ml-2" />}
+                                    </button>
+                                    <button onClick={playNext} className="text-gray-300">
+                                        <SkipForward className="w-10 h-10 md:w-12 md:h-12 fill-current" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                    ) : (
+                    <div
+                        className="w-full flex-1 flex flex-col relative mask-image-y custom-scroll overflow-y-auto pb-20">
+                        <div className="my-auto space-y-8 md:space-y-10 py-20 text-center md:text-left">
+                            {[{t: 0, text: "🎵 (Intro)"}, {t: 5, text: "Escuchando en modo PWA."}, {t: 10, text: "Siente
+                            el ritmo."}, {t: 15, text: "Responsive y fluido."}, {t: 20, text: "Nexus
+                            Music."}].map((line, i) => {
+                            const isActive = audioRef.current?.currentTime >= line.t && audioRef.current?.currentTime <
+                                (line.t + 5); return <p key={i} className={`text-3xl md:text-6xl font-black
+                                tracking-tighter leading-tight lyric-line ${isActive ? 'active' : '' }`}>{line.text}</p>
+                                })}
+                        </div>
+                        {/* Mobile Lyrics Bottom Controls */}
+                        <div
+                            className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-6 bg-black/60 backdrop-blur-3xl px-8 py-4 rounded-full border border-white/10 w-[90%] md:w-auto">
+                            <button onClick={playPrev} className="text-white">
+                                <SkipBack className="w-6 h-6 fill-current" />
+                            </button>
+                            <button onClick={togglePlay}
+                                className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-black">
+                                {isPlaying ?
+                                <Pause className="w-6 h-6 fill-black" /> :
+                                <Play className="w-6 h-6 fill-black ml-1" />}
+                            </button>
+                            <button onClick={playNext} className="text-white">
+                                <SkipForward className="w-6 h-6 fill-current" />
+                            </button>
+                        </div>
+                    </div>
+                    )}
+                </div>
+            </div>
+            )}
+        </div>
+        );
+        }

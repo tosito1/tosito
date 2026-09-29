@@ -1,0 +1,69 @@
+SECTOR 9 (El Monedero Financiero)
+
+Función: Almacena el saldo disponible.
+
+Estructura: Utiliza el estándar Value Block de NXP con inversión lógica a nivel de bits (Bitwise NOT) para evitar corrupciones.
+
+Matemática Oculta: Formato Little Endian. El valor interno es 282. El sistema utiliza un factor de escala de fracciones de céntimo (x0.005), dando como resultado exacto un saldo de 1.41.
+
+Bloques: 37 y 38 (Espejo).
+
+👤 SECTOR 8 (Identidad del Usuario)
+
+Función: Vincula la tarjeta física con el perfil del usuario en la base de datos de la empresa.
+
+Estructura: Codificación directa BCD (Binary-Coded Decimal).
+
+Dato extraído: Identificador 25974746. (Se confirma que el prefijo "03" impreso en el plástico es un código de sistema/ciudad externo al chip).
+
+Bloques: 32 y 33 (Almacenamiento redundante para evitar fallos de lectura en los tornos).
+
+🚌 SECTORES 10, 11 y 12 (La Caja Negra / Historial)
+
+Función: Registro de los últimos viajes o validaciones realizadas (Ring Buffer / Buffer circular de 10 posiciones).
+
+Estructura del Timestamp: Cuenta los minutos transcurridos desde una fecha base (Epoch) configurada el 1 de Enero de 1997.
+
+Dato extraído: El Bloque 49 (D1 AD 63 convertido a decimal 13741411 minutos) revela una validación el 15 de Febrero de 2023 a las 15:31.
+
+Firmas: Cada línea incluye identificadores de la máquina validadora y un Checksum (CRC) final (CB 44) para certificar que el viaje se grabó correctamente.
+
+
+🔍 DESGLOSE TÉCNICO DEL DUMP:
+
+🔢 SECTOR 0 (Identidad y Acceso - El Master Key)
+
+Función: Contiene el UID (que es único e inmutable) y las claves de seguridad de todos los sectores.
+
+Clave Universal: La clave encontrada (1848A8D1E4C5) es la 'llave maestra' que permite leer o modificar las reglas del resto de la tarjeta.
+
+📝 SECTOR 1 (Configuración del Sistema)
+
+Función: Define las reglas de seguridad y de uso (Access Conditions). En este caso, indica que el Bloc
+k 0 solo puede ser leído, mientras que los bloques de datos 1, 2 y 3 permiten lectura/escritura (código C0 78 C0).
+
+Dato extraído: Se confirma que la tarjeta NO está en modo "Magic" (es decir, NO se puede modificar el UID físico).
+
+🔒 SECTOR 2 (Bloqueo de Fabricante)
+
+Función: Identificación de origen y bloqueo de funciones sensibles.
+
+Dato extraído: El código interno es 00000000, lo que confirma que estamos ante una tarjeta MIFARE Standard (original de NXP), no una falsificación de menor calidad (como una KT41).
+
+👤 SECTOR 8 (Identidad del Usuario)
+
+Función: Vincula la tarjeta física con el perfil del usuario en la base de datos de la empresa.
+
+Estructura: Codificación directa BCD (Binary-Coded Decimal).
+
+Dato extraído: Identificador 25974746. (Se confirma que el prefijo "03" impreso en el plástico es un código de sistema/ciudad externo al chip).
+
+🚌 SECTORES 10, 11 y 12 (La Caja Negra / Historial)
+
+Función: Registro de los últimos viajes o validaciones realizadas (Ring Buffer / Buffer circular de 10 posiciones).
+
+Estructura del Timestamp: Cuenta los minutos transcurridos desde una fecha base (Epoch) configurada el 1 de Enero de 1997.
+
+Dato extraído: El Bloque 49 (D1 AD 63 convertido a decimal 13741411 minutos) revela una validación el 15 de Febrero de 2023 a las 15:31.
+
+Firmas: Cada línea incluye identificadores de la máquina validadora y un Checksum (CRC) final (CB 44) para certificar que el viaje se grabó correctamente.
